@@ -13,7 +13,7 @@ In this example GZip implementation, the LZ77 module has been accelerated on the
 
 ### Resource Utilization
 
-The LZ77 kernel runs at 250Mhz and uses the following resources:
+The LZ77 kernel runs at 250MHz and uses the following resources:
 
 | Design | Compute Units | LUT | LUTMEM | REG | BRAM | DSP |
 | ------ | ------------- | --- | ------ | --- | ---- | --- |
@@ -23,7 +23,7 @@ The LZ77 kernel runs at 250Mhz and uses the following resources:
 ## Description
 
 In this example, the Huffman encoding is still being run as part of the host
-application and is not accelerated. The LZ77 kernel is implemented as a C/C++
+application and it is not yet accelerated. The LZ77 kernel is implemented as a C/C++
 kernel and compiled using SDAccel.
 
 The following picture shows various internal dataflow stages (pipeline stages)
@@ -58,8 +58,8 @@ the end, streams from multiple pipes are written to DDR.
 
 This example is provided with two popular compression benchmarks. 
 
-1. Silesia
-2. Cantrybury
+1. [Silesia](http://sun.aei.polsl.pl/~sdeor/index.php?page=silesia)
+2. [Canterybury](http://corpus.canterbury.ac.nz/descriptions/#cantrbry)
 
 ```
   Input Arguments : 
