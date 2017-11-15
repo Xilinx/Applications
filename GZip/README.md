@@ -63,8 +63,8 @@ the end, streams from multiple pipes are written to DDR.
 ## Software & Hardware
 
 ```
-  Software : Xilinx SDx 2017.1
-  Hardware : xilinx:aws-vu9p-f1:4ddr-xpr-2pr (AWS VU9p DSA)
+  Software: Xilinx SDx 2017.1
+  Hardware: xilinx:aws-vu9p-f1:4ddr-xpr-2pr (AWS VU9p DSA)
 ```
  
 ## Execution Steps
