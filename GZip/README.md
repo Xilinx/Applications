@@ -41,7 +41,7 @@ necessary performance:
 1.  The whole LZ77 pipeline has been designed to process 8bytes/cycle. To
 achieve this, we read 8byte in parallel from DDR memory, and then perform
 multiple comparison in the dictionary to find the best match. Every cycle, we
-compare multiple sub-strings in a 8-byte length to find the best match.
+compare multiple sub-strings in an 8-byte length to find the best match.
 2.  To perform multiple comparisons every cycle, several copies of the
 dictionary data is maintained. The dictionary is also updated every cycle to
 avoid conditional writes.
@@ -53,7 +53,15 @@ the end, streams from multiple pipes are written to DDR.
 
 
 ![Byte Pack select](./img/Byte_pack.png) <br />
+  
+  
+## Experimental Setup
 
+```
+  Software : Xilinx SDx 2017.1
+  Hardware : xilinx:aws-vu9p-f1:4ddr-xpr-2pr (AWS VU9p DSA)
+```
+ 
 ## Execution Steps
 
 This example is provided with two popular compression benchmarks. 
@@ -62,12 +70,12 @@ This example is provided with two popular compression benchmarks.
 2. [Canterybury](http://corpus.canterbury.ac.nz/descriptions/#cantrbry)
 
 ```
-  Input Arguments : 
+  Input Arguments: 
     
         1. To execute list/batch of files: -l <files.list> (files.list contains list of files)
         2. To execute single file: -i <file>
         
-   Note : Default arguments are set in Makefile
+   Note: Default arguments are set in Makefile
 ```
 
 ### Emulation flows
