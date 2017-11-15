@@ -20,7 +20,7 @@ The LZ77 kernel runs at 250MHz and uses the following resources:
 | 8 Bytes/clock | 1 | 31842(3.57%) | 1202(0.22%) |35577(1.79%) | 277(17.15%) |0|
 | 8 Bytes/clock | 2 | 63669(7.18%) | 2404(0.44%) | 71154(3.60%) | 554(34.30%)|0|
 
-## Description
+## Algorithm Description
 
 In this example, the Huffman encoding is still being run as part of the host
 application and it is not yet accelerated. The LZ77 kernel is implemented as a C/C++
