@@ -9,7 +9,10 @@ Gzip is based on the DEFLATE algorithm. The complete GZip application has two pa
 1. LZ77 compression 
 2. Huffman encoding
 
-In this example GZip implementation, the LZ77 module has been accelerated on the FPGA device available on the AWS F1 instance. The accelerated LZ77 algorithm provides a throughput of 3.5GBytes/s. 
+In this example GZip implementation, the LZ77 module has been accelerated on the
+FPGA device available on the AWS F1 instance. The accelerated LZ77 algorithm
+provides a throughput of 3.5GBytes/s using 2 compute units. Higher performance
+can be achieved by using additional compute units. 
 
 ### Resource Utilization
 
