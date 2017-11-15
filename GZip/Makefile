@@ -76,7 +76,7 @@ check_EXE=$(HOST_NAME)
 check_XCLBINS=$(XCLBIN_NAME)
 #check_ARGS= -l ./cantrbry.list
 #check_ARGS= -l ./silesia.list
-check_ARGS= -i ./benchmark/silesia/dickens
+check_ARGS= -i ./benchmark/cantrbry/alice29.txt
 CHECKS=check
 
 include $(COMMON_REPO)/utility/rules.mk
