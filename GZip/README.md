@@ -55,7 +55,7 @@ the end, streams from multiple pipes are written to DDR.
 ![Byte Pack select](./img/Byte_pack.png) <br />
   
   
-## Experimental Setup
+## Software & Hardware
 
 ```
   Software : Xilinx SDx 2017.1
