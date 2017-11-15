@@ -81,6 +81,8 @@ This example is provided with two popular compression benchmarks.
 ### Emulation flows
 ```
   make check TARGETS=<sw_emu/hw_emu>
+  
+  Note: This command compiles for targeted emulation mode and executes the application
 ```
 ### Hardware
 
