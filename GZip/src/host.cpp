@@ -175,10 +175,13 @@ int process(std::string & inFile_name, xil_lz77& lz77)
     rewind(inFile);
 
     fclose(inFile);    
+    
+    float size_in_mb = (float)input_size/1000000;
     std::cout.precision(3);
     std::cout << "\t\t" 
          << ((float)debytes/enbytes) << "\t\t"; 
-    std::cout  << (ret ? "FAILED\t": "PASSED\t")<< "\t" << input_size << "\t\t" << inFile_name << std::endl; 
+    std::cout.precision(3);
+    std::cout  << (ret ? "FAILED\t": "PASSED\t")<< "\t" << size_in_mb << "\t\t\t" << inFile_name << std::endl; 
     return ret;
 }  
 int main(int argc, char *argv[])
@@ -195,7 +198,7 @@ int main(int argc, char *argv[])
     std::string infile      = parser.value("input_file");   
     std::string filelist    = parser.value("file_list");   
     std::cout<<"\n";
-    std::cout<<"E2E(MBps)\tKT(MBps)\tCR\t\tSTATUS\t\tFile Size\tFile Name"<<std::endl;
+    std::cout<<"E2E(MBps)\tKT(MBps)\tCR\t\tSTATUS\t\tFile Size(MB)\t\tFile Name"<<std::endl;
     std::cout<<"\n";
     if (!filelist.empty()) {
         std::ifstream infilelist(filelist.c_str());
