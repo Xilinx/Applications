@@ -1,6 +1,6 @@
 {
     "runtime": ["OpenCL"],
-    "example": "LZ77 algorithm",
+    "example": "GZip",
     "overview": [
         "This example demostrates data compression using C/C++(HLS) kernel. LZ77 algorithm is fully optimized to achieve 3.5GB/s kernel throughput. It also demonstrates various optimization techniques that are common and easily applicable to other compression algorithms as well. "
     ],
