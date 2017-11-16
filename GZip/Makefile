@@ -1,7 +1,7 @@
 #GZip Settings
 ################################################################################
 #Select the number of Compute units. 
-COMPUTE_UNITS:=1
+COMPUTE_UNITS:=2
 ################################################################################
 
 
@@ -75,8 +75,8 @@ XCLBINS=$(XCLBIN_NAME)
 check_EXE=$(HOST_NAME)
 check_XCLBINS=$(XCLBIN_NAME)
 #check_ARGS= -l ./cantrbry.list
-check_ARGS= -l ./silesia.list
-#check_ARGS= -i ./benchmark/cantrbry/alice29.txt
+#check_ARGS= -l ./silesia.list
+check_ARGS= -i ./benchmark/cantrbry/alice29.txt
 CHECKS=check
 
 include $(COMMON_REPO)/utility/rules.mk
