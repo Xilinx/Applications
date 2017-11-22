@@ -11,7 +11,7 @@ WebP is a new image format developed by Google and supported in Chrome, Opera an
 * Color Profile: It may have an embedded ICC profile.
 
 
-## Software and System Requirement
+## Software and system requirements
 The following packages are required to run this application:
 * Xilinx SDAccel 2017.1
 * GCC 6.x
