@@ -72,7 +72,7 @@ the end, streams from multiple pipes are written to DDR.
 This example is provided with two popular compression benchmarks. 
 
 1. [Silesia](http://sun.aei.polsl.pl/~sdeor/index.php?page=silesia)
-2. [Canterybury](http://corpus.canterbury.ac.nz/descriptions/#cantrbry)
+2. [Canterbury](http://corpus.canterbury.ac.nz/descriptions/#cantrbry)
 
 ```
   Input Arguments: 
