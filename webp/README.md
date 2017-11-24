@@ -24,8 +24,9 @@ The following packages are required to run this application:
     ```bash
     bash xocc.sh
     ```
-    - The `xocc.sh` script compiles both the host application code and kernel code. 
+    - The `xocc.sh` script compiles both the host application code (cwebp) and kernel code (kernel.xclbin). 
     - It sets environment variables and uses `make` to compile the application.
+
     
 * The following environment variables can be configured in `xocc.sh`:
     - VP8_SDX: SDAccel directory
@@ -34,13 +35,27 @@ The following packages are required to run this application:
     - VP8_NBINSTANCES: number of instances. 1,2,3 or 4 are currently supported.
     - VP8_FREQUENCY: device frequency
 
+
+* Follow the guide to create Amazon FPGA Image (AFI):
+    - [AWS F1 Application Execution on Xilinx Virtex UltraScale Devices](https://github.com/aws/aws-fpga/blob/master/SDAccel/README.md)
+
+
+* Move kernel.xclbin to kernel.xclbin_origin and copy kernel.awsxclbin to kernel.xclbin
    
+
 ## Running the accelerated WebP encoder
-* After building the accelerated WebP encoder, execute it as follows:
+* Put following command in script `run.sh`
     ```bash
+    source /opt/Xilinx/SDx/2017.1.rte/setup.sh
     ./cwebp list.rst -use_ocl -q 80 -o output
     ```
-    - list.rst is text file lists input pictures, should not be less than "NPicPool" defined in src_syn/vp8_AsyncConfig.h
+    - list.rst is text file lists input pictures, should be equal to "NPicPool" defined in src_syn/vp8_AsyncConfig.h
     - -use_ocl: should be kept
     - -q: compression quality
     - -o: output directory
+  
+
+* Execute the script as follows:
+    ```bash
+    sudo ./run.sh
+    ```
