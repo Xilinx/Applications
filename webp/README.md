@@ -51,43 +51,55 @@ The following packages are required to run this application:
 * DSA: AWS VU9P: xilinx:aws-vu9p-f1:4ddr-xpr-2pr
 
 
+
+
 ## Building the accelerated WebP encoder
-* To build the accelerated WebP encoder, run the following command:
+
+* Prerequisites: the following steps assume that you have followed the instructions on [how to create, configure and connect to an F1 instance](https://github.com/Xilinx/SDAccel_Examples/wiki/Create,-configure-and-test-an-AWS-F1-instance) and that you are connected to a properly configured F1 instance.
+
+* In a terminal window, execute the following commands to set-up the SDAccel environment
+    ```bash
+    cd $AWS_FPGA_REPO_DIR  
+    source sdaccel_setup.sh
+    source $XILINX_SDX/settings64.sh 
+    ```
+
+* Build the accelerated WebP encoder with the following command:
     ```bash
     bash xocc.sh
     ```
-    - The `xocc.sh` script compiles both the host application code (cwebp) and kernel code (kernel.xclbin). 
-    - It sets environment variables and uses `make` to compile the application.
+	- The xocc.sh script compiles both the host application code (`cwebp`) and FPGA binary (kernel.xclbin).
+	- The following environment variables can be configured in `xocc.sh` to control the output of compilation flow:
+		- VP8_SDX: SDAccel directory
+		- DSA: Device DSA
+		- VP8_TARGET: hw or hw_emu
+		- VP8_NBINSTANCES: number of instances. 1,2,3 or 4 are currently supported.
+		- VP8_FREQUENCY: device frequency
 
-    
-* The following environment variables can be configured in `xocc.sh`:
-    - VP8_SDX: SDAccel directory
-    - DSA: Device DSA
-    - VP8_TARGET: hw or hw_emu
-    - VP8_NBINSTANCES: number of instances. 1,2,3 or 4 are currently supported.
-    - VP8_FREQUENCY: device frequency
+* Create the AWS FPGA binary and AFI from the *.xclbin file
+   ```bash
+   $SDACCEL_DIR/tools/create_sdaccel_afi.sh \
+	-xclbin=<xclbin-file-name>.xclbin \
+	-s3_bucket=<bucket-name> \
+	-s3_dcp_key=<dcp-folder-name> \
+	-s3_logs_key=<logs-folder-name>
+   ```
 
+* Wait until the AFI becomes available before proceeding to execute the application on the F1 instance.
 
-* Follow the guide to create Amazon FPGA Image (AFI):
-    - [AWS F1 Application Execution on Xilinx Virtex UltraScale Devices](https://github.com/aws/aws-fpga/blob/master/SDAccel/README.md)
-
-
-* Move kernel.xclbin to kernel.xclbin_origin and copy kernel.awsxclbin to kernel.xclbin
-   
+* For more details about the last two steps, refer to [these instructions on how to build an AFI for F1](https://github.com/Xilinx/SDAccel_Examples/wiki/Create,-configure-and-test-an-AWS-F1-instance#build-the-host-application-and-fpga-binary-to-execute-on-f1)
 
 ## Running the accelerated WebP encoder
-* Put following command in script `run.sh`
-    ```bash
-    source /opt/Xilinx/SDx/2017.1.rte/setup.sh
-    ./cwebp list.rst -use_ocl -q 80 -o output
-    ```
+
+* The `cwebp` application takes the following arguments:
     - list.rst is text file lists input pictures, should be equal to "NPicPool" defined in src_syn/vp8_AsyncConfig.h
     - -use_ocl: should be kept
     - -q: compression quality
     - -o: output directory
-  
 
-* Execute the script as follows:
-    ```bash
-    sudo ./run.sh
+* Run the accelerated WebP encoder with the following commands:
+    ```sh
+    sudo sh
+    source /opt/Xilinx/SDx/2017.1.rte/setup.sh   
+    ./cwebp list.rst -use_ocl -q 80 -o output 
     ```
