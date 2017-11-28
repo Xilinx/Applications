@@ -87,6 +87,8 @@ The following packages are required to run this application:
 
 * Wait until the AFI becomes available before proceeding to execute the application on the F1 instance.
 
+* Move kernel.xclbin to kernel.xclbin_origin and copy kernel.awsxclbin to kernel.xclbin.
+
 * For more details about the last two steps, refer to [these instructions on how to build an AFI for F1](https://github.com/Xilinx/SDAccel_Examples/wiki/Create,-configure-and-test-an-AWS-F1-instance#build-the-host-application-and-fpga-binary-to-execute-on-f1)
 
 ## Running the accelerated WebP encoder
