@@ -4,7 +4,11 @@
 WebP is a new image format developed by Google and supported in Chrome, Opera and Android that is optimized to enable faster and smaller images on the Web.
 WebP images are about 30% smaller in size compared to PNG and JPEG images at equivalent visual quality. In addition, the WebP image format has feature parity with other formats as well.
 
-This accelerated WebP encoder project (SDx) is based on `libwebp` open source project. Time-consuming functions are shifted into 2 FPGA kernels including:
+This accelerated WebP encoder project (SDx) is based on `libwebp` open source project. For one input picutre (.png), the output picutre (.webp) is achieved after following six steps:
+
+    <img src="./img/webp_steps.png" width="50%" height="50%">
+
+Time-consuming functions are accelerated by 2 FPGA kernels including:
 
   ```bash
   Kernel-1: intra-prediction and probability counting
@@ -42,6 +46,9 @@ Some original algorithms are modified for hardware efficiency, but without effec
     | BRAM |           97    |   27   |  5.74%  |
     | DDR bandwidth |        |        |  5.80%  |
 
+* Multi-pictures process. Host code supports multi-pictures process with asynchronous behaviors, which allows to overlap host-device communiations, prediction kernel computation and arithmetic coding kernel computation. This is shown by following demonstration picture and profiling result.
+
+ <img src="./img/webp_overlap.png" width="50%" height="50%">
 
 ## Software and system requirements
 The following packages are required to run this application:
