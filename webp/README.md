@@ -48,7 +48,9 @@ Some original algorithms are modified for hardware efficiency, but without effec
 
 * Multi-pictures process. Host code supports multi-pictures process with asynchronous behaviors, which allows to overlap host-device communiations, prediction kernel computation and arithmetic coding kernel computation. This is shown by following demonstration picture and profiling result.
 
- <img src="./img/webp_overlap.png" width="50%" height="50%">
+ <img src="./img/webp_overlap.png" width="40%" height="40%">
+ 
+ <img src="./img/webp_profiling.png" width="70%" height="70%">
 
 ## Software and system requirements
 The following packages are required to run this application:
