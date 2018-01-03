@@ -35,7 +35,7 @@ The following  are various internal dataflow stages (pipeline stages)
 into which the kernel implementation has been split:  
   
 
-1. Read Input and Update Preset Window
+1. Read Input and Update Present Window
 2. Read/Write into History Hash Table
 3. Optimal Match Finder
 4. Byte Packing
@@ -46,10 +46,10 @@ necessary performance:
 
 1.  The whole LZ77 pipeline has been designed to process 8bytes/cycle. To
 achieve this, we read 8byte in parallel from DDR memory, and then perform
-multiple comparison in the dictionary to find the best match. Every cycle, we
-compare multiple sub-strings in an 8-byte length to find the best match.
+multiple comparison in the history hash table to find the optimal match. Every cycle, we
+compare multiple sub-strings in an 8-byte length to find the optimal match.
 2.  To perform multiple comparisons every cycle, several copies of the
-dictionary data is maintained. The dictionary is also updated every cycle to
+history hash table data is maintained. The history hash table is also updated every cycle to
 avoid conditional writes.
 3.  The last stage of LZ77 compression performs a byte-level packing of the
 data. This step by definition has a throughput of 1Byte per cycle. Hence, to
