@@ -1,30 +1,38 @@
 /**********
 Copyright (c) 2017, Xilinx, Inc.
 All rights reserved.
+
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
+
 1. Redistributions of source code must retain the above copyright notice,
 this list of conditions and the following disclaimer.
+
 2. Redistributions in binary form must reproduce the above copyright notice,
 this list of conditions and the following disclaimer in the documentation
 and/or other materials provided with the distribution.
+
 3. Neither the name of the copyright holder nor the names of its contributors
 may be used to endorse or promote products derived from this software
 without specific prior written permission.
+
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
-THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
-EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED.IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+THIS SOFTWARE,EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **********/
+
 #include "lz77.h"
 #include <fstream>
 #include <vector>
 #include "cmdlineparser.h"
+
+long xgzip_enc = 0 ;
 
 uint32_t lz77_encode_top(const char *inFile_name, xil_lz77& lz77) 
 {
@@ -124,6 +132,12 @@ int lz77_decode_top(const std::string& inFile_name,uint32_t enbytes) {
     free(decode_in);
     free(decode_out);
 
+    char decodehuff_remove[512];
+    string dhuff_cmp = inFile_name;
+    dhuff_cmp = dhuff_cmp + "decode.huffman";
+    snprintf(decodehuff_remove, sizeof(decodehuff_remove), "rm %s", dhuff_cmp.c_str());
+    system(decodehuff_remove);
+
     return debytes;
 }
 
@@ -141,9 +155,15 @@ void huffman_encode(const char *input) {
     // Huffman encoding
     char huff_cmd_encode[512];
     string huff_cmp = inFile_name;
-    huff_cmp = huff_cmp + "encode.huffman";
+    huff_cmp = huff_cmp + "encode.xgzip";
     snprintf(huff_cmd_encode, sizeof(huff_cmd_encode), "./huffman -c -i %s -o %s",outFile_name.c_str(),huff_cmp.c_str()); 
     system(huff_cmd_encode);
+
+    char lz77_remove_encode[512];
+    string lz77_cmp = inFile_name;
+    lz77_cmp = lz77_cmp + "encode.lz77";
+    snprintf(lz77_remove_encode, sizeof(lz77_remove_encode), "rm %s", lz77_cmp.c_str());
+    system(lz77_remove_encode);
 
 }
 
@@ -155,7 +175,21 @@ void huffman_decode(const char *inFile_name) {
     // Huffman decoding
     char huff_cmd_decode[512];
     string huff_cmp = inFile_name;
-    huff_cmp = huff_cmp + "encode.huffman";
+    huff_cmp = huff_cmp + "encode.xgzip";
+    
+    FILE *inFile  = NULL;
+    inFile  = fopen(huff_cmp.c_str(), "rb");
+    
+    // Find file size
+    fseek(inFile, 0, SEEK_END);
+    long input_size = ftell(inFile);
+    rewind(inFile);
+
+    // xgzip_enc update actual size
+    xgzip_enc = input_size;
+
+    fclose(inFile);
+
     string huff_dec = inFile_name;
     huff_dec = huff_dec + "decode.huffman";
     snprintf(huff_cmd_decode, sizeof(huff_cmd_decode), "./huffman -d -i %s -o %s",huff_cmp.c_str(),huff_dec.c_str()); 
@@ -202,40 +236,46 @@ int process(std::string & inFile_name, xil_lz77& lz77)
     float size_in_mb = (float)input_size/1000000;
     std::cout.precision(3);
     std::cout << "\t\t" 
-         << ((float)debytes/enbytes) << "\t\t"; 
+         << ((float)debytes/xgzip_enc) << "\t\t"; 
     std::cout.precision(3);
     std::cout  << (ret ? "FAILED\t": "PASSED\t")<< "\t" << size_in_mb << "\t\t\t" << inFile_name << std::endl; 
     return ret;
-}  
+} 
+ 
 int main(int argc, char *argv[])
 {
     std::string binaryFileName = "gZip_" + std::to_string(COMPUTE_UNITS) + "cu";
-    xil_lz77 lz77;
-    lz77.init(binaryFileName);
     
     sda::utils::CmdLineParser parser;
-    parser.addSwitch("--input_file",    "-i",       "input data flie",        "");
-    parser.addSwitch("--file_list",     "-l",       "List of Input Files",    "");
+    parser.addSwitch("--input_file",    "-i",       "Input data file",        "");
+    parser.addSwitch("--file_list ",    "-l",       "List of Input Files",    "");
     parser.parse(argc, argv);
+    
+    xil_lz77 lz77;
+    lz77.init(binaryFileName);
 
     std::string infile      = parser.value("input_file");   
-    std::string filelist    = parser.value("file_list");   
-    std::cout<<"\n";
-    std::cout<<"E2E(MBps)\tKT(MBps)\tCR\t\tSTATUS\t\tFile Size(MB)\t\tFile Name"<<std::endl;
-    std::cout<<"\n";
+    std::string filelist    = parser.value("file_list ");   
     if (!filelist.empty()) {
+        std::cout<<"\n";
+        std::cout<<"E2E(MBps)\tKT(MBps)\tCR\t\tSTATUS\t\tFile Size(MB)\t\tFile Name"<<std::endl;
+        std::cout<<"\n";
         std::ifstream infilelist(filelist.c_str());
         std::string line;
         while(std::getline(infilelist,line)){
             process(line,lz77);
         }
     }else if (!infile.empty()){
+        std::cout<<"\n";
+        std::cout<<"E2E(MBps)\tKT(MBps)\tCR\t\tSTATUS\t\tFile Size(MB)\t\tFile Name"<<std::endl;
+        std::cout<<"\n";
 
         std::string inFile_name = argv[1];
         int ret = process(infile,lz77);   
         cout << "TEST " << (ret ? "FAILED": "PASSED") << endl; 
     }  else{
         parser.printHelp();
+    	lz77.release();
         exit(EXIT_FAILURE);
     }
     lz77.release();

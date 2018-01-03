@@ -1,26 +1,32 @@
 /**********
 Copyright (c) 2017, Xilinx, Inc.
 All rights reserved.
+
 Redistribution and use in source and binary forms, with or without modification,
 are permitted provided that the following conditions are met:
+
 1. Redistributions of source code must retain the above copyright notice,
 this list of conditions and the following disclaimer.
+
 2. Redistributions in binary form must reproduce the above copyright notice,
 this list of conditions and the following disclaimer in the documentation
 and/or other materials provided with the distribution.
+
 3. Neither the name of the copyright holder nor the names of its contributors
 may be used to endorse or promote products derived from this software
 without specific prior written permission.
+
 THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
 ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
-THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
-IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
-PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
-HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
-OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
-EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED.IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT,
+INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
+LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
+BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
+THIS SOFTWARE,EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **********/
+
 #include <stdio.h>
 #include <stdint.h>
 #include <assert.h>
@@ -289,7 +295,7 @@ void bytePacking (
         //printme("%s:first chunkSize=%d\n",__FUNCTION__,size);
         bool is_encoded = false;  
         uint32_t out_idx = 0;  
-        uint8_t length = 0;
+        uint8_t magnitude = 0;
         uint8_t value1,value2;
         encodedV_dt currV;
         uint32_t loc_idx = 0; 
@@ -308,15 +314,15 @@ void bytePacking (
             uint8_t tCh      = tmpEncodedValue.range(7,0);
             uint8_t tLen     = tmpEncodedValue.range(15,8);
             uint16_t tOffset = tmpEncodedValue.range(31,16);
-            if (length){  
-                --length;
+            if (magnitude){  
+                --magnitude;
             }else if (tLen > 0){  
-                uint32_t offset = tOffset;  
-                length = tLen- 1;  
-                uint8_t temp    = (length << 4) & 0xF0;  
-                uint8_t temp1   = (offset >> 8) & 0x0F;  
+                uint32_t distance = tOffset;  
+                magnitude = tLen- 1;  
+                uint8_t temp    = (magnitude << 4) & 0xF0;  
+                uint8_t temp1   = (distance >> 8) & 0x0F;  
                 uint8_t res     = temp | temp1;  
-                uint8_t temp2   = offset & 0xFF;  
+                uint8_t temp2   = distance & 0xFF;  
                 localB[loc_idx++] = marker;
                 localB[loc_idx++] = res;
                 localB[loc_idx++] = temp2;
@@ -361,30 +367,30 @@ void compress(
 {
     //printme("%s:Starting\n",__FUNCTION__);
     // Look ahead buffer
-    uint8_t curr_window[SEEK_WINDOW];
-    #pragma HLS ARRAY_PARTITION variable=curr_window complete 
-    // History Dictionaries
-    uintDictV_t dict[VEC][VEC][TABLE_SIZE];   
-    #pragma HLS ARRAY_PARTITION variable=dict dim=1 complete
-    #pragma HLS ARRAY_PARTITION variable=dict dim=2 complete
+    uint8_t present_window[SEEK_WINDOW];
+    #pragma HLS ARRAY_PARTITION variable=present_window complete 
+    // History Hash Tables
+    uintDictV_t history_hash_table[VEC][VEC][TABLE_SIZE];   
+    #pragma HLS ARRAY_PARTITION variable=history_hash_table dim=1 complete
+    #pragma HLS ARRAY_PARTITION variable=history_hash_table dim=2 complete
 
-    // Comparison window        
-    uintV_t comp_window[LEN][VEC];
-    #pragma HLS ARRAY_PARTITION variable=comp_window dim=1 complete
-    #pragma HLS ARRAY_PARTITION variable=comp_window dim=2 complete
+    // Data Hold Windows     
+    uintV_t hold_window[LEN][VEC];
+    #pragma HLS ARRAY_PARTITION variable=hold_window dim=1 complete
+    #pragma HLS ARRAY_PARTITION variable=hold_window dim=2 complete
  
-    // Compare index 
-    int32_t comp_idx[VEC][VEC];  
-    #pragma HLS ARRAY_PARTITION variable=comp_idx dim=1 complete 
-    #pragma HLS ARRAY_PARTITION variable=comp_idx dim=2 complete 
+    // Data Hold Index
+    int32_t hold_idx[VEC][VEC];  
+    #pragma HLS ARRAY_PARTITION variable=hold_idx dim=1 complete 
+    #pragma HLS ARRAY_PARTITION variable=hold_idx dim=2 complete 
 
     uint32_t out_cntr = 0;
 
-    // Flush main dictionary and index dictionary
+    // Flush main Hash Table and index Hash Table
     uintDictV_t zeroValue = 0;
     zeroValue.range(VEC*BIT+31, VEC*BIT) = -1;
 
-    // Initialize history dictionaries
+    // Initialize history hashtables
     flush: for(int i = 0; i < TABLE_SIZE; i++) {
     #pragma HLS PIPELINE
     #pragma HLS UNROLL FACTOR=2
@@ -392,176 +398,174 @@ void compress(
        #pragma HLS UNROLL
             for (int k = 0; k < VEC; k++){
             #pragma HLS UNROLL
-                dict[k][j][i] = zeroValue;
+                history_hash_table[k][j][i] = zeroValue;
             }
         }
     }
 
-    //shift current window
+    // Read Input data
     uintV_t tmpValue = inStream.read();
     curr_win: for(int m = 0; m < VEC; m++){
     #pragma HLS UNROLL
-        curr_window[VEC+m] = tmpValue.range(m * BIT + BIT - 1, m * BIT);
+        present_window[VEC+m] = tmpValue.range(m * BIT + BIT - 1, m * BIT);
     }
 
     // Holds best index value
-    int32_t best_idx[VEC];
-    #pragma HLS ARRAY_PARTITION variable=best_idx complete
+    int32_t good_idx[VEC];
+    #pragma HLS ARRAY_PARTITION variable=good_idx complete
     
     uint32_t inputSizeV = input_size/VEC;
     // Run over input data
     lz77_main: for(int inIdx = 1; inIdx < inputSizeV; inIdx++) {
     #pragma HLS PIPELINE ii=1
-    #pragma HLS dependence variable=dict inter false
+    #pragma HLS dependence variable=history_hash_table inter false
         /************************************************************************
-        *    Shift module Start
+        *    Read Module Start
         ***********************************************************************/
        
-        //shift current window
+        // Move present window
         shift1: for(int m = 0; m < VEC; m++)
-            curr_window[m] = curr_window[VEC + m];
+            present_window[m] = present_window[VEC + m];
        
-        // load new values
+        // Update new values
         tmpValue = inStream.read(); 
         shift2: for(int m = 0; m < VEC; m++){
-            curr_window[VEC + m] = tmpValue.range(m * BIT + BIT - 1, m * BIT);
+            present_window[VEC + m] = tmpValue.range(m * BIT + BIT - 1, m * BIT);
         }
 
         /************************************************************************
-        *    Shift module End 
+        *    Read Input Module End 
         ***********************************************************************/
 
         /************************************************************************/
-        //          Dictionary Lookup and Update Module Start
+        //          Hash Table Read/Write Module Start
         /***********************************************************************/
 
         uint32_t hash[VEC];
-        int32_t curr_idx[VEC]; 
-        uintV_t  curr_windowV[VEC];  
+        int32_t present_idx[VEC]; 
+        uintV_t  present_windowV[VEC];  
         hash_cal: for (int i = 0 ; i < VEC ; i++) {
         #pragma HLS UNROLL
-            curr_idx[i] = i + inIdx * VEC;
-            hash[i] = (curr_window[i] << 2)     ^
-                      (curr_window[i + 1] << 1) ^
-                      (curr_window[i + 2])      ^
-                      (curr_window[i + 3]);
+            present_idx[i] = i + inIdx * VEC;
+            hash[i] = (present_window[i] << 2)     ^
+                      (present_window[i + 1] << 1) ^
+                      (present_window[i + 2])      ^
+                      (present_window[i + 3]);
 
             uintV_t tmpDictValue;
             for (int j = 0 ; j < VEC ; j++){
-                tmpDictValue.range(j * BIT + BIT - 1, j * BIT) = curr_window[i+j];
+                tmpDictValue.range(j * BIT + BIT - 1, j * BIT) = present_window[i+j];
             }
-            curr_windowV[i] = tmpDictValue;
+            present_windowV[i] = tmpDictValue;
         }
-        // Calculate hash & history dict search
-        dict_lookup: for(int i = 0; i < VEC; i++) {
+        // Calculate hash & history history_hash_table seek
+        history_hash_table_lookup: for(int i = 0; i < VEC; i++) {
         #pragma HLS UNROLL
             // Run over literals
-            dict2: for(int j = 0; j < VEC; j++) {
+            history_hash_table2: for(int j = 0; j < VEC; j++) {
             #pragma HLS UNROLL
-                // Loop over dictionaries
-                uintDictV_t tmpValue  = dict[i][j][hash[i]];
-                comp_window[i][j] = tmpValue.range(VEC*BIT -1,0);
-                comp_idx[i][j]    = tmpValue.range(VEC*BIT +31, VEC*BIT);
+                // Loop over history_hash_tableionaries
+                uintDictV_t tmpValue  = history_hash_table[i][j][hash[i]];
+                hold_window[i][j] = tmpValue.range(VEC*BIT -1,0);
+                hold_idx[i][j]    = tmpValue.range(VEC*BIT +31, VEC*BIT);
             }
         }
-        dict_update: for (int i = 0 ; i < VEC ; i++){
+        history_hash_table_update: for (int i = 0 ; i < VEC ; i++){
         #pragma HLS UNROLL
             for (int m = 0 ; m < VEC ; m++){
             #pragma HLS UNROLL
                 uintDictV_t tmpValue;
-                tmpValue.range(VEC*BIT-1,0) = curr_windowV[i];
-                tmpValue.range(VEC*BIT+31, VEC*BIT)= curr_idx[i];
-                dict[m][i][hash[i]] = tmpValue;
+                tmpValue.range(VEC*BIT-1,0) = present_windowV[i];
+                tmpValue.range(VEC*BIT+31, VEC*BIT)= present_idx[i];
+                history_hash_table[m][i][hash[i]] = tmpValue;
             }
         }
         
         /************************************************************************/
-        //          Dictionary Lookup and Update Module -- End
+        //          Hashtable Read/Write Module -- End
         /***********************************************************************/
         
 
         /************************************************************************/
-        //          Match Search and Filter -- Start
+        //          Optimal match finder -- Start
         /***********************************************************************/
-        // Match search and filtering
-
             
-        // Comp dict pick
-        uint8_t comp_dict[VEC];
-        int8_t best_length[VEC];
+        // Hold Hash Table pick
+        uint8_t hold_table[VEC];
+        int8_t good_len[VEC];
         
-        search_init: for(int i = 0; i < VEC; i++) {
+        seek_init: for(int i = 0; i < VEC; i++) {
         #pragma HLS UNROLL
-            comp_dict[i] = 0;
-            best_length[i] = 0;
+            hold_table[i] = 0;
+            good_len[i] = 0;
         }
         
-        // Match search and reduction
-        // Loop over comparison window
-        search_main: for(int i = 0; i < VEC; i++) {
+        // Optimal Search
+        seek_main: for(int i = 0; i < VEC; i++) {
         #pragma HLS UNROLL
-            int8_t length[VEC];
-            // Loop over current window
-            search2: for(int j = 0; j < VEC; j++) {
+            int8_t magnitude[VEC];
+            // Loop over present window
+            seek2: for(int j = 0; j < VEC; j++) {
                 
-                bool done = 0;
+                bool finish = 0;
                 int8_t temp = 0;
-                // Compare current/compare
-                uintV_t tmpCompVal = comp_window[j][i];
-                search3 : for(int k = 0; k < LEN; k++) {
-                    if((curr_window[j + k] == tmpCompVal.range(k * BIT + BIT - 1, k * BIT) && !done)) 
+                // Compare present/hold
+                uintV_t tmpCompVal = hold_window[j][i];
+                seek3 : for(int k = 0; k < LEN; k++) {
+                    if((present_window[j + k] == tmpCompVal.range(k * BIT + BIT - 1, k * BIT) && !finish)) 
                         temp++;          
                     else
-                        done = 1;
+                        finish = 1;
                 }
                 
-                int32_t twl_bit = curr_idx[i] - comp_idx[i][j];
+                int32_t twl_bit = present_idx[i] - hold_idx[i][j];
                 if(twl_bit >= MAX_OFFSET_LIMIT){
-                    length[j] = 0;
+                    magnitude[j] = 0;
                 }
                 else {
-                    length[j] = temp;
+                    magnitude[j] = temp;
                 }
             }
 
-            // update best length
-            search4: for(int m = 0; m < VEC; m++) {
+            // Write good magnitude found so far
+            seek4: for(int m = 0; m < VEC; m++) {
                 
-                if(length[m] > best_length[m]) {
-                    best_length[m] = length[m];
-                    comp_dict[m] = i;               
+                if(magnitude[m] > good_len[m]) {
+                    good_len[m] = magnitude[m];
+                    hold_table[m] = i;               
                 }
             }
 
         }//end
 
         bestid: for(int s = 0; s < VEC; s++){
-            best_idx[s] = comp_idx[s][comp_dict[s]];
+            good_idx[s] = hold_idx[s][hold_table[s]];
         }
         
-        uint32_t best_offset[VEC];
-        int8_t best_length_0[VEC];
-        // Find the best offset 
+        uint32_t good_distance[VEC];
+        int8_t good_len_0[VEC];
+        
+        // Corresponding good distance is picked  
         find_main : for(int i = 0; i < VEC; i++) {
-            int32_t offset = curr_idx[i] - best_idx[i];  
-            if( best_length[i] >= 4  && offset < MAX_OFFSET_LIMIT && offset < curr_idx[i]) {
-                best_offset[i] = offset;
-                best_length_0[i] = best_length[i];
+            int32_t distance = present_idx[i] - good_idx[i];  
+            if( good_len[i] >= 4  && distance < MAX_OFFSET_LIMIT && distance < present_idx[i]) {
+                good_distance[i] = distance;
+                good_len_0[i] = good_len[i];
             }else {
-                best_offset[i] = 0;
-                best_length_0[i] = 0;
+                good_distance[i] = 0;
+                good_len_0[i] = 0;
             }
         }   
   
         /************************************************************************/
-        //          Match Search and Filter -- End
+        //          Optimal match finder -- End
         /***********************************************************************/
         encodedV_dt tmpV;
         for (int i = 0 ; i < VEC ; i++){
              encoded_dt tmpValue;
-             tmpValue.range(7,0)    = curr_window[i];
-             tmpValue.range(15,8)    = best_length_0[i];
-             tmpValue.range(31,16)    = best_offset[i];
+             tmpValue.range(7,0)    = present_window[i];
+             tmpValue.range(15,8)    = good_len_0[i];
+             tmpValue.range(31,16)    = good_distance[i];
              tmpV.range((i+1)*32-1,i*32) = tmpValue;
         }
         outStream << tmpV;
@@ -571,7 +575,7 @@ void compress(
     leftover2:for (int i = 0; i < VEC ; i++){  
     #pragma HLS UNROLL
          encoded_dt tmpValue;
-         tmpValue.range(7,0)    = curr_window[VEC + i];  
+         tmpValue.range(7,0)    = present_window[VEC + i];  
          tmpValue.range(15,8)   = 0;  
          tmpValue.range(31,16) = 0;  
          tmpV.range((i+1)*32-1,i*32) = tmpValue;  

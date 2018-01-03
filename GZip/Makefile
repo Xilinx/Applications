@@ -14,7 +14,8 @@ include $(COMMON_REPO)/libs/cmdparser/cmdparser.mk
 include $(COMMON_REPO)/libs/logger/logger.mk
 
 NCU:=$(COMPUTE_UNITS)cu
-HOST_NAME:=host_$(NCU)
+#HOST_NAME:=xgzip_$(NCU)
+HOST_NAME:=xgzip
 XO1_NAME:=gZip_cu1
 XO2_NAME:=gZip_cu2
 XO3_NAME:=gZip_cu3
@@ -74,11 +75,11 @@ XCLBINS=$(XCLBIN_NAME)
 # check
 check_EXE=$(HOST_NAME)
 check_XCLBINS=$(XCLBIN_NAME)
-#check_ARGS= -l ./cantrbry.list
+check_ARGS= -l ./cantrbry.list
 #check_ARGS= -l ./silesia.list
-check_ARGS= -i ./benchmark/cantrbry/alice29.txt
+#check_ARGS= -i ./benchmark/cantrbry/alice29.txt
 CHECKS=check
 
 include $(COMMON_REPO)/utility/rules.mk
 
-EXTRA_CLEAN=benchmark/*.huffman ./benchmark/*/*.huffman ./benchmark/*.orig ./benchmark/*/*.orig ./benchmark/*.lz77 ./benchmark/*/*.lz77
+EXTRA_CLEAN=benchmark/*.huffman ./benchmark/*/*.huffman ./benchmark/*.orig ./benchmark/*/*.orig ./benchmark/*.lz77 ./benchmark/*/*.lz77 ./benchmark/*/*.xgzip
