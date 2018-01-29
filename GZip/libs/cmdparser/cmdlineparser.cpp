@@ -198,7 +198,7 @@ int CmdLineParser::parse(int argc, char* argv[]) {
 		if(starts_with(token, string("--"))) {
 			if(m_mapKeySwitch.find(token) == m_mapKeySwitch.end()) {
 				LogError("Unrecognized key passed %s", token.c_str());
-				printHelp();
+				//printHelp();
 				return -1;
 			}
 
@@ -209,7 +209,7 @@ int CmdLineParser::parse(int argc, char* argv[]) {
 		else if(starts_with(token, "-")) {
 			if(m_mapShortcutKeys.find(token) == m_mapShortcutKeys.end()) {
 				LogError("Unrecognized shortcut key passed %s", token.c_str());
-				printHelp();
+				//printHelp();
 				return -1;
 			}
 

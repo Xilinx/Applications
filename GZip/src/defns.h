@@ -32,3 +32,22 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **********/
+#ifndef DEFNS_H_
+#define DEFNS_H_
+#include <iostream>
+#include <cstring>
+#include <string>
+#include <fstream>
+#include <cassert>
+#include <cstdlib>
+#include <cstdio>
+#include <stdbool.h>
+#include <time.h>
+#include <math.h>
+#include <stdint.h>
+#include <vector>
+#include "xil_gzip_config.h"
+#include <sys/stat.h>
+#include "xcl2.hpp"
+#include <iomanip>
+#endif
