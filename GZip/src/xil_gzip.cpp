@@ -32,12 +32,13 @@ OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
 THIS SOFTWARE,
 EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 **********/
+
 #include "xil_gzip.h"
-#define GZIP_MAGIC_0 31
-#define GZIP_MAGIC_1 139
-#define METHOD 8
-#define ORIG_NAME 8 
-#define OS_CODE 3
+#define FORMAT_0 31
+#define FORMAT_1 139
+#define VARIANT 8
+#define REAL_CODE 8 
+#define OPCODE 3
 
 extern unsigned long crc;
 #define CHUNK_16K 16384
@@ -47,15 +48,15 @@ int batch_buf_release = 0;
 void zip(std::string & inFile_name, std::ofstream & outFile, uint8_t *zip_out, uint32_t enbytes) {
 
     // 2 bytes of magic header
-    outFile.put(GZIP_MAGIC_0);
-    outFile.put(GZIP_MAGIC_1);
+    outFile.put(FORMAT_0);
+    outFile.put(FORMAT_1);
    
     // 1 byte Compression method
-    outFile.put(METHOD);
+    outFile.put(VARIANT);
     
     // 1 byte flags
     uint8_t flags = 0;
-    flags |= ORIG_NAME;
+    flags |= REAL_CODE;
     outFile.put(flags);
 
     // 4 bytes file modification time in unit format
@@ -78,8 +79,8 @@ void zip(std::string & inFile_name, std::ofstream & outFile, uint8_t *zip_out, u
     uint8_t deflate_flags = 0;
     outFile.put(deflate_flags);
 
-    // 1 byte OS_CODE - 0x03 for Unix
-    outFile.put(OS_CODE);
+    // 1 byte OPCODE - 0x03 for Unix
+    outFile.put(OPCODE);
     
     // Dump file name
     for(int i = 0; inFile_name[i] != '\0'; i++){
