@@ -12,6 +12,16 @@ Gzip is based on the DEFLATE algorithm. The complete GZip application has two pa
 In this example GZip implementation, the LZ77 and Static Huffman modules are accelerated on the FPGA
 device available on the AWS F1 instance. The accelerated GZip application provides a throughput of 1.6GB/s. This GZip example achieves around 1.7x compression ratio overall (Silesia Benchmark).
 
+Note: This implementation of GZip doesnt include CRC32 logic, due to this while using standard gzip decoder with "-d" option results in crc related warning and decompression fails. To overcome this issue please use standard GZip decoder with following option always.
+
+
+```
+	gzip -dc compressedfile.gz > outputfilename
+	
+	Note: Execution of this command generates "crc" warning, this warning can be ignored.
+```
+
+
 
 ### Resource Utilization
 
@@ -120,9 +130,19 @@ This section presents various steps involved to generate encode and decode outpu
              using standard GZip decoder (Example: gzip -dc <filename.xil.gz> > output.xil)
 ```
 
-#### Sample Result 
+#### Usage 
 
-This section presents sample output format produced by this application for a given input file. Below is the sample output format.
+This section presents steps to use this application effectively. 
+
+
+| Mode | Throughput (MB/s) | Module |
+| -----| ------ |-------|
+| Batch of Files| 1.54  | Host & Device|
+| Single File   | 1.92	| Device |
+
+Table above presents the best throughput achieved during execution of this application.
+In batch mode this application performs overlapped execution between host and device.
+In single file mode kernel (device) throughput is presented.
 
 ```
 ------------------------------------------------------------------------------------------------------------
@@ -130,57 +150,19 @@ This section presents sample output format produced by this application for a gi
 Batch Mode Command: ./xil_gzip -l webster.list -b 0
                   
 Note: If batch size is 0, all the files are attempted to process in batch mode.
-
-Batch		Throughput		GZip_CR		STATUS		File Size(MB)		File Name
-
-20		1544.44
-					1.72		PASSED		41.5			webster_1
-					1.72		PASSED		41.5			webster_2
-					1.72		PASSED		41.5			webster_3
-					1.72		PASSED		41.5			webster_4
-					1.72		PASSED		41.5			webster_5
-					1.72		PASSED		41.5			webster_6
-					1.72		PASSED		41.5			webster_7
-					1.72		PASSED		41.5			webster_8
-					1.72		PASSED		41.5			webster_9
-					1.72		PASSED		41.5			webster_10
-					1.72		PASSED		41.5			webster_11
-					1.72		PASSED		41.5			webster_12
-					1.72		PASSED		41.5			webster_13
-					1.72		PASSED		41.5			webster_14
-					1.72		PASSED		41.5			webster_15
-					1.72		PASSED		41.5			webster_16
-					1.72		PASSED		41.5			webster_17
-					1.72		PASSED		41.5			webster_18
-					1.72		PASSED		41.5			webster_19
-					1.72		PASSED		41.5			webster_20
-
-
-
-Note: xil_gzip output presented above corresponds to batch mode. 
-      To demonstrate overall acceleration batch of large files of same type are used.
-
+      Throughput (MB/s) presented in batch mode execution corresponds to end to end execution
+      (Host and Device).
+      
 ------------------------------------------------------------------------------------------------------------
 
 Single File Mode Command: ./xil_gzip -i benchmark/silesia/webster 
 
-KT(MBps)	GZip_CR		STATUS		File Size(MB)		File Name
-
-1926.91		1.719		DONE		41.459			webster
-
-Note: xil_gzip output is presented above corresponds to single file mode. 
-      In single file mode host to device overlapped execution is not possible, 
-      results presents kernel time instead of overall time. 
-
+Note: In single file mode host to device overlapped execution is not possible.
+      Throughput (KT(MBps)) presented in single file mode corresponds to kernel (Device) execution only.
+      
 -------------------------------------------------------------------------------------------------------------
-Batch      - Size of Batch
-Throughput - End to End Acceleration in MB/s 
-KT(MBps)   - GZip Kernel throughput 
-CR         - Compression Ratio
-STATUS     - Test case validation status
-File Size  - Input file size in MBs
-File Name  - Input file name
 
 ```
-  
+
+
 
