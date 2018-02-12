@@ -1651,160 +1651,160 @@ static int RecordTokens(VP8EncIterator* const it, const VP8ModeScore* const rd,
   }
 
 
-/*   int VP8EncTokenLoop_ryanw(VP8Encoder* const enc) { */
+  /*   int VP8EncTokenLoop_ryanw(VP8Encoder* const enc) { */
 
 
-/*   	const WebPPicture* const pic = enc->pic_; */
-/* 	VP8EncIterator it; */
-/* 	PassStats stats; */
-/* 	int ok; */
-/* 	InitPassStats(enc, &stats); */
-/* 	ok = PreLoopInitialize(enc); */
-/* 	if (!ok) return 0; */
-/* 	VP8IteratorInit(enc, &it); */
+  /*   	const WebPPicture* const pic = enc->pic_; */
+  /* 	VP8EncIterator it; */
+  /* 	PassStats stats; */
+  /* 	int ok; */
+  /* 	InitPassStats(enc, &stats); */
+  /* 	ok = PreLoopInitialize(enc); */
+  /* 	if (!ok) return 0; */
+  /* 	VP8IteratorInit(enc, &it); */
 
-/* 	//////////////////////////////////////////////// */
-/* 	float q = Clamp(stats.q, 0.f, 100.f); */
-/* 	VP8SetSegmentParams(enc, q);      // setup segment quantizations and filters */
-/* 	SetSegmentProbas(enc);            // compute segment probabilities */
-/* 	ResetSSE(enc); */
+  /* 	//////////////////////////////////////////////// */
+  /* 	float q = Clamp(stats.q, 0.f, 100.f); */
+  /* 	VP8SetSegmentParams(enc, q);      // setup segment quantizations and filters */
+  /* 	SetSegmentProbas(enc);            // compute segment probabilities */
+  /* 	ResetSSE(enc); */
 
 
-/* 	/////VP8DefaultProbas(enc); */
-/* 	VP8EncProba* const proba = &enc->proba_; */
-/* 	proba->use_skip_proba_ = 0; */
-/* 	memset(proba->segments_, 255u, sizeof(proba->segments_));//oly {0xff, 0xff, 0xff} */
-/* 	memcpy(proba->coeffs_, VP8CoeffsProba0, sizeof(VP8CoeffsProba0)); */
-/* 	proba->dirty_ = 1; */
-/* 	/////SetLoopParams(enc, stats.q); */
+  /* 	/////VP8DefaultProbas(enc); */
+  /* 	VP8EncProba* const proba = &enc->proba_; */
+  /* 	proba->use_skip_proba_ = 0; */
+  /* 	memset(proba->segments_, 255u, sizeof(proba->segments_));//oly {0xff, 0xff, 0xff} */
+  /* 	memcpy(proba->coeffs_, VP8CoeffsProba0, sizeof(VP8CoeffsProba0)); */
+  /* 	proba->dirty_ = 1; */
+  /* 	/////SetLoopParams(enc, stats.q); */
 
-/* 	//////ResetStats(enc); */
-/* 	//VP8CalculateLevelCosts(proba); */
-/* 	proba->nb_skip_ = 0; */
+  /* 	//////ResetStats(enc); */
+  /* 	//VP8CalculateLevelCosts(proba); */
+  /* 	proba->nb_skip_ = 0; */
 
-/* 	///// ResetTokenStats(enc); */
-/* 	memset(proba->stats_, 0, sizeof(proba->stats_)); */
-/* 	///////////////////////////////////////////////// */
-/* 	VP8TBufferClear(&enc->tokens_); */
+  /* 	///// ResetTokenStats(enc); */
+  /* 	memset(proba->stats_, 0, sizeof(proba->stats_)); */
+  /* 	///////////////////////////////////////////////// */
+  /* 	VP8TBufferClear(&enc->tokens_); */
 
-/* 	//FinalizeTokenProbas(&enc->proba_);//This is about AC */
+  /* 	//FinalizeTokenProbas(&enc->proba_);//This is about AC */
 
-/* 	it.do_trellis_ = 0;//(rd_opt RD_OPT_TRELLIS_ALL); */
-/* 	/\*************************************************************\/ */
-/* 	/\* Preparing data for FPGA                                   *\/ */
-/* 	/\*************************************************************\/ */
+  /* 	it.do_trellis_ = 0;//(rd_opt RD_OPT_TRELLIS_ALL); */
+  /* 	/\*************************************************************\/ */
+  /* 	/\* Preparing data for FPGA                                   *\/ */
+  /* 	/\*************************************************************\/ */
 
-/* 	AllPicInfo picinfo;//Picture information */
+  /* 	AllPicInfo picinfo;//Picture information */
 
-/* 	Set_AllPicInfo( &picinfo, enc);//Set picture information */
-/* 	int size_info = sizeof(AllPicInfo); */
-/* 	//int* p_info = malloc( size_info*4);//244 bytes now */
-/* 	//interface of kernel top */
-/* 	/\*--Following should be the interface of kernel -----------------------------------------------------------------*\/ */
-/* 	int p_info[128]; */
-/* 	uint8_t* ysrc; */
-/* 	uint8_t* usrc; */
-/* 	uint8_t* vsrc; */
-/* 	int16_t* pout_level; */
-/* 	uint8_t* pout_out; */
-/* 	uint8_t* pout_pred; */
-/* 	uint8_t* pout_ret; */
-/* 	//   int16_t pout_mb[512];//for level, pred and ret, */
-/* 	//   uint8_t pout_mb_out[384]; */
-/* 	/\*-------------------------------------------------*\/ */
+  /* 	Set_AllPicInfo( &picinfo, enc);//Set picture information */
+  /* 	int size_info = sizeof(AllPicInfo); */
+  /* 	//int* p_info = malloc( size_info*4);//244 bytes now */
+  /* 	//interface of kernel top */
+  /* 	/\*--Following should be the interface of kernel -----------------------------------------------------------------*\/ */
+  /* 	int p_info[128]; */
+  /* 	uint8_t* ysrc; */
+  /* 	uint8_t* usrc; */
+  /* 	uint8_t* vsrc; */
+  /* 	int16_t* pout_level; */
+  /* 	uint8_t* pout_out; */
+  /* 	uint8_t* pout_pred; */
+  /* 	uint8_t* pout_ret; */
+  /* 	//   int16_t pout_mb[512];//for level, pred and ret, */
+  /* 	//   uint8_t pout_mb_out[384]; */
+  /* 	/\*-------------------------------------------------*\/ */
 
-/* 	int num_mb = picinfo.mb_w * picinfo.mb_h; */
-/* 	ysrc       = malloc( num_mb * 16 * 16 * sizeof(uint8_t)); */
-/* 	usrc       = malloc( num_mb *  4 * 16 * sizeof(uint8_t)); */
-/* 	vsrc       = malloc( num_mb *  4 * 16 * sizeof(uint8_t)); */
-/* 	pout_level = malloc( num_mb *512 *      sizeof(int16_t)); */
-/* 	//for pout_level, we plan to put all data of one MB into 1K Byte space and send it to DDR. */
-/* 	//Thus no need to prepare a buffer for coefficients and other data which is 2 times bigger than input buffer */
-/* 	pout_out   = malloc( num_mb * 24 * 16 * sizeof(uint8_t)); */
-/* 	//   pout_pred  = malloc( num_mb * sizeof(uint64_t)); */
-/* 	//   pout_ret   = malloc( num_mb * sizeof(uint8_t)); */
+  /* 	int num_mb = picinfo.mb_w * picinfo.mb_h; */
+  /* 	ysrc       = malloc( num_mb * 16 * 16 * sizeof(uint8_t)); */
+  /* 	usrc       = malloc( num_mb *  4 * 16 * sizeof(uint8_t)); */
+  /* 	vsrc       = malloc( num_mb *  4 * 16 * sizeof(uint8_t)); */
+  /* 	pout_level = malloc( num_mb *512 *      sizeof(int16_t)); */
+  /* 	//for pout_level, we plan to put all data of one MB into 1K Byte space and send it to DDR. */
+  /* 	//Thus no need to prepare a buffer for coefficients and other data which is 2 times bigger than input buffer */
+  /* 	pout_out   = malloc( num_mb * 24 * 16 * sizeof(uint8_t)); */
+  /* 	//   pout_pred  = malloc( num_mb * sizeof(uint64_t)); */
+  /* 	//   pout_ret   = malloc( num_mb * sizeof(uint8_t)); */
 
-/* 	//for testing copy picture data from host to FPGA, should be replaced by formal code */
-/* 	memcpy( (void*)ysrc,   (void*)(pic->y), picinfo.y_stride  *   picinfo.height); */
-/* 	memcpy( (void*)usrc,   (void*)(pic->u), picinfo.uv_stride * ((picinfo.height+1)>>1)); */
-/* 	memcpy( (void*)vsrc,   (void*)(pic->v), picinfo.uv_stride * ((picinfo.height+1)>>1)); */
-/* 	memcpy( (void*)p_info, (void*)(&picinfo), size_info); */
+  /* 	//for testing copy picture data from host to FPGA, should be replaced by formal code */
+  /* 	memcpy( (void*)ysrc,   (void*)(pic->y), picinfo.y_stride  *   picinfo.height); */
+  /* 	memcpy( (void*)usrc,   (void*)(pic->u), picinfo.uv_stride * ((picinfo.height+1)>>1)); */
+  /* 	memcpy( (void*)vsrc,   (void*)(pic->v), picinfo.uv_stride * ((picinfo.height+1)>>1)); */
+  /* 	memcpy( (void*)p_info, (void*)(&picinfo), size_info); */
 
-/* 	FILE* fp_ysrc=fopen("fp_ysrc.dat", "wb"); */
-/* 	FILE* fp_usrc=fopen("fp_usrc.dat", "wb"); */
-/* 	FILE* fp_vsrc=fopen("fp_vsrc.dat", "wb"); */
-/* 	FILE* fp_p_info=fopen("fp_p_info.dat", "wb"); */
-/* 	fwrite( (void*)ysrc, 		1, picinfo.y_stride  *   picinfo.height, 			fp_ysrc); */
-/* 	fwrite( (void*)usrc,   	1, picinfo.uv_stride * ((picinfo.height+1)>>1), 	fp_usrc); */
-/* 	fwrite( (void*)vsrc,    	1, picinfo.uv_stride * ((picinfo.height+1)>>1), 	fp_vsrc); */
-/* 	fwrite( (void*)p_info,  	1, size_info,									 	fp_p_info); */
-/* 	fclose(fp_ysrc); */
-/* 	fclose(fp_usrc); */
-/* 	fclose(fp_vsrc); */
-/* 	fclose(fp_p_info); */
+  /* 	FILE* fp_ysrc=fopen("fp_ysrc.dat", "wb"); */
+  /* 	FILE* fp_usrc=fopen("fp_usrc.dat", "wb"); */
+  /* 	FILE* fp_vsrc=fopen("fp_vsrc.dat", "wb"); */
+  /* 	FILE* fp_p_info=fopen("fp_p_info.dat", "wb"); */
+  /* 	fwrite( (void*)ysrc, 		1, picinfo.y_stride  *   picinfo.height, 			fp_ysrc); */
+  /* 	fwrite( (void*)usrc,   	1, picinfo.uv_stride * ((picinfo.height+1)>>1), 	fp_usrc); */
+  /* 	fwrite( (void*)vsrc,    	1, picinfo.uv_stride * ((picinfo.height+1)>>1), 	fp_vsrc); */
+  /* 	fwrite( (void*)p_info,  	1, size_info,									 	fp_p_info); */
+  /* 	fclose(fp_ysrc); */
+  /* 	fclose(fp_usrc); */
+  /* 	fclose(fp_vsrc); */
+  /* 	fclose(fp_p_info); */
 
-/* 	hls::stream< ap_uint<WD_PIX*16> >  str_out; */
+  /* 	hls::stream< ap_uint<WD_PIX*16> >  str_out; */
 
-/* 	kernel_IntraPredLoop2( */
-/* 						  p_info, */
-/* 						  ysrc, */
-/* 						  usrc, */
-/* 						  vsrc, */
-/* #ifdef _KEEP_PSNR_ */
-/* 						  &str_out, */
-/* #endif */
-/* 						  pout_level//(int32_t*)pout_level */
-/* 						  ); */
+  /* 	kernel_IntraPredLoop2( */
+  /* 						  p_info, */
+  /* 						  ysrc, */
+  /* 						  usrc, */
+  /* 						  vsrc, */
+  /* #ifdef _KEEP_PSNR_ */
+  /* 						  &str_out, */
+  /* #endif */
+  /* 						  pout_level//(int32_t*)pout_level */
+  /* 						  ); */
 
-/* 	FILE* fp_level=fopen("fp_level.dat", "wa"); */
-/* 	fwrite( (void*)pout_level, 1, num_mb *512 * sizeof(int16_t), fp_level); */
-/* 	fclose(fp_level); */
+  /* 	FILE* fp_level=fopen("fp_level.dat", "wa"); */
+  /* 	fwrite( (void*)pout_level, 1, num_mb *512 * sizeof(int16_t), fp_level); */
+  /* 	fclose(fp_level); */
 
-/* 	FinalizeTokenProbas(&enc->proba_); */
-/* 	int16_t* pt=pout_level; */
-/* 	ap_NoneZero ap_nz; */
-/* 	do { */
-/* 	  ap_uint<LG2_MAX_NUM_MB_W> x_mb = it.x_; */
-/* 	  ap_uint<LG2_MAX_NUM_MB_W> y_mb = it.y_; */
-/* #ifdef _KEEP_PSNR_ */
-/* 	  VP8IteratorImport( &it, NULL); */
-/* #endif */
-/* 	  ap_uint<6> ret     = (ap_uint<6>)pt[416]; */
-/* 	  it.mb_->uv_mode_   = ret(3,0);//it_m.ap_uv_mode_c; */
-/* 	  it.mb_->type_      = ret(4,4); */
-/* 	  it.mb_->skip_      = ret(5,5);//(it_r.ap_nz == 0); */
-/* 	  for(int y=0; y<4 ; y++){ */
-/* 		for(int x=0; x<4 ; x++){ */
-/* 		  it.preds_[x + it.enc_->preds_w_*y ] = pt[400+y*4+x];//SB_GET(mode_b,y,x,WD_MODE); */
-/* 		} */
-/* 	  } */
-/* 	  //	  FinalizeTokenProbas(&enc->proba_); */
+  /* 	FinalizeTokenProbas(&enc->proba_); */
+  /* 	int16_t* pt=pout_level; */
+  /* 	ap_NoneZero ap_nz; */
+  /* 	do { */
+  /* 	  ap_uint<LG2_MAX_NUM_MB_W> x_mb = it.x_; */
+  /* 	  ap_uint<LG2_MAX_NUM_MB_W> y_mb = it.y_; */
+  /* #ifdef _KEEP_PSNR_ */
+  /* 	  VP8IteratorImport( &it, NULL); */
+  /* #endif */
+  /* 	  ap_uint<6> ret     = (ap_uint<6>)pt[416]; */
+  /* 	  it.mb_->uv_mode_   = ret(3,0);//it_m.ap_uv_mode_c; */
+  /* 	  it.mb_->type_      = ret(4,4); */
+  /* 	  it.mb_->skip_      = ret(5,5);//(it_r.ap_nz == 0); */
+  /* 	  for(int y=0; y<4 ; y++){ */
+  /* 		for(int x=0; x<4 ; x++){ */
+  /* 		  it.preds_[x + it.enc_->preds_w_*y ] = pt[400+y*4+x];//SB_GET(mode_b,y,x,WD_MODE); */
+  /* 		} */
+  /* 	  } */
+  /* 	  //	  FinalizeTokenProbas(&enc->proba_); */
 
-/* 	  ok = RecordTokens_nrd2(enc, &ap_nz, x_mb, y_mb, it.mb_->type_, pt, pt+16, pt+16*17, &enc->tokens_); */
-/* 	  pt+=512; */
+  /* 	  ok = RecordTokens_nrd2(enc, &ap_nz, x_mb, y_mb, it.mb_->type_, pt, pt+16, pt+16*17, &enc->tokens_); */
+  /* 	  pt+=512; */
 
-/* #ifdef _KEEP_PSNR_ */
-/* 	  int VP8ScanUV[4 + 4] = { */
-/* 		0 + 0 * BPS,   4 + 0 * BPS, 0 + 4 * BPS,  4 + 4 * BPS,    // U */
-/* 		8 + 0 * BPS,  12 + 0 * BPS, 8 + 4 * BPS, 12 + 4 * BPS     // V */
-/* 	  }; */
-/* 	  for(int n=0;n<16;n++){ */
-/* 		ap_uint<WD_PIX*16> tmp = str_out.read(); */
-/* 		set_vect_to(tmp,it.yuv_out_ + VP8Scan[n],32); */
-/* 	  } */
-/* 	  for(int n = 0; n < 8; n += 1){ */
-/* 		ap_uint<WD_PIX*16> tmp = str_out.read(); */
-/* 		set_vect_to(tmp,it.yuv_out_ + U_OFF_ENC+ VP8ScanUV[n],32); */
-/* 	  } */
-/* 	  StoreSideInfo(&it);//just for PSRN calculation, can be passed */
-/* #endif */
+  /* #ifdef _KEEP_PSNR_ */
+  /* 	  int VP8ScanUV[4 + 4] = { */
+  /* 		0 + 0 * BPS,   4 + 0 * BPS, 0 + 4 * BPS,  4 + 4 * BPS,    // U */
+  /* 		8 + 0 * BPS,  12 + 0 * BPS, 8 + 4 * BPS, 12 + 4 * BPS     // V */
+  /* 	  }; */
+  /* 	  for(int n=0;n<16;n++){ */
+  /* 		ap_uint<WD_PIX*16> tmp = str_out.read(); */
+  /* 		set_vect_to(tmp,it.yuv_out_ + VP8Scan[n],32); */
+  /* 	  } */
+  /* 	  for(int n = 0; n < 8; n += 1){ */
+  /* 		ap_uint<WD_PIX*16> tmp = str_out.read(); */
+  /* 		set_vect_to(tmp,it.yuv_out_ + U_OFF_ENC+ VP8ScanUV[n],32); */
+  /* 	  } */
+  /* 	  StoreSideInfo(&it);//just for PSRN calculation, can be passed */
+  /* #endif */
 
-/* 	} while (ok && VP8IteratorNext(&it)); */
+  /* 	} while (ok && VP8IteratorNext(&it)); */
 
-/* 	FinalizeTokenProbas(&enc->proba_);//This is about AC */
-/* 	ok = VP8EmitTokens(&enc->tokens_, enc->parts_+0,(const uint8_t*)enc->proba_.coeffs_, 1); */
-/* 	return PostLoopFinalize(&it, ok);//This functions */
-/*   } */
+  /* 	FinalizeTokenProbas(&enc->proba_);//This is about AC */
+  /* 	ok = VP8EmitTokens(&enc->tokens_, enc->parts_+0,(const uint8_t*)enc->proba_.coeffs_, 1); */
+  /* 	return PostLoopFinalize(&it, ok);//This functions */
+  /*   } */
 
 #else
 
