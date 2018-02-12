@@ -6,7 +6,7 @@ WebP images are about 30% smaller in size compared to PNG and JPEG images at equ
 
 This accelerated WebP encoder project (SDx) is based on `libwebp` open source project. For one input picutre (.png), the output picutre (.webp) is achieved after following six steps:
 
-    <img src="./img/webp_steps.png" width="50%" height="50%">
+    <img src="./imgforreadme/webp_steps.png" width="50%" height="50%">
 
 Time-consuming functions are accelerated by 2 FPGA kernels including:
 
@@ -48,9 +48,9 @@ Some original algorithms are modified for hardware efficiency, but without effec
 
 * Multi-pictures process. Host code supports multi-pictures process with asynchronous behaviors, which allows to overlap host-device communiations, prediction kernel computation and arithmetic coding kernel computation. This is shown by following demonstration picture and profiling result.
 
- <img src="./img/webp_overlap.png" width="40%" height="40%">
+ <img src="./imgforreadme/webp_overlap.png" width="40%" height="40%">
  
- <img src="./img/webp_profiling.png" width="70%" height="70%">
+ <img src="./imgforreadme/webp_profiling.png" width="70%" height="70%">
 
 ## Software and system requirements
 The following packages are required to run this application:
