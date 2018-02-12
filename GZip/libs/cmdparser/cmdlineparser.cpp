@@ -62,7 +62,7 @@ CmdLineParser::CmdLineParser() {
 	// TODO Auto-generated constructor stub
 	m_strDefaultKey = "";
 	m_appname = "application.exe";
-	addSwitch("--help", "-h", "prints this help list", "", true);
+	addSwitch("--help", "-h", "\tPrints This Help List", "", true);
 }
 
 /*
@@ -234,7 +234,9 @@ int CmdLineParser::parse(int argc, char* argv[]) {
 			ctOptions++;
 
 			if(key == "--help") {
+				//printf("Reached help prints \n");
 				printHelp();
+				exit(EXIT_FAILURE);
 				return 1;
 			}
 
