@@ -11,10 +11,10 @@ export DSA=xilinx:aws-vu9p-f1:4ddr-xpr-2pr:4.0
 export DSA_PLATFORM=xilinx_aws-vu9p-f1_4ddr-xpr-2pr_4_0
 export DSA_DEVICE=$DSA
 
-# ku115
+# # ku115
+# export DSA=xilinx:xil-accel-rd-ku115:4ddr-xpr:4.0
 # export DSA_PLATFORM=xilinx_xil-accel-rd-ku115_4ddr-xpr_4_0
-# export DSA=$DSA_PLATFORM
-# export DSA_DEVICE=
+# export DSA_DEVICE=$DSA
 
 ### Nb of instance: 1, 2, 3, 4 ###
 export VP8_NBINSTANCES=1

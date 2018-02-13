@@ -29,7 +29,8 @@ XCLBINS = krnl_enctokenloop
 
 # C++ Compiler Flags and xocc compiler flags
 CXXFLAGS := -I $(SDX_VIVADO_HLS)/include \
-            -DVP8_NBINSTANCES=$(VP8_NBINSTANCES) -g
+            -DVP8_NBINSTANCES=$(VP8_NBINSTANCES) -g \
+            -DVP8_DSA=\"$(DSA_DEVICE)\"
 
 XOCCFLAGS := --xp "param:compiler.preserveHlsOutput=1" \
              --xp "param:compiler.generateExtraRunData=true" -s \

@@ -616,15 +616,9 @@ int CreateKernel() {
 
   const cl_device_type deviceType = CL_DEVICE_TYPE_ACCELERATOR;
 
-  // char target_device_name[1001] = "xilinx:adm-pcie-ku3:2ddr:3.1";
-  // char target_device_name[1001] = "xilinx:adm-pcie-ku3:2ddr-xpr:3.3";
-  // char target_device_name[1001] = "xilinx:adm-pcie-7v3:1ddr:3.0";
-  char target_device_name[1001] = "xilinx:aws-vu9p-f1:4ddr-xpr-2pr:4.0";
-  
-  // char target_device_name[1001] = "xilinx_xil-accel-rd-vu9p_4ddr-xpr_4_2";
+  // char target_device_name[1001] = "xilinx:aws-vu9p-f1:4ddr-xpr-2pr:4.0";  
   // target_device_name = "xilinx_xil-accel-rd-ku115_4ddr-xpr_4_0"
-	
-  // char target_device_name[1001] = "xilinx:aws-vu9p-f1:4ddr-xpr-2pr:4.0";
+  char target_device_name[1001] = VP8_DSA;
 
   hardware = getOclHardware(deviceType, target_device_name);
   if (!hardware.mQueue) {
