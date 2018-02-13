@@ -430,12 +430,3 @@ timeline:
 
 profile: 
 	sda2protobuf sdaccel_profile_summary.csv
-
-
-
-
-# $(XCLBIN_GOALS): predkernel.xo ackernel.xo
-# 	$(XOCC) $(XOCCFLAGS) --platform $(PLATFORM) --link -o $@ \
-# 		-t $(TARGETS) $^ --kernel_frequency $(VP8_FREQUENCY) \
-#         --nk $(predkernel_name):$(VP8_NBINSTANCES) --nk $(ackernel_name):$(VP8_NBINSTANCES)
-
