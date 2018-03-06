@@ -3,7 +3,7 @@
 ########################### Settings ###########################
 
 ### Software environment ###
-VP8_SDX=/proj/xbuilds/2017.1_sdx_daily_latest
+export VP8_SDX=/proj/xbuilds/2017.1_sdx_daily_latest/installs/lin64/SDx/2017.1
 
 ### DSA setting ###
 # aws
@@ -27,32 +27,25 @@ export VP8_TARGET=hw_emu
 ### device frequency ###
 export VP8_FREQUENCY=250
 
+### Compiler setting ###
+export CXX=$VP8_SDX/Vivado/tps/lnx64/gcc-6.2.0/bin/g++
+export LD_LIBRARY_PATH=$VP8_SDX/Vivado/tps/lnx64/gcc-6.2.0/lib64:$LD_LIBRARY_PATH
+
 
 #############################################################
 
 
-export XILINX_SDX=$VP8_SDX/installs/lin64/SDx/2017.1
-export XILINX_SDK=$VP8_SDX/installs/lin64/SDx/2017.1/SDK
-export XILINX_SDACCEL=$XILINX_SDX
-export XBINST_DSA_PATH=${XILINX_DSA_PATH:=$XILINX_SDX/platforms}
-
 # dsa path (some are internal)
 export VP8_DEVICE_REPO_PATH=$VP8_SDX/internal_platforms
-
-$XILINX_SDX/bin/sdx -version
-$XILINX_SDX/bin/xocc --version
 
 # emulation
 # export XCL_EMULATION_MODE="true"
 
-# host runtime + kernel bin
-export XILINX_OPENCL=$XILINX_SDX
-export XILINX_VIVADO=${SDX_VIVADO:=$XILINX_SDX/Vivado}
-export LD_LIBRARY_PATH=$XILINX_SDX/runtime/lib/x86_64:$XILINX_SDX/lib/lnx64.o:$XILINX_VIVADO/lib/lnx64.o:$XILINX_SDX/lnx64/tools/opencv:$LD_LIBRARY_PAT
+# host runtime
+export LD_LIBRARY_PATH=$VP8_SDX/runtime/lib/x86_64:$VP8_SDX/lib/lnx64.o:$VP8_SDX/Vivado/lib/lnx64.o:$LD_LIBRARY_PATH
 
-# set g++ path
-export CXX=${SDX_CXX_PATH:=/tools/batonroot/rodin/devkits/lnx64/gcc-6.1.0/bin/g++}
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/tools/batonroot/rodin/devkits/lnx64/gcc-6.1.0/lib64
+$VP8_SDX/bin/sdx -version
+$VP8_SDX/bin/xocc --version
 
 # call make
 make -f Makefile.xocc compile | tee make_xocc.log

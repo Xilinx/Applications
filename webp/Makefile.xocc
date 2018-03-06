@@ -3,10 +3,10 @@
 CXX := $(CXX)
 
 # OpenCL compiler
-XOCC := $(XILINX_SDACCEL)/bin/xocc 
+XOCC := $(VP8_SDX)/bin/xocc 
 
 # xbinst
-XBINST := $(XILINX_SDX)/bin/xbinst
+XBINST := $(VP8_SDX)/bin/xbinst
 XBINST_DIR := xbinst
 
 # arch
@@ -28,7 +28,7 @@ EXES = cwebp
 XCLBINS = krnl_enctokenloop
 
 # C++ Compiler Flags and xocc compiler flags
-CXXFLAGS := -I $(SDX_VIVADO_HLS)/include \
+CXXFLAGS := -I $(VP8_SDX)/Vivado_HLS/include \
             -DVP8_NBINSTANCES=$(VP8_NBINSTANCES) -g \
             -DVP8_DSA=\"$(DSA_DEVICE)\"
 
@@ -98,11 +98,11 @@ XOCCFLAGS := $(XOCCFLAGS) \
 endif
 
 
-opencl_CXXFLAGS := -I $(XILINX_SDACCEL)/runtime/include/1_2 \
-                   -I $(XILINX_SDACCEL)/Vivado_HLS/include
+opencl_CXXFLAGS := -I $(VP8_SDX)/runtime/include/1_2 \
+                   -I $(VP8_SDX)/Vivado_HLS/include
 
-opencl_LDFLAGS := -L $(XILINX_SDACCEL)/runtime/lib/x86_64 \
-                  -L $(XILINX_SDACCEL)/lib/lnx64.o -lxilinxopencl -pthread
+opencl_LDFLAGS := -L $(VP8_SDX)/runtime/lib/x86_64 \
+                  -L $(VP8_SDX)/lib/lnx64.o -lxilinxopencl -pthread
 
 cwebp_CXXFLAGS := -I./src/ \
                   $(opencl_CXXFLAGS) \
@@ -331,13 +331,6 @@ EXE_GOALS+= $(1)
 
 endef
 
-# sanitize_dsa - create a filesystem friendly name from dsa name
-#   $(1) - name of dsa
-COLON=:
-PERIOD=.
-UNDERSCORE=_
-sanitize_dsa = $(strip $(subst $(PERIOD),$(UNDERSCORE),$(subst $(COLON),$(UNDERSCORE),$(1))))
-
 # host target
 $(foreach exe,$(EXES),$(eval $(call mk_exe,$(exe))))
 
@@ -405,7 +398,7 @@ clean:
 
 json:
 	@echo '${\n} Generating emconfig.json ...'
-	$(XILINX_SDACCEL)/bin/emconfigutil --xp prop:solution.device_repo_paths=$(VP8_DEVICE_REPO_PATH) --xdevice $(DEVICE) --nd 1 
+	$(VP8_SDX)/bin/emconfigutil --xp prop:solution.device_repo_paths=$(VP8_DEVICE_REPO_PATH) --xdevice $(DEVICE) --nd 1 
 
 package:
 	@echo '${\n} Running xbinst...'
