@@ -394,7 +394,7 @@ $(XCLBIN_GOALS): $(XOOBJS)
 	$(XOCC) $(XOCCFLAGS) --platform $(PLATFORM) --link -o $@ \
 		-t $(TARGETS) $^ --kernel_frequency $(VP8_FREQUENCY)
 
-compile: $(EXE_GOALS) $(XCLBIN_GOALS)
+compile: $(EXE_GOALS) $(XCLBIN_GOALS) json
 		@echo ' '	 
 		@echo 'Compiling host exe and kernel.xclbin...'
         $(info $(EXE_GOALS_GOALS))		
