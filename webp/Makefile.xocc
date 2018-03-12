@@ -1,38 +1,26 @@
 
 # cxx compiler
-CXX := $(CXX)
+CXX := $(WEBP_CXX)
 
-# OpenCL compiler
-XOCC := $(VP8_SDX)/bin/xocc 
+# xocc compiler
+XOCC := $(WEBP_SDX)/bin/xocc 
 
-# xbinst
-XBINST := $(VP8_SDX)/bin/xbinst
-XBINST_DIR := xbinst
+# platform and device
+PLATFORM := $(WEBP_DSA)
+DEVICE := $(WEBP_DSA)
 
-# device
-NUMPLATFORM = 1
-PLATFORM := $(DSA)
-DEVICE := $(DSA_DEVICE)
-EMCONFIG_FILE := emconfig.json
+# c++ compiler flags
+CXXFLAGS := -DWEBP_NBINSTANCES=$(WEBP_NBINSTANCES) -DWEBPDSA=\"$(DEVICE)\" -g
+CXXFLAGS += -I $(WEBP_SDX)/Vivado_HLS/include -I $(WEBP_SDX)/runtime/include/1_2 -I ./src/
+CXXFLAGS += -Wall -fpermissive -DHAVE_MALLOC_H -DHAVE_PTHREAD -DWEBP_HAVE_PNG -DWEBP_HAVE_TIFF \
+            -DWEBP_USE_THREAD -DWEBP_HAVE_GIF -DFPGA_DEVICE 
+CXXFLAGS += -L $(WEBP_SDX)/runtime/lib/x86_64 -L $(WEBP_SDX)/lib/lnx64.o -lxilinxopencl -pthread -lpng
 
-# By default build for hardware can be set to
-#   hw_emu for hardware emulation
-#   sw_emu for software emulation
-#   or a collection of all or none of these
-TARGETS := $(VP8_TARGET)
-
-EXES = cwebp
-XCLBINS = krnl_enctokenloop
-
-# C++ Compiler Flags and xocc compiler flags
-CXXFLAGS := -I $(VP8_SDX)/Vivado_HLS/include \
-            -DVP8_NBINSTANCES=$(VP8_NBINSTANCES) -g \
-            -DVP8_DSA=\"$(DSA_DEVICE)\"
-
+# xocc compiler flags
 XOCCFLAGS := --xp "param:compiler.preserveHlsOutput=1" \
              --xp "param:compiler.generateExtraRunData=true" -s
 
-ifeq ($(shell expr $(VP8_NBINSTANCES) \>= 1), 1)
+ifeq ($(shell expr $(WEBP_NBINSTANCES) \>= 1), 1)
 XOCCFLAGS := $(XOCCFLAGS) \
              --xp misc:map_connect=add.kernel.kernel_IntraPredLoop2_NoOut_1_1.M_AXI_GMEM0.core.OCL_REGION_0.M03_AXI \
              --xp misc:map_connect=add.kernel.kernel_IntraPredLoop2_NoOut_1_1.M_AXI_GMEM1.core.OCL_REGION_0.M03_AXI \
@@ -47,7 +35,7 @@ XOCCFLAGS := $(XOCCFLAGS) \
              --xp misc:map_connect=add.kernel.kernel_2_ArithmeticCoding_1_1.M_AXI_GMEM4.core.OCL_REGION_0.M03_AXI 
 endif
 
-ifeq ($(shell expr $(VP8_NBINSTANCES) \>= 2), 1)
+ifeq ($(shell expr $(WEBP_NBINSTANCES) \>= 2), 1)
 XOCCFLAGS := $(XOCCFLAGS) \
              --xp misc:map_connect=add.kernel.kernel_IntraPredLoop2_NoOut_2_1.M_AXI_GMEM0.core.OCL_REGION_0.M02_AXI \
              --xp misc:map_connect=add.kernel.kernel_IntraPredLoop2_NoOut_2_1.M_AXI_GMEM1.core.OCL_REGION_0.M02_AXI \
@@ -62,7 +50,7 @@ XOCCFLAGS := $(XOCCFLAGS) \
              --xp misc:map_connect=add.kernel.kernel_2_ArithmeticCoding_2_1.M_AXI_GMEM4.core.OCL_REGION_0.M02_AXI 
 endif
 
-ifeq ($(shell expr $(VP8_NBINSTANCES) \>= 3), 1)
+ifeq ($(shell expr $(WEBP_NBINSTANCES) \>= 3), 1)
 XOCCFLAGS := $(XOCCFLAGS) \
              --xp misc:map_connect=add.kernel.kernel_IntraPredLoop2_NoOut_3_1.M_AXI_GMEM0.core.OCL_REGION_0.M00_AXI \
              --xp misc:map_connect=add.kernel.kernel_IntraPredLoop2_NoOut_3_1.M_AXI_GMEM1.core.OCL_REGION_0.M00_AXI \
@@ -77,7 +65,7 @@ XOCCFLAGS := $(XOCCFLAGS) \
              --xp misc:map_connect=add.kernel.kernel_2_ArithmeticCoding_3_1.M_AXI_GMEM4.core.OCL_REGION_0.M00_AXI 
 endif
 
-ifeq ($(shell expr $(VP8_NBINSTANCES) \>= 4), 1)
+ifeq ($(shell expr $(WEBP_NBINSTANCES) \>= 4), 1)
 XOCCFLAGS := $(XOCCFLAGS) \
              --xp misc:map_connect=add.kernel.kernel_IntraPredLoop2_NoOut_4_1.M_AXI_GMEM0.core.OCL_REGION_0.M01_AXI \
              --xp misc:map_connect=add.kernel.kernel_IntraPredLoop2_NoOut_4_1.M_AXI_GMEM1.core.OCL_REGION_0.M01_AXI \
@@ -92,30 +80,7 @@ XOCCFLAGS := $(XOCCFLAGS) \
              --xp misc:map_connect=add.kernel.kernel_2_ArithmeticCoding_4_1.M_AXI_GMEM4.core.OCL_REGION_0.M01_AXI 
 endif
 
-
-opencl_CXXFLAGS := -I $(VP8_SDX)/runtime/include/1_2 \
-                   -I $(VP8_SDX)/Vivado_HLS/include
-
-opencl_LDFLAGS := -L $(VP8_SDX)/runtime/lib/x86_64 \
-                  -L $(VP8_SDX)/lib/lnx64.o -lxilinxopencl -pthread
-
-cwebp_CXXFLAGS := -I./src/ \
-                  $(opencl_CXXFLAGS) \
-                  -Wall -fpermissive \
-                  -DHAVE_MALLOC_H \
-                  -DHAVE_PTHREAD  \
-                  -DWEBP_HAVE_PNG \
-                  -DWEBP_HAVE_TIFF \
-                  -DWEBP_USE_THREAD \
-                  -DWEBP_HAVE_GIF \
-                  -DFPGA_DEVICE 
-
-cwebp_LDFLAGS := $(opencl_LDFLAGS) -lpng
-
-
-###################
-
-# Host Application
+# host src
 cwebp_SRCS= src/dec/alpha.c \
             src/dec/buffer.c \
             src/dec/frame.c \
@@ -283,139 +248,57 @@ cwebp_HDRS=examples/anim_util.h \
            src_syn/vp8_hls_syn.h \
            src_syn/vp8_hls_syn2.h
 
-# krnl_enctokenloop_SRCS=./src/enc/kernel/kernel_enctokenloop.c
-# kernel_name=enctokenloop
+# kernel src
+krnl_SRCS = ./src_syn/vp8_hls_syn.cpp
 
-krnl_enctokenloop_SRCS = ./src_syn/vp8_hls_syn.cpp
-
-predkernel_name   = kernel_IntraPredLoop2_NoOut
-predkernel_name_1 = kernel_IntraPredLoop2_NoOut_1
-predkernel_name_2 = kernel_IntraPredLoop2_NoOut_2
-predkernel_name_3 = kernel_IntraPredLoop2_NoOut_3
-predkernel_name_4 = kernel_IntraPredLoop2_NoOut_4
-
-ackernel_name   = kernel_2_ArithmeticCoding
-ackernel_name_1 = kernel_2_ArithmeticCoding_1
-ackernel_name_2 = kernel_2_ArithmeticCoding_2
-ackernel_name_3 = kernel_2_ArithmeticCoding_3
-ackernel_name_4 = kernel_2_ArithmeticCoding_4
-
-
-###################
-
-# rules.mk - defines basic rules for building executables and xclbins
-
-# Defines the prefix for each kernel.
-XCLBIN_DIR=xclbin
-
-# mk_exe - build an exe from host code
-#   CXX - compiler to use
-#   CXXFLAGS - base compiler flags to use
-#   LDFLAGS - base linker flags to use
-#   $(1) - name of exe
-#   $(1)_SRCS - the source files to compile
-#   $(1)_HDRS - the header files used by sources
-#   $(1)_CXXFLAGS - extra flags specific to this exe
-#   $(1)_LDFLAGS - extra linkder flags
-define mk_exe
-
-$(1): $($(1)_SRCS) $($(1)_HDRS)
-	$(CXX) $(CXXFLAGS) -w $($(1)_CXXFLAGS)  -o $$@ $($(1)_SRCS) $($(1)_LDFLAGS) $(LDFLAGS) 
-
-EXE_GOALS+= $(1)
-
-endef
-
-# host target
-$(foreach exe,$(EXES),$(eval $(call mk_exe,$(exe))))
-
-# kernel
+# target
+EXE_GOALS := cwebp
 XCLBIN_GOALS := kernel.xclbin
 
-predkernel_1.xo: $(krnl_enctokenloop_SRCS)
-	$(XOCC) $(XOCCFLAGS) --platform $(PLATFORM) --compile -o $@ \
-		-t $(TARGETS) -k $(predkernel_name_1) --kernel_frequency $(VP8_FREQUENCY) $^
+# host + kernel + json
+compile: $(EXE_GOALS) $(XCLBIN_GOALS) json
+		@echo ' '	 
+		@echo 'Compiling cwebp and kernel.xclbin...'
 
-predkernel_2.xo: $(krnl_enctokenloop_SRCS)
-	$(XOCC) $(XOCCFLAGS) --platform $(PLATFORM) --compile -o $@ \
-		-t $(TARGETS) -k $(predkernel_name_2) --kernel_frequency $(VP8_FREQUENCY) $^
+# host
+$(EXE_GOALS): $(cwebp_SRCS) $(cwebp_HDRS)
+	$(CXX) $(CXXFLAGS) -w -o $@ $(cwebp_SRCS) 
 
-predkernel_3.xo: $(krnl_enctokenloop_SRCS)
-	$(XOCC) $(XOCCFLAGS) --platform $(PLATFORM) --compile -o $@ \
-		-t $(TARGETS) -k $(predkernel_name_3) --kernel_frequency $(VP8_FREQUENCY) $^
-
-predkernel_4.xo: $(krnl_enctokenloop_SRCS)
-	$(XOCC) $(XOCCFLAGS) --platform $(PLATFORM) --compile -o $@ \
-		-t $(TARGETS) -k $(predkernel_name_4) --kernel_frequency $(VP8_FREQUENCY) $^
-
-ackernel_1.xo: $(krnl_enctokenloop_SRCS)
-	$(XOCC) $(XOCCFLAGS) --platform $(PLATFORM) --compile -o $@ \
-		-t $(TARGETS) -k $(ackernel_name_1) --kernel_frequency $(VP8_FREQUENCY) $^
-
-ackernel_2.xo: $(krnl_enctokenloop_SRCS)
-	$(XOCC) $(XOCCFLAGS) --platform $(PLATFORM) --compile -o $@ \
-		-t $(TARGETS) -k $(ackernel_name_2) --kernel_frequency $(VP8_FREQUENCY) $^
-
-ackernel_3.xo: $(krnl_enctokenloop_SRCS)
-	$(XOCC) $(XOCCFLAGS) --platform $(PLATFORM) --compile -o $@ \
-		-t $(TARGETS) -k $(ackernel_name_3) --kernel_frequency $(VP8_FREQUENCY) $^
-
-ackernel_4.xo: $(krnl_enctokenloop_SRCS)
-	$(XOCC) $(XOCCFLAGS) --platform $(PLATFORM) --compile -o $@ \
-		-t $(TARGETS) -k $(ackernel_name_4) --kernel_frequency $(VP8_FREQUENCY) $^
+# kernel
+predkernel_name := kernel_IntraPredLoop2_NoOut
+ackernel_name := kernel_2_ArithmeticCoding
 
 XOOBJS := 
-ifeq ($(shell expr $(VP8_NBINSTANCES) \>= 1), 1)
-    XOOBJS := $(XOOBJS) predkernel_1.xo ackernel_1.xo
+ifeq ($(shell expr $(WEBP_NBINSTANCES) \>= 1), 1)
+    XOOBJS := $(XOOBJS) $(predkernel_name)_1.xo $(ackernel_name)_1.xo
 endif
-ifeq ($(shell expr $(VP8_NBINSTANCES) \>= 2), 1)
-    XOOBJS := $(XOOBJS) predkernel_2.xo ackernel_2.xo
+ifeq ($(shell expr $(WEBP_NBINSTANCES) \>= 2), 1)
+    XOOBJS := $(XOOBJS) $(predkernel_name)_2.xo $(ackernel_name)_2.xo
 endif
-ifeq ($(shell expr $(VP8_NBINSTANCES) \>= 3), 1)
-    XOOBJS := $(XOOBJS) predkernel_3.xo ackernel_3.xo
+ifeq ($(shell expr $(WEBP_NBINSTANCES) \>= 3), 1)
+    XOOBJS := $(XOOBJS) $(predkernel_name)_3.xo $(ackernel_name)_3.xo
 endif
-ifeq ($(shell expr $(VP8_NBINSTANCES) \>= 4), 1)
-    XOOBJS := $(XOOBJS) predkernel_4.xo ackernel_4.xo
+ifeq ($(shell expr $(WEBP_NBINSTANCES) \>= 4), 1)
+    XOOBJS := $(XOOBJS) $(predkernel_name)_4.xo $(ackernel_name)_4.xo
 endif
 
 $(XCLBIN_GOALS): $(XOOBJS)
 	$(XOCC) $(XOCCFLAGS) --platform $(PLATFORM) --link -o $@ \
-		-t $(TARGETS) $^ --kernel_frequency $(VP8_FREQUENCY)
+		-t $(WEBP_TARGET) $^ --kernel_frequency $(WEBP_FREQUENCY)
 
-compile: $(EXE_GOALS) $(XCLBIN_GOALS) json
-		@echo ' '	 
-		@echo 'Compiling host exe and kernel.xclbin...'
-        $(info $(EXE_GOALS_GOALS))		
-        $(info $(XCLBIN_GOALS))	
+$(predkernel_name)_%.xo: $(krnl_SRCS)
+	$(XOCC) $(XOCCFLAGS) --platform $(PLATFORM) --compile -o $@ \
+		-t $(WEBP_TARGET) -k $(patsubst %.xo,%,$@) --kernel_frequency $(WEBP_FREQUENCY) $^
 
-clean:
-	rm -rf $(EXE_GOALS) $(XCLBIN_GOALS) $(XBINST_DIR)/* $(XCLBIN_DIR)/* sdaccel_* *.ll _xocc_* *.xo
+$(ackernel_name)_%.xo: $(krnl_SRCS)
+	$(XOCC) $(XOCCFLAGS) --platform $(PLATFORM) --compile -o $@ \
+		-t $(WEBP_TARGET) -k $(patsubst %.xo,%,$@) --kernel_frequency $(WEBP_FREQUENCY) $^
 
+# json
 json:
 	@echo '${\n} Generating emconfig.json ...'
-	$(VP8_SDX)/bin/emconfigutil --xp prop:solution.device_repo_paths=$(VP8_DEVICE_REPO_PATH) --xdevice $(DEVICE) --nd 1 
+	$(WEBP_SDX)/bin/emconfigutil --xdevice $(DEVICE) --nd 1 
 
-package:
-	@echo '${\n} Running xbinst...'
-	$(XBINST) --platform $(PLATFORM) --platform_repo_paths $(VP8_DEVICE_REPO_PATH) -d .
-
-copy_host_xclbin:
-	@echo '${\n} Copying host exe and xclbin to package'
-	cp -prf kernel.xclbin $(XBINST_DIR)
-	cp -prf $(EXE_GOALS) $(XBINST_DIR)
-	cp -prf pic4test $(XBINST_DIR)
-	cp -prf extlib $(XBINST_DIR)
-
-# helper targets
-
-run: json
-	@echo '${\n} Running...'
-	export XCL_EMULATION_MODE="true"; \
-	export GEN_TEST_PLATFORM=$(DSA); \
-	$(EXE_GOALS) list.txt -use_ocl -q 80 -o output
-
-timeline:
-	sda2wdb sdaccel_timeline_trace.csv
-
-profile: 
-	sda2protobuf sdaccel_profile_summary.csv
+# clean
+clean:
+	rm -rf $(EXE_GOALS) $(XCLBIN_GOALS) sdaccel_* *.ll _xocc_* *.xo json

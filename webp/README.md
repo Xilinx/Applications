@@ -79,11 +79,11 @@ The following packages are required to run this application:
     ```
 	- The xocc.sh script compiles both the host application code (`cwebp`) and FPGA binary (kernel.xclbin).
 	- The following environment variables can be configured in `xocc.sh` to control the output of compilation flow:
-		- VP8_SDX: SDAccel directory
-		- DSA: Device DSA
-		- VP8_TARGET: hw or hw_emu
-		- VP8_NBINSTANCES: number of instances. 1,2,3 or 4 are currently supported.
-		- VP8_FREQUENCY: device frequency
+		- WEBP_SDX: SDAccel directory
+		- WEBP_DSA: Device DSA
+		- WEBP_TARGET: hw or hw_emu
+		- WEBP_NBINSTANCES: number of instances. 1,2,3 or 4 are currently supported.
+		- WEBP_FREQUENCY: device frequency
 
 * Create the AWS FPGA binary and AFI from the *.xclbin file
    ```bash

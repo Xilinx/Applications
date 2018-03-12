@@ -618,7 +618,7 @@ int CreateKernel() {
 
   // char target_device_name[1001] = "xilinx:aws-vu9p-f1:4ddr-xpr-2pr:4.0";  
   // target_device_name = "xilinx_xil-accel-rd-ku115_4ddr-xpr_4_0"
-  char target_device_name[1001] = VP8_DSA;
+  char target_device_name[1001] = WEBPDSA;
 
   hardware = getOclHardware(deviceType, target_device_name);
   if (!hardware.mQueue) {
