@@ -27,10 +27,13 @@ export VP8_TARGET=hw_emu
 ### device frequency ###
 export VP8_FREQUENCY=250
 
-### Compiler setting ###
+### Compiler and linker setting ###
 export CXX=$VP8_SDX/Vivado/tps/lnx64/gcc-6.2.0/bin/g++
 export LD_LIBRARY_PATH=$VP8_SDX/Vivado/tps/lnx64/gcc-6.2.0/lib64:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=$VP8_SDX/Vivado/tps/lnx64/gcc-6.2.0/lib:$LD_LIBRARY_PATH
 
+export PATH=$VP8_SDX/Vivado/tps/lnx64/binutils-2.26/bin:$PATH
+export LD_LIBRARY_PATH=$VP8_SDX/Vivado/tps/lnx64/binutils-2.26/lib:$LD_LIBRARY_PATH
 
 #############################################################
 

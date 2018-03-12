@@ -9,9 +9,6 @@ XOCC := $(VP8_SDX)/bin/xocc
 XBINST := $(VP8_SDX)/bin/xbinst
 XBINST_DIR := xbinst
 
-# arch
-ARCH:=X86
-
 # device
 NUMPLATFORM = 1
 PLATFORM := $(DSA)
