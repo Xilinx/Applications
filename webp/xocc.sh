@@ -37,10 +37,6 @@ export LD_LIBRARY_PATH=$VP8_SDX/Vivado/tps/lnx64/binutils-2.26/lib:$LD_LIBRARY_P
 
 #############################################################
 
-
-# dsa path (some are internal)
-export VP8_DEVICE_REPO_PATH=$VP8_SDX/internal_platforms
-
 # emulation
 # export XCL_EMULATION_MODE="true"
 

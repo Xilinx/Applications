@@ -30,9 +30,7 @@ CXXFLAGS := -I $(VP8_SDX)/Vivado_HLS/include \
             -DVP8_DSA=\"$(DSA_DEVICE)\"
 
 XOCCFLAGS := --xp "param:compiler.preserveHlsOutput=1" \
-             --xp "param:compiler.generateExtraRunData=true" -s \
-             --xp prop:solution.device_repo_paths=$(VP8_DEVICE_REPO_PATH) \
-             --xp prop:solution.platform_repo_paths=$(VP8_DEVICE_REPO_PATH)
+             --xp "param:compiler.generateExtraRunData=true" -s
 
 ifeq ($(shell expr $(VP8_NBINSTANCES) \>= 1), 1)
 XOCCFLAGS := $(XOCCFLAGS) \
