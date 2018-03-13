@@ -114,3 +114,8 @@ The following packages are required to run this application:
     source /opt/Xilinx/SDx/2017.1.rte/setup.sh   
     ./cwebp list.rst -use_ocl -q 80 -o output 
     ```
+    
+## License 
+This project is distributed with the following [license][] terms. 
+
+[license]: license.md
