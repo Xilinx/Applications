@@ -20,21 +20,15 @@ The main feature of configuration used is 'method=4', which uses 'Token' based a
 Some original algorithms are modified for hardware efficiency, but without effect on decoding process.
 
 ## Performance
-* One instance achieves about 8~10 times acceleration. The complexity of image texture may affect the throughput. But for average performance, 9 times can be achieved. Here is two examples:
-
-  - An image with middle complex texture
+* One instance achieves about 6~14 times acceleration. Here are some examples:
   
-    | Kernel | width x height (pix) | -q | hw | time (ms) | Freq (MHz) | Throughput (MB/sec) |
-    | ------ | -------------------- | -- | -- | --------- | --------- |  ------------------ |
-    | kernel-1 | 3840 x 2160 | 80 | aws-vu9p | 74.96 | 250 | 165.9 |
-    | kerenl-2 | 3840 x 2160 | 80 | aws-vu9p | 87.93 | 250 | 141.4 |
-    
-  - An image with simple texture
-
-    | Kernel | width x height (pix) | -q | hw | time (ms) | Freq (MHz) | Throughput (MB/sec)|
-    | ------ | -------------------- | -- | -- | --------- | ---------- | ---------- |
-    | kernel-1 | 3840 x 2160 | 80 | aws-vu9p | 74.4 | 250 | 167.2 |
-    | kerenl-2 | 3840 x 2160 | 80 | aws-vu9p | 45.4 | 250 | 274.0 |
+    | Pictures | Texture complexity | Width (pix) | Height (pix) | -q | Bottleneck | Bottleneck latency (ms) | Freq (MHz) | Throughput FPGA AWS F1 (MB/s) | Throughput CPU AWS C5 (MB/s) | Speed up |
+    | -------- | ------------------ | ----------- | ------------ | -- | ---------- | ----------------------- | ---------- | ---------------------------- | ----------------------------- | --------- |
+    | 3840-city.png   | complex | 3840 | 2160 | 80 | kernel-2 | 87.93 | 250 | 141.49 | 18.46 | 7.67  |
+    | 1920x1080x4.png | simple  | 3840 | 2160 | 80 | kernel-1 | 74.96 | 250 | 167.23 | 16.17 | 10.34 |
+    | 1920x1080.png   | simple  | 1920 | 1080 | 80 | kernel-1 | 18.60 | 250 | 168.47 | 11.85 | 14.22 |
+    | 853x640.png     | simple  | 853  | 640  | 80 | kernel-1 | 74.96 | 250 | 165.98 | 20.97 | 7.92  |
+    | lena_c_512.png  | middle  | 512  | 512  | 80 | kernel-1 | 2.84  | 250 | 138.46 | 21.32 | 6.50  |
 
 * One instance takes about 6% resource of VU9P, flowing is the detail:
 
