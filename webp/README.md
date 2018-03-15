@@ -29,6 +29,8 @@ Some original algorithms are modified for hardware efficiency, but without effec
     | 1920x1080.png   | simple  | 1920 | 1080 | 80 | kernel-1 | 18.60 | 250 | 168.47 | 11.85 | 14.22 |
     | 853x640.png     | simple  | 853  | 640  | 80 | kernel-1 | 74.96 | 250 | 165.98 | 20.97 | 7.92  |
     | lena_c_512.png  | middle  | 512  | 512  | 80 | kernel-1 | 2.84  | 250 | 138.46 | 21.32 | 6.50  |
+  
+    Platform: FPGA AWS F1: 2xlarge, CPU AWS C5: 4xlarge (single thread)
 
 * One instance takes about 6% resource of VU9P, flowing is the detail:
 
