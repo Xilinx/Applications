@@ -30,6 +30,14 @@ Note: This implementation of GZip doesn't include CRC32 (Cyclic Redundancy Check
 | 8               | 45183(5.07%) | 1325(0.24%) |46176(2.33%) | 299(18.51%) |0|250
 
 
+### Performance Benchmark
+
+|Compression Algorithm | Target Hardware | Throughput (MB/s) | Notes |
+|----------------------|-----------------|------------|-------|
+|GZip (file to file)   |C5.4xlarge       |68.8    |Usage: gzip -1|
+|Pigz (file to file)   |C5.4xlarge (16-threads)|641|Usage: pigz -p 16 --fast|
+|GZip (buffer to buffer)|F1.2xlarge|1500|  - |
+
 
 ### Results
 
