@@ -1,6 +1,6 @@
 # GZip 
 
-Gzip is a file format used for file compression and decompression. 
+Xilinx Gzip application is FPGA based GZIP compression which gives very high throughput with respect to CPU. This application is developed and tested on AWS F1 instance.
 
 ## Overview
 
