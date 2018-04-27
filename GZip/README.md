@@ -100,7 +100,7 @@ the end, streams from multiple pipes are written to DDR.
  
 ## Execution Steps
 
-This example is provided with two popular compression benchmarks. 
+This example is benchmarked using two popular data compression data sets. 
 
 1. [Silesia](http://sun.aei.polsl.pl/~sdeor/index.php?page=silesia)
 2. [Canterbury](http://corpus.canterbury.ac.nz/descriptions/#cantrbry)
