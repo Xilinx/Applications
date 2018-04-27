@@ -81,8 +81,16 @@ XCLBINS=$(XCLBIN_NAME)
 # check
 check_EXE=$(HOST_NAME)
 check_XCLBINS=$(XCLBIN_NAME)
-check_ARGS= -l ./cantrbry.list -b 4 
-#check_ARGS= -l ./silesia.list
+
+# To test/validate batch of files
+check_ARGS= -l ./files.list -b 2 
+
+# To compress a single file
+#check_ARGS= -i benchmark/bible.txt
+
+# To decompress a single file using standard gzip
+# gzip -dc <filename>.xil.gz > <outputfile> 
+
 CHECKS=check
 
 include $(COMMON_REPO)/utility/rules.mk

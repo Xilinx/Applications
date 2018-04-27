@@ -142,7 +142,7 @@ This section presents steps to use this application effectively.
 ```
 ------------------------------------------------------------------------------------------------------------
 
-Batch Mode Command: ./xil_gzip -l silesia.list -b 0
+Batch Mode Command: ./xil_gzip -l <file.list> -b 0
                   
 Note: If batch size is 0, all the files are attempted to process in batch mode.
       Throughput (MB/s) presented in batch mode execution corresponds to end to end execution
