@@ -80,7 +80,8 @@
             } \
             else{ \
                 if(burst_size[i]) done = true; \
-            }\
+                if (read_size[i] >= input_size[i]) is_pending.range(i,i) = false; \
+            }
 
 
 //LZ specific Defines
