@@ -3,17 +3,18 @@
 ########################### Settings ###########################
 
 ### Software environment ###
-export WEBP_SDX=/proj/xbuilds/2017.1_sdx_daily_latest/installs/lin64/SDx/2017.1
+if [ $XILINX_SDX ]; then
+    echo "XILINX_SDX = $XILINX_SDX"
+    export WEBP_SDX=$XILINX_SDX
+else
+    echo "ERROR: Xilinx SDx is not found. Please refer to UG1238 (SDx Environments Release Notes, Installation, and Licensing Guide) for setting up."
+    exit 1
+fi
 
 ### DSA setting ###
 # aws
 export WEBP_DSA=xilinx:aws-vu9p-f1:4ddr-xpr-2pr:4.0
 export WEBP_DSA_PLATFORM=xilinx_aws-vu9p-f1_4ddr-xpr-2pr_4_0
-
-# # ku115
-# export WEBP_DSA=xilinx:xil-accel-rd-ku115:4ddr-xpr:4.0
-# export WEBP_DSA_PLATFORM=xilinx_xil-accel-rd-ku115_4ddr-xpr_4_0
-# export WEBP_DSA_DEVICE=$DSA
 
 ### Nb of instance: 1, 2, 3, 4 ###
 export WEBP_NBINSTANCES=1
