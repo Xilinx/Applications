@@ -1,5 +1,7 @@
-xil-lz4
+There are two different License for this.
 
+
+For Xilinx LZ4 related, following is the license:
 
 /**********
  * Copyright (c) 2017-2018, Xilinx, Inc.
@@ -37,9 +39,7 @@ xil-lz4
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
-
-cyan4973-lz4
-
+For xxHash, License is as below:
 
 /*
 *  xxHash - Fast Hash algorithm
@@ -74,10 +74,3 @@ cyan4973-lz4
 *  - xxHash homepage: http://www.xxhash.com
 *  - xxHash source repository : https://github.com/Cyan4973/xxHash
 */
-
-
-
-
-
-
-(2018.05.21)
