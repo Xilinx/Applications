@@ -1,5 +1,5 @@
 /**********
-Copyright (c) 2017, Xilinx, Inc.
+Copyright (c) 2018, Xilinx, Inc.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -185,7 +185,7 @@ void process_batch(std::string & filelist, std::string & batch, xil_gzip & gzip)
 
 int main(int argc, char *argv[])
 {
-    std::string binaryFileName = "gZip_" + std::to_string(COMPUTE_UNITS) + "cu";
+    std::string binaryFileName = "gZip_app";
     
     sda::utils::CmdLineParser parser;
     parser.addSwitch("--input_file",    "-i",     "Input Data File",        "");

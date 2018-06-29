@@ -1,5 +1,5 @@
 /**********
-Copyright (c) 2017, Xilinx, Inc.
+Copyright (c) 2018, Xilinx, Inc.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -57,16 +57,6 @@ typedef ap_uint<GMEM_DWIDTH> uint512_t;
 typedef ap_uint<32> encoded_dt;
 typedef ap_uint<VEC*32> encodedV_dt;
 
-#if (COMPUTE_UNIT == 1)
-namespace  cu1 
-#elif (COMPUTE_UNIT == 2)
-namespace  cu2 
-#elif (COMPUTE_UNIT == 3)
-namespace  cu3 
-#elif (COMPUTE_UNIT == 4)
-namespace  cu4
-#endif
-{
 template <int DATAWIDTH, int BURST_SIZE>
 void gmem_to_stream(const ap_uint<DATAWIDTH>* in, 
                     hls::stream<ap_uint<DATAWIDTH> > &outStream, 
@@ -846,25 +836,13 @@ void gzip(
     encoded_size[0] = stream_to_gmem<uint16_t,GMEM_DWIDTH>(out,outStream512);
 }
 
-}//end of namepsace
-
 extern "C"{
-//For DDR1
-#if (COMPUTE_UNIT == 1)
-void gZip_cu1
-#elif (COMPUTE_UNIT == 2)
-void gZip_cu2
-#elif (COMPUTE_UNIT == 3)
-void gZip_cu3
-#elif (COMPUTE_UNIT == 4)
-void gZip_cu4
-#endif
-(
-                const uint512_t *in,      
-                uint512_t       *out,          
-                uint32_t        *encoded_size,
-                long input_size                      
-                )
+void gZip_cu(
+             const uint512_t *in,      
+             uint512_t       *out,          
+             uint32_t        *encoded_size,
+             long input_size                      
+            )
 {
     #pragma HLS INTERFACE m_axi port=in offset=slave bundle=gmem0
     #pragma HLS INTERFACE m_axi port=out offset=slave bundle=gmem2
@@ -878,15 +856,7 @@ void gZip_cu4
     #pragma HLS data_pack variable=in
     #pragma HLS data_pack variable=out
 
-#if (COMPUTE_UNIT == 1)
-    cu1::gzip(in,out,encoded_size,input_size);
-#elif (COMPUTE_UNIT == 2)
-    cu2::gzip(in,out,encoded_size,input_size);
-#elif (COMPUTE_UNIT == 3)
-    cu3::gzip(in,out,encoded_size,input_size);
-#elif (COMPUTE_UNIT == 4)
-    cu4::gzip(in,out,encoded_size,input_size);
-#endif
+    gzip(in,out,encoded_size,input_size);
 
 }
 }

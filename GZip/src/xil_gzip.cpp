@@ -1,5 +1,5 @@
 /**********
-Copyright (c) 2017, Xilinx, Inc.
+Copyright (c) 2018, Xilinx, Inc.
 All rights reserved.
 
 Redistribution and use in source and binary forms, with or without modification,
@@ -254,7 +254,7 @@ int xil_gzip::init(const std::string& binaryFileName)
     }
     
     // Various Kernel Names
-    std::string kernel_names = "gZip_cu1";
+    std::string kernel_names = "gZip_cu";
     
     // Create kernels based on compute unit count
     kernel_gzip = new cl::Kernel(*m_program, (kernel_names.c_str()));    
@@ -324,8 +324,6 @@ void xil_gzip::compress(uint8_t *in[],
     cl::Event read_events[2];
     cl::Event write_events[2];
 
-    std::vector<cl::Event> kernelWriteWait;
-    std::vector<cl::Event> kernelComputeWait;
 
     bool file_flags[total_file_count];
 
@@ -382,6 +380,10 @@ void xil_gzip::compress(uint8_t *in[],
         batch_buffer_size[flag]      = new cl::Buffer(*m_context, 
                 CL_MEM_USE_HOST_PTR | CL_MEM_WRITE_ONLY | CL_MEM_EXT_PTR_XILINX, 
                 sizeof(uint32_t) * inputSizeInKB , &sizeExt[flag]);
+        
+        // Kernel write and compute events local
+        std::vector<cl::Event> kernelWriteWait;
+        std::vector<cl::Event> kernelComputeWait;
 
         // Vector of memory objects
         std::vector<cl::Memory> inBufVec;
