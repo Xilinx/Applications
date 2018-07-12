@@ -5,18 +5,28 @@ Xilinx implementation of LZ4 application is aimed at achieving high throughput f
 This Xilinx LZ4 application is developed and tested on AWS F1 instance. To know
 more about standard LZ4 application please refer https://github.com/lz4/lz4
 
+This application is accelerated using generic hardware architecture for LZ based data compression algorithms.
+
+![LZx compress select](../img/lzx_comp.png) <br />
+
+![LZx decompress select](../img/lzx_decomp.png) <br />
+
+For more details refer this [link](https://gitenterprise.xilinx.com/heeran/xil_lz4/blob/master/README.md)
+
+
 ## Results
 
 ### Resource Utilization <br />
 
 Table below presents resource utilization of Xilinx LZ4 compress/decompress
-kernels with 8 cores. It is possible to extend number of cores to achieve higher throughput.
+kernels with 8 engines. It is possible to extend number of engines to achieve higher throughput.
 
 
 | Design | LUT | LUTMEM | REG | BRAM | URAM| DSP | Fmax (MHz) |
 | --------------- | --- | ------ | --- | ---- | --- | -----| -----|
-| Compression     | 79502(7.07%) | 28317(4.90%)|60756(2.8%)|24(1.28%) | 48(5%)|1(0.01%)|250|
-| Decompression     | 44451(4.31%) | 22413(3.88%)|40649(1.87%)|146(7.79%)|0|1(0.01%)|250|
+| Compression     | 99996(10.08%) | 44701(7.74%)|61033(2.90%)|146(7.79%) | 48(5%)|1(0.01%)|230|
+| Decompression     | 44447(4.30%) | 22413(3.88%)|40626(1.87%)|146(7.79%)|0|1(0.01%)|230|
+
 
 
 ### Throughput & Compression Ratio
@@ -25,11 +35,11 @@ Table below presents the best throughput achieved during execution of this appli
 
 | Topic| Results| 
 |-------|--------|
-|Best Compression Throughput|1.85 GB/s|
-|Best Decompression Throughput| 1.83 GB/s |
-|Average Compression Ratio| 1.87x (Silesia Benchmark)|
+|Best Compression Throughput|2.28 GB/s|
+|Best Decompression Throughput| 2.4 GB/s |
+|Average Compression Ratio| 2.10x (Silesia Benchmark)|
 
-Note: This throughput is reported for Single Kernel. Overall throughput can be increased by multiple compute units. 
+Note: This throughput is reported for buffer to buffer using two compute units. For large files, buffer to buffer throughput >2.5GB/s is achieved. Overall throughput can still be increased with multiple compute units. 
 
 
 ## Software & Hardware
@@ -77,7 +87,22 @@ While using PARALLEL_BLOCK (8 default) the generated executable would be
             3.a. <files.list>: Contains various file names with current path    
         
    Note: Default arguments are set in Makefile
+
+  Help:
+
+        ===============================================================================================
+        Usage: application.exe -[-h-c-l-d-B-x]
+
+                --help,         -h      Print Help Options   Default: [false]
+                --compress,     -c      Compress
+                --file_list,    -l      List of Input Files
+                --decompress,   -d      Decompress
+                --block_size,   -B      Compress Block Size [0-64: 1-256: 2-1024: 3-4096] Default: [0]
+                --flow,     -x      Validation [0-All: 1-XcXd: 2-XcSd: 3-ScXd]   Default:[1]
+        ===============================================================================================
+
 ```
+
 
 ### Limitations
 
