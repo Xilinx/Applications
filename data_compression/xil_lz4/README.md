@@ -19,7 +19,7 @@ For more details refer this [link](https://gitenterprise.xilinx.com/heeran/xil_l
 ### Resource Utilization <br />
 
 Table below presents resource utilization of Xilinx LZ4 compress/decompress
-kernels with 8 engines. It is possible to extend number of engines to achieve higher throughput.
+kernels with 8 engines for single compute unit. It is possible to extend number of engines to achieve higher throughput.
 
 
 | Design | LUT | LUTMEM | REG | BRAM | URAM| DSP | Fmax (MHz) |
@@ -35,12 +35,11 @@ Table below presents the best throughput achieved during execution of this appli
 
 | Topic| Results| 
 |-------|--------|
-|Best Compression Throughput|2.28 GB/s|
-|Best Decompression Throughput| 2.4 GB/s |
+|Best Compression Throughput|2.52 GB/s|
+|Best Decompression Throughput| 2.71 GB/s |
 |Average Compression Ratio| 2.10x (Silesia Benchmark)|
 
-Note: This throughput is reported for buffer to buffer using two compute units. For large files, buffer to buffer throughput >2.5GB/s is achieved. Overall throughput can still be increased with multiple compute units. 
-
+Note: This throughput is reported for buffer to buffer using two compute units. The throughput reported above is for large files >100MB. Overall throughput can still be increased with multiple compute units.
 
 ## Software & Hardware
 
