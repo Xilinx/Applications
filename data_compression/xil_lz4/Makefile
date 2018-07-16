@@ -88,7 +88,7 @@ else
 endif
 
 ifneq ($(strip $(SINGLE_XCLBIN)),true)
-	$(XCLBIN_C)_LDCLFLAGS+=--xp param:compiler.userPostSysLinkTcl=$(CURDIR)/scripts/userPostSysLink.tcl
+	$(XCLBIN_C)_LDCLFLAGS+=--xp param:compiler.userPostSysLinkTcl=$(CURDIR)/scripts/userPostSysLinkcomp.tcl
 	$(XCLBIN_D)_LDCLFLAGS+=--xp param:compiler.userPostSysLinkTcl=$(CURDIR)/scripts/userPostSysLinkdecomp.tcl
 endif
 

@@ -35,8 +35,8 @@ Table below presents the best throughput achieved during execution of this appli
 
 | Topic| Results| 
 |-------|--------|
-|Best Compression Throughput|2.52 GB/s|
-|Best Decompression Throughput| 2.71 GB/s |
+|Best Compression Throughput|2.55 GB/s|
+|Best Decompression Throughput| 2.70 GB/s |
 |Average Compression Ratio| 2.10x (Silesia Benchmark)|
 
 Note: This throughput is reported for buffer to buffer using two compute units. The throughput reported above is for large files >100MB. Overall throughput can still be increased with multiple compute units.
@@ -45,7 +45,7 @@ Note: This throughput is reported for buffer to buffer using two compute units. 
 
 ```
   Software: Xilinx SDx 2017.4
-  Hardware: xilinx_aws-vu9p-f1_dynamic_5_0 (AWS VU9p F1 DSA)
+  Hardware: xilinx_aws-vu9p-f1-04261818_dynamic_5_0 (AWS VU9p F1 DSA)
 ```
  
 ## Usage
