@@ -30,12 +30,7 @@
  * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  * **********/
 #pragma once
-
-#ifdef VEC_8
-    #define VEC 8 
-#else
-    #define VEC 16
-#endif
+#define VEC 8 
 
 #ifndef PARALLEL_BLOCK
 #define PARALLEL_BLOCK 8

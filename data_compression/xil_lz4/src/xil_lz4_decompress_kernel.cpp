@@ -1,5 +1,5 @@
 /**********
- * Copyright (c) 2018, Xilinx, Inc.
+ * Copyright (c) 2017, Xilinx, Inc.
  * All rights reserved.
  * Redistribution and use in source and binary forms, with or without
  * modification,
@@ -33,14 +33,20 @@
 #include <stdint.h>
 #include <assert.h>
 #include "hls_stream.h"
+#include "stream_utils.h"
+#include "lz_compress.h"
 #include <ap_int.h>
 #include "xil_lz4_config.h"
+
+#define MARKER 255
 #define MAX_OFFSET 65536 
 #define HISTORY_SIZE MAX_OFFSET
-#define MARKER 255
 
-//LZ77 specific Defines
 #define BIT 8
+#define READ_STATE 0
+#define MATCH_STATE 1
+#define LOW_OFFSET_STATE 2 
+#define LOW_OFFSET 8 // This should be bigger than Pipeline Depth to handle inter dependency false case
 
 //LZ4 Decompress states
 #define READ_TOKEN      0
@@ -50,349 +56,18 @@
 #define READ_OFFSET1    4
 #define READ_MATCH_LEN  5
 
-#define READ_STATE 0
-#define MATCH_STATE 1
-#define LOW_OFFSET_STATE 2 
-#define LOW_OFFSET 8 // This should be bigger than Pipeline Depth to handle inter dependency false case
 typedef ap_uint<BIT> uintV_t;
 typedef ap_uint<GMEM_DWIDTH> uint512_t;
 typedef ap_uint<32> compressd_dt;
 
 #define GET_DIFF_IF_BIG(x,y)   (x>y)?(x-y):0
 
-#define MM2S_IF_NOT_FULL(outStream,bIdx)\
-        is_full.range(bIdx,bIdx) = outStream.full();\
-            if(!is_full.range(bIdx,bIdx) && (read_idx[bIdx] != write_idx[bIdx])){\
-                outStream << local_buffer[bIdx][read_idx[bIdx]];\
-                read_idx[bIdx] += 1;\
-            }
-
-#define S2MM_IF_NOT_EMPTY(i,instream,burst_size,input_size,read_size,write_size,write_idx) \
-            burst_size[i] = c_max_burst_size; \
-            if(((input_size[i] - write_size[i]) < burst_size[i])){ \
-                burst_size[i] = GET_DIFF_IF_BIG(input_size[i],write_size[i]); \
-            } \
-            if(((read_size[i] - write_size[i]) < burst_size[i]) && (input_size[i] > read_size[i])){ \
-                bool is_empty = instream.empty(); \
-                if(!is_empty){ \
-                    local_buffer[i][write_idx[i]] = instream.read(); \
-                    write_idx[i] += 1; \
-                    read_size[i] += 64; \
-                    is_pending.range(i,i) = true;\
-                }else{ \
-                    is_pending.range(i,i) = false; \
-                }\
-            } \
-            else{ \
-                if(burst_size[i]) done = true; \
-            }
-
-
+#if (D_COMPUTE_UNIT == 1)
 namespace  dec_cu1 
+#elif (D_COMPUTE_UNIT == 2)
+namespace  dec_cu2 
+#endif
 {
-template <int DATAWIDTH, int BURST_SIZE>
-void mm2s(const ap_uint<DATAWIDTH> *in,
-          const uint32_t _input_idx[PARALLEL_BLOCK], 
-          hls::stream<ap_uint<DATAWIDTH> > &outStream_0,
-#if PARALLEL_BLOCK > 1
-          hls::stream<ap_uint<DATAWIDTH> > &outStream_1,
-#endif 
-#if PARALLEL_BLOCK > 2
-          hls::stream<ap_uint<DATAWIDTH> > &outStream_2, 
-          hls::stream<ap_uint<DATAWIDTH> > &outStream_3, 
-#endif
-#if PARALLEL_BLOCK > 4
-          hls::stream<ap_uint<DATAWIDTH> > &outStream_4, 
-          hls::stream<ap_uint<DATAWIDTH> > &outStream_5, 
-          hls::stream<ap_uint<DATAWIDTH> > &outStream_6, 
-          hls::stream<ap_uint<DATAWIDTH> > &outStream_7, 
-#endif
-          const uint32_t _input_size[PARALLEL_BLOCK]
-        )
-{
-    const int c_byte_size = 8;
-    const int c_word_size = DATAWIDTH/c_byte_size;
-    ap_uint<DATAWIDTH> local_buffer[PARALLEL_BLOCK][BURST_SIZE];
-    #pragma HLS ARRAY_PARTITION variable=local_buffer dim=1 complete
-    #pragma HLS RESOURCE variable=local_buffer core=RAM_2P_LUTRAM
-    uint32_t read_idx[PARALLEL_BLOCK];
-    uint32_t write_idx[PARALLEL_BLOCK];
-    uint32_t read_size[PARALLEL_BLOCK];
-    uint32_t input_idx[PARALLEL_BLOCK]; 
-    uint32_t input_size[PARALLEL_BLOCK];
-    #pragma HLS ARRAY_PARTITION variable=read_idx  dim=0 complete
-    #pragma HLS ARRAY_PARTITION variable=write_idx dim=0 complete
-    #pragma HLS ARRAY_PARTITION variable=read_size dim=0 complete
-    ap_uint<PARALLEL_BLOCK> pending;
-    ap_uint<PARALLEL_BLOCK> is_full;
-    for (uint32_t bIdx  = 0 ; bIdx < PARALLEL_BLOCK ; bIdx++){
-        #pragma HLS UNROLL 
-        read_idx[bIdx]  = 0;
-        write_idx[bIdx] = 0;
-        read_size[bIdx] = 0;
-        input_idx[bIdx] = _input_idx[bIdx];
-        input_size[bIdx] = _input_size[bIdx];
-        pending.range(bIdx,bIdx) = 1;
-    }
-    while(pending){
-        pending = 0;
-        for (uint32_t bIdx = 0; bIdx < PARALLEL_BLOCK ; bIdx++){
-            //Global Memory read
-            uint32_t pending_bytes = GET_DIFF_IF_BIG(input_size[bIdx],read_size[bIdx]);
-            if((pending_bytes) && (read_idx[bIdx] == write_idx[bIdx])){
-                uint32_t pending_words = (pending_bytes -1)/c_word_size +1;
-                uint32_t burst_size = (pending_words > BURST_SIZE)? BURST_SIZE: pending_words;
-                uint32_t mem_read_byte_idx = read_size[bIdx] + input_idx[bIdx];
-                uint32_t mem_read_word_idx = (mem_read_byte_idx)?((mem_read_byte_idx-1)/c_word_size + 1):0;
-                gmem_rd:for(uint32_t i= 0 ; i < burst_size ; i++){
-                #pragma HLS PIPELINE II=1
-                    local_buffer[bIdx][i] = in[mem_read_word_idx+i];
-                }
-                pending.range(bIdx,bIdx) = 1;
-                read_idx[bIdx]  = 0;
-                write_idx[bIdx] = burst_size;
-                read_size[bIdx] += burst_size*c_word_size; 
-            }
-        }
-        ap_uint<PARALLEL_BLOCK> terminate_all;
-        terminate_all = 1;
-        bool terminate = 0;
-        mm2s:for(int i = 0  ; (terminate == 0) && (terminate_all != 0) ; i++){
-            #pragma HLS PIPELINE II=1
-            MM2S_IF_NOT_FULL(outStream_0,0);
-#if PARALLEL_BLOCK > 1
-            MM2S_IF_NOT_FULL(outStream_1,1);
-#endif
-#if PARALLEL_BLOCK > 2
-            MM2S_IF_NOT_FULL(outStream_2,2);
-            MM2S_IF_NOT_FULL(outStream_3,3);
-#endif
-#if PARALLEL_BLOCK > 4
-            MM2S_IF_NOT_FULL(outStream_4,4);
-            MM2S_IF_NOT_FULL(outStream_5,5);
-            MM2S_IF_NOT_FULL(outStream_6,6);
-            MM2S_IF_NOT_FULL(outStream_7,7);
-#endif
-            terminate = 0;
-            for(uint32_t bIdx = 0 ; bIdx < PARALLEL_BLOCK ; bIdx++){
-            #pragma HLS UNROLL 
-                if(read_idx[bIdx] == write_idx[bIdx]){
-                    terminate_all.range(bIdx,bIdx) = 0;
-                    if (read_size[bIdx] < input_size[bIdx]){
-                        terminate = 1;
-                    }
-                }else{
-                    terminate_all.range(bIdx,bIdx) = 1;
-                    pending.range(bIdx,bIdx) = 1;
-                }
-            }
-        }
-    }
-}
-
-template <class SIZE_DT, int IN_WIDTH, int OUT_WIDTH>
-void stream_downsizer(
-        hls::stream<ap_uint<IN_WIDTH>  > &inStream,
-        hls::stream<ap_uint<OUT_WIDTH> > &outStream,
-        SIZE_DT input_size)
-{
-    const int c_byte_width = 8;
-    const int c_input_word = IN_WIDTH/c_byte_width;
-    const int c_out_word   = OUT_WIDTH/c_byte_width;
-    uint32_t sizeOutputV   = (input_size -1)/c_out_word + 1;
-    int factor = c_input_word / c_out_word;
-    ap_uint<IN_WIDTH> inBuffer= 0;
-    conv512toV:for (int i = 0 ; i < sizeOutputV ; i++){
-    #pragma HLS PIPELINE II=1
-        int idx = i % factor;
-        if (idx == 0)  inBuffer= inStream.read();
-        ap_uint<OUT_WIDTH> tmpValue = inBuffer.range((idx+1)*VEC - 1, idx*VEC);
-        outStream << tmpValue;
-    }
-}
-
-template <class SIZE_DT, int IN_WIDTH, int OUT_WIDTH>
-void stream_upsizer(
-        hls::stream<ap_uint<IN_WIDTH> >     &inStream,
-        hls::stream<ap_uint<OUT_WIDTH> >    &outStream,
-        SIZE_DT original_size
-        )
-{
-    int pack_size = OUT_WIDTH/IN_WIDTH;
-    ap_uint<OUT_WIDTH> outBuffer;
-    for(int i = 0; i < original_size; i += pack_size) {
-        int chunk_size = pack_size;
-        
-        if(i + pack_size > original_size) 
-            chunk_size = original_size - i;
-        
-        for(int j = 0; j < chunk_size; j++){
-        #pragma HLS PIPELINE II=1        
-            uint8_t c = inStream.read();
-            outBuffer.range((j+1)*VEC - 1, j*VEC) = c;
-        }
-
-        outStream << outBuffer;
-    }
-}
-
-template <class STREAM_SIZE_DT, int BURST_SIZE, int DATAWIDTH>
-void    s2mm(
-        ap_uint<DATAWIDTH>                  *out, 
-        const uint32_t                      output_idx[PARALLEL_BLOCK],
-        hls::stream<ap_uint<DATAWIDTH> >    &inStream_0,
-#if PARALLEL_BLOCK > 1
-        hls::stream<ap_uint<DATAWIDTH> >    &inStream_1,
-#endif
-#if PARALLEL_BLOCK > 2
-        hls::stream<ap_uint<DATAWIDTH> >    &inStream_2,
-        hls::stream<ap_uint<DATAWIDTH> >    &inStream_3,
-#endif
-#if PARALLEL_BLOCK > 4 
-        hls::stream<ap_uint<DATAWIDTH> >    &inStream_4,
-        hls::stream<ap_uint<DATAWIDTH> >    &inStream_5,
-        hls::stream<ap_uint<DATAWIDTH> >    &inStream_6,
-        hls::stream<ap_uint<DATAWIDTH> >    &inStream_7,
-#endif
-        const STREAM_SIZE_DT                      input_size[PARALLEL_BLOCK]
-        )
-{
-    const int c_byte_size = 8;
-    const int c_word_size = DATAWIDTH/c_byte_size;
-    const int c_max_burst_size = c_word_size * BURST_SIZE;
-    uint32_t read_size[PARALLEL_BLOCK];
-    uint32_t write_size[PARALLEL_BLOCK];
-    uint32_t burst_size[PARALLEL_BLOCK];
-    uint32_t write_idx[PARALLEL_BLOCK];
-    #pragma HLS ARRAY PARTITION variable=input_size dim=0 complete
-    #pragma HLS ARRAY PARTITION variable=read_size  dim=0 complete
-    #pragma HLS ARRAY PARTITION variable=write_size dim=0 complete
-    #pragma HLS ARRAY PARTITION variable=write_idx dim=0 complete
-    #pragma HLS ARRAY PARTITION variable=burst_size dim=0 complete
-    ap_uint<PARALLEL_BLOCK> end_of_stream = 0;
-    ap_uint<PARALLEL_BLOCK> is_pending = 1;
-    ap_uint<DATAWIDTH> local_buffer[PARALLEL_BLOCK][BURST_SIZE];
-    #pragma HLS ARRAY_PARTITION variable=local_buffer dim=1 complete
-    #pragma HLS RESOURCE variable=local_buffer core=RAM_2P_LUTRAM
-
-    for (int i = 0; i < PARALLEL_BLOCK ; i++){
-        #pragma HLS UNROLL
-        read_size[i] = 0;
-        write_size[i] = 0;
-        write_idx[i] = 0;
-    }
-    bool done = false;
-    uint32_t loc=0;
-    uint32_t remaining_data = 0;
-    while(is_pending != 0){
-        done = false;
-        for (int i = 0 ; (is_pending != 0) && (done == 0) ; i++ ){
-            #pragma HLS PIPELINE II=1 
-            S2MM_IF_NOT_EMPTY(0,inStream_0,burst_size,input_size,read_size,write_size,write_idx); 
-#if PARALLEL_BLOCK > 1
-            S2MM_IF_NOT_EMPTY(1,inStream_1,burst_size,input_size,read_size,write_size,write_idx); 
-#endif
-#if PARALLEL_BLOCK > 2
-            S2MM_IF_NOT_EMPTY(2,inStream_2,burst_size,input_size,read_size,write_size,write_idx); 
-            S2MM_IF_NOT_EMPTY(3,inStream_3,burst_size,input_size,read_size,write_size,write_idx); 
-#endif
-#if PARALLEL_BLOCK > 4
-            S2MM_IF_NOT_EMPTY(4,inStream_4,burst_size,input_size,read_size,write_size,write_idx); 
-            S2MM_IF_NOT_EMPTY(5,inStream_5,burst_size,input_size,read_size,write_size,write_idx); 
-            S2MM_IF_NOT_EMPTY(6,inStream_6,burst_size,input_size,read_size,write_size,write_idx); 
-            S2MM_IF_NOT_EMPTY(7,inStream_7,burst_size,input_size,read_size,write_size,write_idx); 
-#endif
-        }
-          
-        for(int i = 0; i < PARALLEL_BLOCK; i++){
-            //Write the data to global memory
-            if((read_size[i]> write_size[i]) && (read_size[i] - write_size[i]) >= burst_size[i]){
-                uint32_t base_addr = output_idx[i] + write_size[i];
-                uint32_t base_idx = base_addr / c_word_size;
-                uint32_t burst_size_in_words = (burst_size[i])?((burst_size[i]-1)/c_word_size + 1):0;
-                for (int j = 0 ; j < burst_size_in_words ; j++){
-                    #pragma HLS PIPELINE II=1
-                    out[base_idx + j] = local_buffer[i][j];
-                }
-                write_size[i] += burst_size[i];
-                write_idx[i] = 0;
-            }
-       }
-        for(int i = 0; i < PARALLEL_BLOCK; i++){
-            #pragma HLS UNROLL
-            if(done==true && (write_size[i] >= input_size[i])){
-                is_pending.range(i,i) = 0;                
-            }
-            else{
-                is_pending.range(i,i) = 1;
-            }
-       }
-
-    }
-}
-
-void lz_decompress(
-        hls::stream<compressd_dt> &inStream,          
-        hls::stream<ap_uint<8> > &outStream,          
-        uint32_t original_size
-    )
-{
-    uint8_t local_buf[HISTORY_SIZE];
-    #pragma HLS dependence variable=local_buf inter false
-
-    uint32_t match_len = 0; 
-    uint32_t out_len = 0;
-    uint32_t match_loc = 0;
-    uint32_t length_extract=0;
-    uint8_t next_states = READ_STATE;
-    uint16_t offset =0;
-    compressd_dt nextValue;
-    ap_uint<8> outValue = 0;
-    ap_uint<8> prevValue[LOW_OFFSET];
-    #pragma HLS ARRAY PARTITION variable=prevValue dim=0 complete
-    lz_decompress:for(uint32_t i = 0; i < original_size; i++ ) {
-    #pragma HLS PIPELINE II=1
-        if (next_states == READ_STATE){
-            nextValue = inStream.read();
-            offset         = nextValue.range(15,0);
-            length_extract = nextValue.range(31,16);
-            if (length_extract){
-                match_loc = i -offset -1;
-                match_len = length_extract + 1;
-                out_len = 1;
-                if (offset>=LOW_OFFSET){
-                    next_states = MATCH_STATE;
-                    outValue = local_buf[match_loc % HISTORY_SIZE];
-                }else{
-                    next_states = LOW_OFFSET_STATE;
-                    outValue = prevValue[offset];
-                }
-                match_loc++;
-            }else{
-                outValue = nextValue.range(7,0);
-            }
-        }else if (next_states == LOW_OFFSET_STATE){
-            outValue = prevValue[offset];
-            match_loc++;
-            out_len++;
-            if (out_len == match_len) next_states = READ_STATE;
-        }else{
-            outValue = local_buf[match_loc % HISTORY_SIZE];
-            match_loc++;
-            out_len++;
-            if (out_len == match_len) next_states = READ_STATE;
-        }
-        local_buf[i % HISTORY_SIZE] = outValue;
-        outStream << outValue;
-        for(uint32_t pIdx= LOW_OFFSET-1 ; pIdx > 0 ; pIdx--){
-            #pragma HLS UNROLL
-            prevValue[pIdx] = prevValue[pIdx-1];
-        }
-        prevValue[0] = outValue;
-    }
-}
-
-// LZ77 compress module
 void lz4_decompressr(
         hls::stream<ap_uint<8> > &inStream,          
         hls::stream<compressd_dt> &outStream,          
@@ -482,7 +157,7 @@ void lz4_core(
     #pragma HLS dataflow 
     stream_downsizer<uint32_t, GMEM_DWIDTH, 8>(instream_512,instreamV,input_size); 
     lz4_decompressr(instreamV, decompressd_stream, input_size1); 
-    lz_decompress(decompressd_stream, decompressed_stream, output_size); 
+    lz_decompress<HISTORY_SIZE,READ_STATE,MATCH_STATE,LOW_OFFSET_STATE,LOW_OFFSET>(decompressd_stream, decompressed_stream, output_size); 
     stream_upsizer<uint32_t, 8, GMEM_DWIDTH>(decompressed_stream, outstream_512, output_size1);
 }
 
@@ -589,7 +264,7 @@ void lz4_dec(
    lz4_core(inStream512_7,outStream512_7, input_size1[7],output_size1[7]); 
 #endif
     // Transfer data from kernel to global memory
-    s2mm<uint32_t, GMEM_BURST_SIZE, GMEM_DWIDTH>(out,
+   s2mm_decompress<uint32_t, GMEM_BURST_SIZE, GMEM_DWIDTH>(out,
                                                  input_idx,
                                                  outStream512_0,
 #if PARALLEL_BLOCK > 1
@@ -613,7 +288,11 @@ void lz4_dec(
 }//end of namepsace
 
 extern "C" {
+#if (D_COMPUTE_UNIT == 1)
 void xil_lz4_dec_cu1
+#elif (D_COMPUTE_UNIT == 2)
+void xil_lz4_dec_cu2
+#endif
 (
                 const uint512_t *in,      
                 uint512_t       *out,          
@@ -624,7 +303,7 @@ void xil_lz4_dec_cu1
                 )
 {
     #pragma HLS INTERFACE m_axi port=in offset=slave bundle=gmem0
-    #pragma HLS INTERFACE m_axi port=out offset=slave bundle=gmem2
+    #pragma HLS INTERFACE m_axi port=out offset=slave bundle=gmem0
     #pragma HLS INTERFACE m_axi port=in_block_size offset=slave bundle=gmem1
     #pragma HLS INTERFACE m_axi port=in_compress_size offset=slave bundle=gmem1
     #pragma HLS INTERFACE s_axilite port=in bundle=control
@@ -649,7 +328,8 @@ void xil_lz4_dec_cu1
     #pragma HLS ARRAY_PARTITION variable=block_size dim=0 complete
     #pragma HLS ARRAY_PARTITION variable=block_size1 dim=0 complete
 
-    
+    //printf ("In decode compute unit %d no_blocks %d\n", D_COMPUTE_UNIT, no_blocks);   
+ 
     for (int i = 0; i < no_blocks; i+=PARALLEL_BLOCK) {
         
         int nblocks = PARALLEL_BLOCK;
@@ -661,6 +341,7 @@ void xil_lz4_dec_cu1
             if(j < nblocks) {
                 uint32_t iSize = in_compress_size[i + j];
                 uint32_t oSize = in_block_size[i + j];
+                //printf("iSize %d oSize %d \n", iSize, oSize);
                 compress_size[j] = iSize;
                 block_size[j]  = oSize;
                 compress_size1[j] = iSize;
@@ -675,14 +356,11 @@ void xil_lz4_dec_cu1
             }
 
         }
-        dec_cu1::lz4_dec(in,
-                         out,
-                         input_idx,
-                         compress_size,
-                         block_size,
-                         compress_size1,
-                         block_size1
-                        );
+#if (D_COMPUTE_UNIT == 1)
+        dec_cu1::lz4_dec(in, out, input_idx, compress_size, block_size, compress_size1, block_size1);
+#elif (D_COMPUTE_UNIT == 2)
+        dec_cu2::lz4_dec(in, out, input_idx, compress_size, block_size, compress_size1, block_size1);
+#endif
     }
 
 }
