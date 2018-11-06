@@ -62,7 +62,7 @@
                 if(!is_empty){ \
                     local_buffer[i][write_idx[i]] = instream.read(); \
                     write_idx[i] += 1; \
-                    read_size[i] += 64; \
+                    read_size[i] += c_word_size; \
                     is_pending.range(i,i) = true;\
                 }else{ \
                     is_pending.range(i,i) = false; \
@@ -83,7 +83,7 @@
                 if(!is_empty){ \
                     local_buffer[i][write_idx[i]] = instream.read(); \
                     write_idx[i] += 1; \
-                    read_size[i] += 64; \
+                    read_size[i] += c_word_size; \
                     is_pending.range(i,i) = true;\
                 }else{ \
                     is_pending.range(i,i) = false; \

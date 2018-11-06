@@ -134,8 +134,8 @@ void lz4_decompressr(
     }
 }
 void lz4_core(
-        hls::stream<ap_uint<512> > &instream_512, 
-        hls::stream<ap_uint<512> > &outstream_512, 
+        hls::stream<ap_uint<GMEM_DWIDTH> > &instream_512, 
+        hls::stream<ap_uint<GMEM_DWIDTH> > &outstream_512, 
         const uint32_t _input_size,
         const uint32_t _output_size
         )
