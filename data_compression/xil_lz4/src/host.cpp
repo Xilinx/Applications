@@ -58,7 +58,8 @@ void xil_compress_top(std::string & compress_mod, uint32_t block_size) {
         std::cout << "Unable to open file";
         exit(1);
     }
-    uint32_t input_size = get_file_size(inFile);
+    uint64_t input_size = get_file_size(inFile);
+    inFile.close();
     
     std::string lz_compress_in  = compress_mod;
     std::string lz_compress_out = compress_mod;
@@ -70,16 +71,28 @@ void xil_compress_top(std::string & compress_mod, uint32_t block_size) {
     // 0 means Xilinx flow
     xlz.m_switch_flow = 0;
 
+#ifdef EVENT_PROFILE
+    auto total_start = std::chrono::high_resolution_clock::now();
+#endif
     // Call LZ4 compression
-    uint32_t enbytes = xlz.compress_file(lz_compress_in, lz_compress_out);
+    uint64_t enbytes = xlz.compress_file(lz_compress_in, lz_compress_out, input_size);
+#ifdef EVENT_PROFILE
+    auto total_end = std::chrono::high_resolution_clock::now();
+    auto total_time_ns = std::chrono::duration<double, std::nano>(total_end - total_start);
+#endif
 
 #ifdef VERBOSE 
     std::cout.precision(3);
-    std::cout   << "\t\t" << (float) input_size/enbytes 
-                << "\t\t" << (float) input_size/1000000 
+    std::cout   << "\t\t" << (double) input_size / enbytes
+                << "\t\t" << (double) input_size / 1000000
                 << "\t\t\t" << lz_compress_in << std::endl;
-    std::cout << "\n"; 
-    std::cout << "Output Location: " << lz_compress_out.c_str() << std::endl;        
+    std::cout << "\n";
+    std::cout << "Output Location: " << lz_compress_out.c_str() << std::endl;
+    std::cout << "Compressed file size: " << enbytes << std::endl;
+#endif
+
+#ifdef EVENT_PROFILE
+    std::cout << "Total Time (milli sec): " << total_time_ns.count() / 1000000 << std::endl;
 #endif
     
     xlz.release();
@@ -162,8 +175,9 @@ void xil_compress_decompress_list(std::string & file_list, std::string & ext1,
                 std::cout << "Unable to open file";
                 exit(1);
             }
-            
-            uint32_t input_size = get_file_size(inFile);
+
+	    uint64_t input_size = get_file_size(inFile);
+	    inFile.close();
 
             std::string lz_compress_in  = line;
             std::string lz_compress_out = line;
@@ -173,14 +187,14 @@ void xil_compress_decompress_list(std::string & file_list, std::string & ext1,
             xlz.m_switch_flow = c_flow;            
  
             // Call LZ4 compression
-            uint32_t enbytes = xlz.compress_file(lz_compress_in, lz_compress_out);
+            uint64_t enbytes = xlz.compress_file(lz_compress_in, lz_compress_out, input_size);
             if (c_flow == 0) {
-                std::cout << "\t\t" << (float) input_size  / enbytes << "\t\t" 
-                          << (float) input_size/1000000 << "\t\t\t" 
+                std::cout << "\t\t" << (double) input_size / enbytes << "\t\t"
+                          << (double) input_size / 1000000 << "\t\t\t"
                           << lz_compress_in << std::endl;
             } else {
                 std::cout << std::fixed << std::setprecision(3);
-                std::cout << (float) input_size/1000000 << "\t\t\t" 
+                std::cout << (double) input_size / 1000000 << "\t\t\t"
                           << lz_compress_in << std::endl;
             }
 
@@ -245,7 +259,8 @@ void xil_compress_decompress_list(std::string & file_list, std::string & ext1,
             exit(1);
         }
         
-        uint32_t input_size = get_file_size(inFile_dec);
+	uint64_t input_size = get_file_size(inFile_dec);
+	inFile_dec.close();
 
         std::string lz_decompress_in  = file_line;
         std::string lz_decompress_out = file_line;
@@ -253,14 +268,14 @@ void xil_compress_decompress_list(std::string & file_list, std::string & ext1,
        
         // Call LZ4 decompression
         xlz.m_switch_flow = d_flow;
-        xlz.decompress_file(lz_decompress_in, lz_decompress_out);
+        xlz.decompress_file(lz_decompress_in, lz_decompress_out, input_size);
         
         if (d_flow == 0) {
-            std::cout   << "\t\t" << (float) input_size/1000000 
+            std::cout   << "\t\t" << (double) input_size / 1000000
                         << "\t\t" << lz_decompress_in << std::endl;
         } else {
             std::cout << std::fixed << std::setprecision(3);
-            std::cout   << (float) input_size/1000000 
+            std::cout   << (double) input_size / 1000000
                         << "\t\t" << lz_decompress_in << std::endl;
         }
     } // While loop ends
@@ -423,7 +438,8 @@ void xil_decompress_top(std::string & decompress_mod) {
         exit(1);
     }
     
-    uint32_t input_size = get_file_size(inFile);
+    uint64_t input_size = get_file_size(inFile);
+    inFile.close();
 
     string lz_decompress_in  = decompress_mod;
     string lz_decompress_out = decompress_mod;
@@ -432,12 +448,12 @@ void xil_decompress_top(std::string & decompress_mod) {
     xlz.m_switch_flow = 0;
 
     // Call LZ4 decompression
-    xlz.decompress_file(lz_decompress_in, lz_decompress_out);
+    xlz.decompress_file(lz_decompress_in, lz_decompress_out, input_size);
 #ifdef VERBOSE 
-    std::cout   << "\t\t" << (float) input_size/1000000 
+    std::cout   << "\t\t" << (double) input_size / 1000000
                 << "\t\t\t" << lz_decompress_in << std::endl;
-    std::cout << "\n"; 
-    std::cout << "Output Location: " << lz_decompress_out.c_str() << std::endl;        
+    std::cout << "\n";
+    std::cout << "Output Location: " << lz_decompress_out.c_str() << std::endl;
 #endif
     xlz.release();
 }

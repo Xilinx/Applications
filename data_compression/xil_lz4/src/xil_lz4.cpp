@@ -49,9 +49,10 @@ uint64_t xil_lz4::get_event_duration_ns(const cl::Event &event){
     return (end_time - start_time);
 }
 
-uint32_t xil_lz4::compress_file(std::string & inFile_name, 
-                                std::string & outFile_name
-                               ) 
+uint64_t xil_lz4::compress_file(std::string & inFile_name,
+                                std::string & outFile_name,
+				uint64_t input_size
+                               )
 {
     if (m_switch_flow == 0) { // Xilinx FPGA compression flow
         std::ifstream inFile(inFile_name.c_str(), std::ifstream::binary);
@@ -62,9 +63,8 @@ uint32_t xil_lz4::compress_file(std::string & inFile_name,
             exit(1);
         }
 
-        uint32_t input_size = get_file_size(inFile);
         std::vector<uint8_t,aligned_allocator<uint8_t>> in (input_size);
-        std::vector<uint8_t,aligned_allocator<uint8_t>> out(input_size * 4);
+        std::vector<uint8_t,aligned_allocator<uint8_t>> out(input_size);
         
         inFile.read((char *)in.data(),input_size); 
      
@@ -108,13 +108,19 @@ uint32_t xil_lz4::compress_file(std::string & inFile_name,
         if (host_buffer_size > input_size){
             host_buffer_size = input_size;
         }
+        if (host_buffer_size > HOST_BUFFER_SIZE){
+            host_buffer_size = HOST_BUFFER_SIZE;
+        }        
         uint8_t temp_buff[10] = {FLG_BYTE,
                                  block_size_header,
                                  input_size,
                                  input_size >> 8,
                                  input_size >> 16,
                                  input_size >> 24,
-                                 0,0,0,0
+                                 input_size >> 32,
+                                 input_size >> 40,
+                                 input_size >> 48,
+                                 input_size >> 56
                                 };
         
         // xxhash is used to calculate hash value
@@ -126,7 +132,7 @@ uint32_t xil_lz4::compress_file(std::string & inFile_name,
         outFile.put((uint8_t)(xxh>>8));
         
         // LZ4 overlap & multiple compute unit compress 
-        uint32_t enbytes = compress(in.data(), out.data(), input_size, host_buffer_size);
+        uint64_t enbytes = compress(in.data(), out.data(), input_size, host_buffer_size);
    
         // LZ4 multiple/single cu sequential version
         //uint32_t enbytes = compress_sequential(in.data(), out.data(), input_size);
@@ -167,15 +173,19 @@ void xil_lz4::buffer_extension_assignments(bool flow){
             if(flow){
                 inExt[i][j].flags = comp_ddr_nums[i];
                 inExt[i][j].obj   = h_buf_in[i][j].data();
+                inExt[i][j].param   = NULL;
                 
                 outExt[i][j].flags = comp_ddr_nums[i];
                 outExt[i][j].obj   = h_buf_out[i][j].data();
+                outExt[i][j].param   = NULL;
                 
                 csExt[i][j].flags = comp_ddr_nums[i];
                 csExt[i][j].obj   = h_compressSize[i][j].data();
+                csExt[i][j].param   = NULL;
                 
                 bsExt[i][j].flags = comp_ddr_nums[i];
                 bsExt[i][j].obj   = h_blksize[i][j].data();
+                bsExt[i][j].param   = NULL;
             }
             else{
                 inExt[i][j].flags = decomp_ddr_nums[i];
@@ -278,9 +288,11 @@ int xil_lz4::release()
     return 0;
 }
 
-uint32_t xil_lz4::decompress_file(std::string & inFile_name, 
-                                  std::string & outFile_name
-                                 ) {
+uint64_t xil_lz4::decompress_file(std::string & inFile_name,
+                                  std::string & outFile_name,
+				  uint64_t input_size
+				  )
+{
     if (m_switch_flow == 0) {
         std::ifstream inFile(inFile_name.c_str(), std::ifstream::binary);
         std::ofstream outFile(outFile_name.c_str(), std::ofstream::binary);
@@ -290,8 +302,6 @@ uint32_t xil_lz4::decompress_file(std::string & inFile_name,
             exit(1);
         }
 
-        uint32_t input_size = get_file_size(inFile);
-            
         std::vector<uint8_t,aligned_allocator<uint8_t>> in(input_size);
 
         // Read magic header 4 bytes
@@ -326,7 +336,7 @@ uint32_t xil_lz4::decompress_file(std::string & inFile_name,
         }
 
         // Original size
-        uint32_t original_size=0; 
+        uint64_t original_size = 0;
         inFile.read((char *)&original_size,8); 
         inFile.get(c);
         // Allocat output size
@@ -342,9 +352,11 @@ uint32_t xil_lz4::decompress_file(std::string & inFile_name,
         if (host_buffer_size > original_size){
             host_buffer_size = original_size;
         }
-
+        if (host_buffer_size > HOST_BUFFER_SIZE){
+            host_buffer_size = HOST_BUFFER_SIZE;
+        }         
         // Decompression Overlapped multiple cu solution
-        uint32_t debytes = decompress(in.data(), out.data(), (input_size - 15), original_size, host_buffer_size);
+        uint64_t debytes = decompress(in.data(), out.data(), (input_size - 15), original_size, host_buffer_size);
 
         // Decompression Sequential multiple cus.
         // uint32_t debytes = decompress_sequential(in.data(), out.data(), (input_size - 15), original_size);
@@ -361,14 +373,16 @@ uint32_t xil_lz4::decompress_file(std::string & inFile_name,
     }
 }
 
-uint32_t xil_lz4::decompress(uint8_t *in,
+uint64_t xil_lz4::decompress(uint8_t *in,
                              uint8_t *out,
-                             uint32_t input_size,
-                             uint32_t original_size,
+                             uint64_t input_size,
+                             uint64_t original_size,
                              uint32_t host_buffer_size
-                            ) {
-    
+                            )
+{
     uint32_t block_size_in_bytes = m_block_size_in_kb * 1024;
+    uint64_t total_write_time = 0;
+    uint64_t total_read_time = 0;
     uint64_t total_kernel_time = 0;
 
     // Total number of blocks exist for this file
@@ -402,8 +416,8 @@ uint32_t xil_lz4::decompress(uint8_t *in,
     uint32_t sizeOfChunk[total_chunks];
     uint32_t blocksPerChunk[total_chunks];
     uint32_t computeBlocksPerChunk[total_chunks];
-    uint32_t idx = 0;
-    for (uint32_t i = 0; i < original_size; i += host_buffer_size, idx++) {
+    uint64_t idx = 0;
+    for (uint64_t i = 0; i < original_size; i += host_buffer_size, idx++) {
         uint32_t chunk_size = host_buffer_size;
         if (chunk_size + i > original_size) {
             chunk_size = original_size - i;
@@ -452,7 +466,7 @@ uint32_t xil_lz4::decompress(uint8_t *in,
     }   
 
     // Counter which helps in tracking output buffer index
-    uint32_t outIdx = 0;
+    uint64_t outIdx = 0;
 
     // Track the flags of remaining chunks 
     int chunk_flags[total_chunks];
@@ -463,8 +477,8 @@ uint32_t xil_lz4::decompress(uint8_t *in,
 
     int flag = 0;
     int lcl_cu = 0;
-    uint32_t inIdx = 0;
-    uint32_t total_decompression_size = 0;
+    uint64_t inIdx = 0;
+    uint64_t total_decompression_size = 0;
     
     uint32_t init_itr = 0;
     if (total_chunks < 2)
@@ -766,11 +780,12 @@ uint32_t xil_lz4::decompress(uint8_t *in,
 
 // Note: Various block sizes supported by LZ4 standard are not applicable to
 // this function. It just supports Block Size 64KB
-uint32_t xil_lz4::decompress_sequential(uint8_t *in,
+uint64_t xil_lz4::decompress_sequential(uint8_t *in,
                             uint8_t *out,
-                            uint32_t input_size,
-                            uint32_t original_size
-                           ) {
+                            uint64_t input_size,
+                            uint64_t original_size
+                           )
+{
     uint32_t block_size_in_bytes = m_block_size_in_kb * 1024;
 
     // Total number of blocks exists for this file
@@ -780,14 +795,14 @@ uint32_t xil_lz4::decompress_sequential(uint8_t *in,
 
     uint32_t no_compress_case=0;
     std::chrono::duration<double, std::nano> kernel_time_ns_1(0);
-    uint32_t inIdx = 0;
-    uint32_t total_decomression_size=0;
+    uint64_t inIdx = 0;
+    uint64_t total_decomression_size=0;
 
     uint32_t hostChunk_cu[D_COMPUTE_UNIT];
     int compute_cu;
-    int output_idx = 0;    
+    uint64_t output_idx = 0;
 
-    for (uint32_t outIdx = 0 ; outIdx < original_size ; outIdx +=HOST_BUFFER_SIZE * D_COMPUTE_UNIT){
+    for (uint64_t outIdx = 0 ; outIdx < original_size ; outIdx +=HOST_BUFFER_SIZE * D_COMPUTE_UNIT){
         compute_cu = 0;
         uint32_t chunk_size  = HOST_BUFFER_SIZE;
 
@@ -966,16 +981,17 @@ uint32_t xil_lz4::decompress_sequential(uint8_t *in,
 // This version of compression does overlapped execution between
 // Kernel and Host. I/O operations between Host and Device are
 // overlapped with Kernel execution between multiple compute units
-uint32_t xil_lz4::compress(uint8_t *in,
+uint64_t xil_lz4::compress(uint8_t *in,
                            uint8_t *out,
-                           uint32_t input_size,
+                           uint64_t input_size,
                            uint32_t host_buffer_size
-                         ) {
-
+                         )
+{
     uint32_t block_size_in_bytes = m_block_size_in_kb * 1024;
     uint32_t overlap_buf_count = OVERLAP_BUF_COUNT;
     uint64_t total_kernel_time = 0;
-
+    uint64_t total_write_time = 0;
+    uint64_t total_read_time = 0;
     // Read, Write and Kernel events
     cl::Event kernel_events[MAX_COMPUTE_UNITS][OVERLAP_BUF_COUNT];
     cl::Event read_events[MAX_COMPUTE_UNITS][OVERLAP_BUF_COUNT];
@@ -1002,7 +1018,7 @@ uint32_t xil_lz4::compress(uint8_t *in,
     uint32_t sizeOfChunk[total_chunks];
     uint32_t blocksPerChunk[total_chunks];
     uint32_t idx = 0;
-    for (uint32_t i = 0; i < input_size; i += host_buffer_size, idx++) {
+    for (uint64_t i = 0; i < input_size; i += host_buffer_size, idx++) {
         uint32_t chunk_size = host_buffer_size;
         if (chunk_size + i > input_size) {
             chunk_size = input_size - i;
@@ -1050,7 +1066,7 @@ uint32_t xil_lz4::compress(uint8_t *in,
 
     // Counter which helps in tracking
     // Output buffer index    
-    uint32_t outIdx = 0;
+    uint64_t outIdx = 0;
 
     // Track the lags of respective chunks for left over handling
     int chunk_flags[total_chunks];
@@ -1066,7 +1082,8 @@ uint32_t xil_lz4::compress(uint8_t *in,
     // Loop below runs over total bricks i.e., host buffer size chunks
     auto total_start = std::chrono::high_resolution_clock::now();
     for (uint32_t brick = 0, itr = 0; brick < total_chunks; brick+=C_COMPUTE_UNIT, itr++, flag =!flag) {
-   
+  
+//  	printf("Brick %u started\n", brick);
         lcl_cu = C_COMPUTE_UNIT;
         if (brick + lcl_cu > total_chunks) 
             lcl_cu = total_chunks - brick;
@@ -1129,14 +1146,9 @@ uint32_t xil_lz4::compress(uint8_t *in,
 
                             out[outIdx++] = NO_COMPRESS_BIT;
                         } else {
-                            uint8_t temp = 0;
-                            temp = block_size;
-                            out[outIdx++] = temp;
-                            temp = block_size >> 8;
-                            out[outIdx++] = temp;
-                            temp = block_size >> 16;
-                            out[outIdx++] = temp;
-                            out[outIdx++] = NO_COMPRESS_BIT;
+                            std::memcpy(&out[outIdx], &block_size, 3);
+                            outIdx += 3;
+                            out[outIdx++] = NO_COMPRESS_BIT;                            
                         }
                         std::memcpy(&out[outIdx], &in[brick_flag_idx * host_buffer_size + index], block_size);
                         outIdx += block_size;
@@ -1300,10 +1312,11 @@ uint32_t xil_lz4::compress(uint8_t *in,
 
 // Note: Various block sizes supported by LZ4 standard are not applicable to
 // this function. It just supports Block Size 64KB
-uint32_t xil_lz4::compress_sequential(uint8_t *in, 
-                                      uint8_t *out, 
-                                      uint32_t input_size
-                                    ) {
+uint64_t xil_lz4::compress_sequential(uint8_t *in,
+                                      uint8_t *out,
+				      uint64_t input_size
+				      )
+{
     uint32_t block_size_in_kb = BLOCK_SIZE_IN_KB;
     uint32_t block_size_in_bytes = block_size_in_kb * 1024;
 
@@ -1312,7 +1325,7 @@ uint32_t xil_lz4::compress_sequential(uint8_t *in,
     std::chrono::duration<double, std::nano> kernel_time_ns_1(0);
     
     // Keeps track of output buffer index
-    uint32_t outIdx = 0;
+    uint64_t outIdx = 0;
         
     // Given a input file, we process it as multiple chunks
     // Each compute unit is assigned with a chunk of data
@@ -1334,7 +1347,7 @@ uint32_t xil_lz4::compress_sequential(uint8_t *in,
     // used per iteration
     int compute_cu = 0;    
 
-    for (uint32_t inIdx = 0 ; inIdx < input_size ; inIdx+= HOST_BUFFER_SIZE * C_COMPUTE_UNIT){
+    for (uint64_t inIdx = 0 ; inIdx < input_size ; inIdx+= HOST_BUFFER_SIZE * C_COMPUTE_UNIT){
         
         // Needs to reset this variable
         // As this drives compute unit launch per iteration
