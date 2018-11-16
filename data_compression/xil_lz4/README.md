@@ -24,8 +24,8 @@ kernels with 8 engines for single compute unit. It is possible to extend number 
 
 | Design | LUT | LUTMEM | REG | BRAM | URAM| DSP | Fmax (MHz) |
 | --------------- | --- | ------ | --- | ---- | --- | -----| -----|
-| Compression     | 99996(10.08%) | 44701(7.74%)|61033(2.90%)|146(7.79%) | 48(5%)|1(0.01%)|230|
-| Decompression     | 44447(4.30%) | 22413(3.88%)|40626(1.87%)|146(7.79%)|0|1(0.01%)|230|
+| Compression     | 80623(8.77%) | 24525(4.41%)|68082(3.50%)|146(7.89%) | 48(5.23%)|1(0.01%)|230|
+| Decompression     | 35898(3.91%) | 13774(2.48%)|41860(2.15%)|146(7.89%)|0|1(0.01%)|230|
 
 
 
@@ -35,16 +35,16 @@ Table below presents the best throughput achieved during execution of this appli
 
 | Topic| Results| 
 |-------|--------|
-|Best Compression Throughput|2.55 GB/s|
+|Best Compression Throughput|2.65 GB/s|
 |Best Decompression Throughput| 2.70 GB/s |
-|Average Compression Ratio| 2.10x (Silesia Benchmark)|
+|Average Compression Ratio| 2.15x (Silesia Benchmark)|
 
 Note: This throughput is reported for buffer to buffer using two compute units. The throughput reported above is for large files >100MB. Overall throughput can still be increased with multiple compute units.
 
 ## Software & Hardware
 
 ```
-  Software: Xilinx SDx 2017.4
+  Software: Xilinx SDx 2018.2
   Hardware: xilinx_aws-vu9p-f1-04261818_dynamic_5_0 (AWS VU9p F1 DSA)
 ```
  
