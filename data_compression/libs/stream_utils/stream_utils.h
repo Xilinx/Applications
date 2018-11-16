@@ -62,7 +62,7 @@
                 if(!is_empty){ \
                     local_buffer[i][write_idx[i]] = instream.read(); \
                     write_idx[i] += 1; \
-                    read_size[i] += 64; \
+                    read_size[i] += c_word_size; \
                     is_pending.range(i,i) = true;\
                 }else{ \
                     is_pending.range(i,i) = false; \
@@ -83,7 +83,7 @@
                 if(!is_empty){ \
                     local_buffer[i][write_idx[i]] = instream.read(); \
                     write_idx[i] += 1; \
-                    read_size[i] += 64; \
+                    read_size[i] += c_word_size; \
                     is_pending.range(i,i) = true;\
                 }else{ \
                     is_pending.range(i,i) = false; \
@@ -205,7 +205,7 @@ void stream_downsizer(
     uint32_t sizeOutputV   = (input_size -1)/c_out_word + 1;
     int factor = c_input_word / c_out_word;
     ap_uint<IN_WIDTH> inBuffer= 0;
-    conv512toV:for (int i = 0 ; i < sizeOutputV ; i++){
+    convInWidthtoV:for (int i = 0 ; i < sizeOutputV ; i++){
     #pragma HLS PIPELINE II=1
         int idx = i % factor;
         if (idx == 0)  inBuffer= inStream.read();

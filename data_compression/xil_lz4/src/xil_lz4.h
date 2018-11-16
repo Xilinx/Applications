@@ -52,16 +52,16 @@
 
 // Below are the codes as per LZ4 standard for 
 // various maximum block sizes supported.
-#define BSIZE_STD_64KB 64
-#define BSIZE_STD_256KB 80
-#define BSIZE_STD_1024KB 96
-#define BSIZE_STD_4096KB 112
+#define BSIZE_STD_64KB 4
+#define BSIZE_STD_256KB 5
+#define BSIZE_STD_1024KB 6
+#define BSIZE_STD_4096KB 7
 
 // Maximum block sizes supported by LZ4
-#define MAX_BSIZE_64KB 65536
-#define MAX_BSIZE_256KB 262144
-#define MAX_BSIZE_1024KB 1048576
-#define MAX_BSIZE_4096KB 4194304
+#define MAX_BSIZE_64KB (64*1024)
+#define MAX_BSIZE_256KB (256*1024)
+#define MAX_BSIZE_1024KB (1024*1024)
+#define MAX_BSIZE_4096KB (4096*1024)
 
 // This value is used to set 
 // uncompressed block size value
@@ -81,9 +81,9 @@
 
 int validate(std::string & inFile_name, std::string & outFile_name);
 
-static uint32_t get_file_size(std::ifstream &file){
+static uint64_t get_file_size(std::ifstream &file){
     file.seekg(0,file.end);
-    uint32_t file_size = file.tellg();
+    uint64_t file_size = file.tellg();
     file.seekg(0,file.beg);
     return file_size;
 }
@@ -92,12 +92,12 @@ class xil_lz4 {
     public:
         int init(const std::string& binaryFile);
         int release();
-        uint32_t compress_sequential(uint8_t *in, uint8_t *out, uint32_t actual_size);
-        uint32_t compress(uint8_t *in, uint8_t *out, uint32_t actual_size, uint32_t host_buffer_size);
-        uint32_t compress_file(std::string & inFile_name, std::string & outFile_name); 
-        uint32_t decompress_file(std::string & inFile_name, std::string & outFile_name);
-        uint32_t decompress_sequential(uint8_t *in, uint8_t *out, uint32_t actual_size, uint32_t original_size);
-        uint32_t decompress(uint8_t *in, uint8_t *out, uint32_t actual_size, uint32_t original_size, uint32_t host_buffer_size);
+        uint64_t compress_sequential(uint8_t *in, uint8_t *out, uint64_t actual_size);
+        uint64_t compress(uint8_t *in, uint8_t *out, uint64_t actual_size, uint32_t host_buffer_size);
+        uint64_t compress_file(std::string & inFile_name, std::string & outFile_name, uint64_t actual_size);
+        uint64_t decompress_file(std::string & inFile_name, std::string & outFile_name, uint64_t actual_size);
+        uint64_t decompress_sequential(uint8_t *in, uint8_t *out, uint64_t actual_size, uint64_t original_size);
+        uint64_t decompress(uint8_t *in, uint8_t *out, uint64_t actual_size, uint64_t original_size, uint32_t host_buffer_size);
         uint64_t get_event_duration_ns(const cl::Event &event);
         void buffer_extension_assignments(bool flow);
         // Binary flow compress/decompress        
