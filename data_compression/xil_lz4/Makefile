@@ -41,7 +41,7 @@ include $(COMMON_REPO)/libs/lz_compress/lz_compress.mk
 C_COMPUTE_UNITS:=2
 D_COMPUTE_UNITS:=2
 PARALLEL_BLOCK:=8
-SINGLE_XCLBIN:=true
+SINGLE_XCLBIN:=false
 ################################################################################
 
 NPB:=$(PARALLEL_BLOCK)b
