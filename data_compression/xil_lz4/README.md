@@ -31,7 +31,7 @@ kernels with 8 engines for single compute unit. It is possible to extend number 
 
 ### Throughput & Compression Ratio
 
-Table below presents the best kernel throughput achieved during execution of this application.
+Table below presents the best kernel throughput achieved with single compute unit during execution of this application.
 
 | Topic| Results| 
 |-------|--------|
