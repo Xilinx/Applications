@@ -92,7 +92,6 @@ void lz4_core(
     #pragma HLS RESOURCE variable=inStream            core=FIFO_SRL
     #pragma HLS RESOURCE variable=compressdStream     core=FIFO_SRL
     #pragma HLS RESOURCE variable=boosterStream       core=FIFO_SRL
-    #pragma HLS RESOURCE variable=litOut              core=FIFO_SRL
     #pragma HLS RESOURCE variable=lenOffsetOut        core=FIFO_SRL
     #pragma HLS RESOURCE variable=lz4Out              core=FIFO_SRL
     #pragma HLS RESOURCE variable=lz4OutSize          core=FIFO_SRL
