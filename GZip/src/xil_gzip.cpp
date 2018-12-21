@@ -350,9 +350,6 @@ void xil_gzip::compress(uint8_t *in[],
             delete (batch_buffer_size[flag]);
         }
 
-        long size_per_unit = (input_size[file] - 1) + 1;
-        long size_of_each_unit_4k = ((size_per_unit - 1) / 4096 + 1) * 4096;
-        int inputSizeInKB = (size_of_each_unit_4k - 1) / BLOCK_PARITION + 1;
         long inbuf_size = input_size[file] * sizeof(uint8_t);
         long outbuf_size = 2 * input_size[file] * sizeof(uint8_t);
 
@@ -379,7 +376,7 @@ void xil_gzip::compress(uint8_t *in[],
         
         batch_buffer_size[flag]      = new cl::Buffer(*m_context, 
                 CL_MEM_USE_HOST_PTR | CL_MEM_WRITE_ONLY | CL_MEM_EXT_PTR_XILINX, 
-                sizeof(uint32_t) * inputSizeInKB , &sizeExt[flag]);
+                sizeof(uint32_t) , &sizeExt[flag]);
         
         // Kernel write and compute events local
         std::vector<cl::Event> kernelWriteWait;
@@ -463,7 +460,6 @@ uint32_t xil_gzip::compress(uint8_t *in,
     auto total_start = std::chrono::high_resolution_clock::now(); 
     long size_per_unit = (input_size - 1)+ 1;
     long size_of_each_unit_4k = ((size_per_unit -1)/4096 + 1) * 4096;
-    int inputSizeInKB = (size_of_each_unit_4k-1) / BLOCK_PARITION+ 1;
     
     // Device buffers
     cl::Buffer* buffer_input;
@@ -499,7 +495,7 @@ uint32_t xil_gzip::compress(uint8_t *in,
 
     buffer_size      = new cl::Buffer(*m_context, 
             CL_MEM_USE_HOST_PTR | CL_MEM_WRITE_ONLY | CL_MEM_EXT_PTR_XILINX, 
-            sizeof(uint32_t) * inputSizeInKB , &sizeExt);
+            sizeof(uint32_t) , &sizeExt);
     auto dw_s = std::chrono::high_resolution_clock::now(); 
     
     
@@ -528,12 +524,11 @@ uint32_t xil_gzip::compress(uint8_t *in,
     m_q->finish();
     auto kernel_end = std::chrono::high_resolution_clock::now();    
     
-    std::vector<cl::Memory> outBufVec;
-    outBufVec.push_back(*(buffer_output));
-    outBufVec.push_back(*(buffer_size));
-    
     // Migrate memory - Map device to host buffers
-    m_q->enqueueMigrateMemObjects(outBufVec,CL_MIGRATE_MEM_OBJECT_HOST);
+    m_q->enqueueReadBuffer((*buffer_size), CL_TRUE, 0, sizeof(uint32_t), 
+                            sizeOut->data(), nullptr, nullptr);
+    m_q->enqueueReadBuffer((*buffer_output), CL_TRUE, 0, sizeof(uint8_t) * sizeOut->data()[0], 
+                            local_out->data(), nullptr, nullptr);
     m_q->finish();
     
     auto dr_end = std::chrono::high_resolution_clock::now();    
