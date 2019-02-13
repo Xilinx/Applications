@@ -356,14 +356,15 @@ void xil_gzip::compress(uint8_t *in[],
         uint8_t *in_ptr = in[file];
         in_ext[flag].flags = XCL_MEM_DDR_BANK0;
         in_ext[flag].obj = &in_ptr[0];
-        in_ext[flag].param = 0;
+        in_ext[flag].param = NULL;
 
         out_ext[flag].flags = XCL_MEM_DDR_BANK1;
         out_ext[flag].obj   = batch_local_out[flag]->data();
-        out_ext[flag].param = 0;
+        out_ext[flag].param = NULL;
 
         sizeExt[flag].flags = XCL_MEM_DDR_BANK1;
         sizeExt[flag].obj = batch_sizeOut[flag]->data();
+        sizeExt[flag].param = NULL;
 
         // Device buffer allocation
         batch_buffer_input[flag]     = new cl::Buffer(*m_context, 
@@ -480,9 +481,9 @@ uint32_t xil_gzip::compress(uint8_t *in,
 
     // OpenCL device buffer extension mapping   
     cl_mem_ext_ptr_t    inExt,outExt,sizeExt;
-    inExt   = get_buffer_extension(0); inExt.obj    = &in[inbuf_start];
-    outExt  = get_buffer_extension(1); outExt.obj   = local_out->data() + outbuf_start;
-    sizeExt = get_buffer_extension(1); sizeExt.obj  = sizeOut->data();
+    inExt   = get_buffer_extension(0); inExt.obj    = &in[inbuf_start]; inExt.param = NULL;
+    outExt  = get_buffer_extension(1); outExt.obj   = local_out->data() + outbuf_start; outExt.param = NULL;
+    sizeExt = get_buffer_extension(1); sizeExt.obj  = sizeOut->data(); sizeExt.param = NULL;
     
     // Device buffer allocation
     buffer_input     = new cl::Buffer(*m_context, 
