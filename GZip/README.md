@@ -27,7 +27,7 @@ Note: This implementation of GZip doesn't include CRC32 (Cyclic Redundancy Check
 
 | Design (Bytes/Clock)  | LUT | LUTMEM | REG | BRAM | DSP | Fmax (MHz) |
 | --------------- | --- | ------ | --- | ---- | --- | -----|
-| 8               | 44907(4.51%) | 1132(0.20%) | 47387(2.24%) | 299(16.33%) |0|250
+| 8               | 43019(4.35%) | 1166(0.20%) | 50722(2.44%) | 303(15.93%) |0|250
 
 
 ### Performance Benchmark
@@ -49,7 +49,7 @@ In single file mode kernel (device) throughput is presented.
 | Topic | Result |
 |-------|--------|
 |Best End to End Throughput| 1.57GB/s |
-|Best Kernel Throughput | 1.91GB/s |
+|Best Kernel Throughput | 1.86GB/s |
 |Average Compression Ratio | 1.7x |
 
 
@@ -94,8 +94,9 @@ the end, streams from multiple pipes are written to DDR.
 ## Software & Hardware
 
 ```
-  Software: Xilinx SDx 2017.4
-  Hardware: xilinx_aws-vu9p-f1_dynamic_5_0 (AWS F1 DSA)
+  Software: Xilinx SDx 2018.2 (SW Build 2258646 / IP Build 2256618)
+  Hardware: xilinx_aws-vu9p-f1_04261818_dynamic_5_0 (AWS F1 DSA)
+  AMI Version: 1.5.0
 ```
  
 ## Execution Steps
