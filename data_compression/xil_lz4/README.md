@@ -11,7 +11,7 @@ This application is accelerated using generic hardware architecture for LZ based
 
 ![LZx decompress select](../img/lzx_decomp.png) <br />
 
-For more details refer this [link](https://gitenterprise.xilinx.com/heeran/xil_lz4/blob/master/README.md)
+For more details refer this [link](https://github.com/Xilinx/Applications/tree/master/data_compression)
 
 
 ## Results
