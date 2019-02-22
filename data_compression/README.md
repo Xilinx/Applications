@@ -43,6 +43,7 @@ unit) and s2mm(output unit) are connected to decompression engines.
 
 Based on the presented architecture above we have implemented following compression algorithm.
 
-* [LZ4 Compress/Decompress](https://gitenterprise.xilinx.com/heeran/xil_lz4/tree/master/xil_lz4)
+* [LZ4 Compress/Decompress](https://github.com/Xilinx/Applications/tree/master/data_compression/xil_lz4)
+* [Snappy Compress/Decompress](https://github.com/Xilinx/Applications/tree/master/data_compression/xil_snappy)
 
 
