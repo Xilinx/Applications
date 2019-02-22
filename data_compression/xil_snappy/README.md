@@ -104,9 +104,12 @@ While using PARALLEL_BLOCK (8 default) the generated executable would be
 
 ### Limitations
 
+- CRC32 is not included
+
 #### Decompression
 
 - Single block per chunk is supported at present
+
 
 
 
