@@ -3,3 +3,4 @@ This repository contains following applications targeting Amazon Web Services (A
 1. GZip
 2. WebP
 3. data_compression/xil_lz4
+4. data_compression/xil_snappy
