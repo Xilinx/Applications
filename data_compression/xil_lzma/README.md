@@ -93,8 +93,3 @@ The generated executable would be
 ```
 
 
-### Limitations
-
-It divides file into 2GB chunks and process each chunk as separate stream.
-
-
