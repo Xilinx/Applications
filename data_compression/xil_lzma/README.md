@@ -21,7 +21,7 @@ Table below presents resource utilization of Xilinx LZMA compress
 
 | Design | LUT | LUTMEM | REG | BRAM | URAM| DSP | Fmax (MHz) |
 | --------------- | --- | ------ | --- | ---- | --- | -----| -----|
-| Compression     | 27463(2.78%) | 9619(1.69%)|34102(1.64%)|38(2.00%) | 0(0%)|3(0.04%)|250|
+| Compression     | 30441(3.02%) | 9036(1.58%)|47448(2.24%)|39(2.17%) | 0(0%)|3(0.04%)|250|
 
 
 ### Throughput & Compression Ratio
@@ -30,10 +30,9 @@ Table below presents the best throughput achieved during execution of this appli
 
 | Topic| Results| 
 |-------|--------|
-|Best Compression Throughput|29MB/s|
-|Average Compression Ratio Xilinx LZMA| 1.54x (Genomic data)|
-|Average Compression Ratio CPU LZMA| 1.96x (Genomic data)|
-|Average Compression Ratio GZIP| 1.26x (Genomic data)|
+|Best Compression Throughput|27MB/s|
+|Average Compression Ratio Xilinx LZMA| 1.82x (Genomic data)|
+|Average Compression Ratio CPU LZMA| 2.07x (Genomic data)|
 
 Note: This throughput is reported for buffer to buffer using one compute units. Overall throughput can still be increased with multiple compute units. 
 
@@ -41,8 +40,8 @@ Note: This throughput is reported for buffer to buffer using one compute units. 
 ## Software & Hardware
 
 ```
-  Software: Xilinx SDx 2018.2
-  Hardware: xilinx_aws-vu9p-f1_dynamic_5_0 (AWS VU9p F1 DSA)
+  Software: Xilinx SDx 2018.3
+  Hardware: xilinx_u200_xdma_201830_1 (Xilinx Alveo U200)
 ```
  
 ## Usage
@@ -88,8 +87,14 @@ The generated executable would be
 
                 --help,         -h      Print Help Options   Default: [false]
                 --compress,     -c      Compress
+				--cu			-x		CU used for compression
         ===============================================================================================
 
 ```
+
+
+### Limitations
+
+It divides file into 2GB chuncks and process each chunch as sapereate stream.
 
 

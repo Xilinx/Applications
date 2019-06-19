@@ -13,22 +13,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-#ifndef DEFNS_H_
-#define DEFNS_H_
-#include <iostream>
-#include <cstring>
-#include <string>
-#include <fstream>
-#include <cassert>
-#include <cstdlib>
-#include <cstdio>
-#include <stdbool.h>
-#include <time.h>
-#include <math.h>
-#include <stdint.h>
-#include <vector>
-#include "xil_lzma_config.h"
-#include <sys/stat.h>
-#include "xcl2.hpp"
-#include <iomanip>
-#endif
+#pragma once
+
+#include "xil_lzma.h"
+#include <cstdint>
+
+class lzma {
+
+private:
+    static lzma* instance;
+    xil_lzma* list[C_COMPUTE_UNIT];
+    int list_count;
+    lzma();
+
+public:
+    static lzma* getinstance();
+
+    int xlzma_init();
+
+    int xlzma_set_dict_size(int xlzma_handle, uint64_t dict_size_bytes);
+
+    uint64_t xlzma_bound(uint64_t input_size);
+
+    int xlzma_compress(int xlzma_handle, char* input, uint64_t input_size, char* output, uint64_t output_buf_size);
+
+    int xlzma_close(int xlzma_handle);
+    ~lzma();
+};
+

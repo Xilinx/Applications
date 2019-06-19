@@ -1,41 +1,25 @@
-/**********
- * Copyright (c) 2019, Xilinx, Inc.
- * All rights reserved.
- * Redistribution and use in source and binary forms, with or without
- * modification,
- * are permitted provided that the following conditions are met:
- * 1. Redistributions of source code must retain the above copyright notice,
- * this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright notice,
- * this list of conditions and the following disclaimer in the documentation
- * and/or other materials provided with the distribution.
- * 3. Neither the name of the copyright holder nor the names of its contributors
- * may be used to endorse or promote products derived from this software
- * without specific prior written permission.
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY
- * DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
- * OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY,
- * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- * **********/
+/*
+ * Copyright 2019 Xilinx, Inc.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 #include "xil_lzma.h"
 #include <fstream>
 #include <vector>
 #include "cmdlineparser.h"
 #include "xil_lzma_config.h"
 
-void xil_compress_top(std::string & compress_mod, uint32_t block_size) {
+void xil_compress_top(std::string & compress_mod, uint32_t block_size,int cu_run) {
     // Xilinx LZMA object 
     xil_lzma xlz;
 
@@ -70,7 +54,7 @@ void xil_compress_top(std::string & compress_mod, uint32_t block_size) {
     xlz.m_switch_flow = 0;
 
     // Call LZMA compression
-	uint64_t enbytes = xlz.compress_file(lz_compress_in, lz_compress_out);
+	uint64_t enbytes = xlz.compress_file(lz_compress_in, lz_compress_out,cu_run);
 	
     //std::cout<<__func__<<":"<<__LINE__<<"\n";
 #ifdef VERBOSE 
@@ -87,17 +71,29 @@ void xil_compress_top(std::string & compress_mod, uint32_t block_size) {
 
 int main(int argc, char *argv[])
 {
+    int cu_run;
     sda::utils::CmdLineParser parser;
     parser.addSwitch("--compress",    "-c",      "Compress",        "");
+    parser.addSwitch("--cu",    "-x",      "CU",        "0");
     parser.parse(argc, argv);
     
     std::string compress_mod      = parser.value("compress");   
-
+    std::string cu      = parser.value("cu");
     uint32_t bSize = 0;
     // Block Size
     bSize = BLOCK_SIZE_IN_KB;
-
+    if(cu.empty()) {
+        printf("please give -x option for cu\n");
+        exit(0);
+    }else {
+         cu_run = atoi(cu.c_str());
+    }
+    printf("cu:%d\n",cu_run);
+	if(cu_run >= C_COMPUTE_UNIT) {
+		printf("%d CU not available\n",cu_run);
+		exit(0);
+	} 
     // "-c" - Compress Mode
     if (!compress_mod.empty()) 
-        xil_compress_top(compress_mod, bSize);   
+        xil_compress_top(compress_mod, bSize,cu_run);   
 }
