@@ -36,6 +36,7 @@ EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #define CL_HPP_ENABLE_PROGRAM_CONSTRUCTION_FROM_ARRAY_COMPATIBILITY 1
 
 #include <CL/cl2.hpp>
+#include <CL/cl_ext_xilinx.h>
 #include <iostream>
 #include <fstream>
 

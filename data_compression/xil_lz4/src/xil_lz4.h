@@ -33,7 +33,11 @@
 #include "defns.h"
 
 // Maximum compute units supported
-#define MAX_COMPUTE_UNITS 2
+#if(C_COMPUTE_UNIT > D_COMPUTE_UNIT)
+     #define MAX_COMPUTE_UNITS C_COMPUTE_UNIT
+#else
+     #define MAX_COMPUTE_UNITS D_COMPUTE_UNIT
+#endif
 
 // Maximum host buffer used to operate
 // per kernel invocation
@@ -52,10 +56,10 @@
 
 // Below are the codes as per LZ4 standard for 
 // various maximum block sizes supported.
-#define BSIZE_STD_64KB 4
-#define BSIZE_STD_256KB 5
-#define BSIZE_STD_1024KB 6
-#define BSIZE_STD_4096KB 7
+#define BSIZE_STD_64KB 0x40 
+#define BSIZE_STD_256KB 0x50
+#define BSIZE_STD_1024KB 0x60
+#define BSIZE_STD_4096KB 0x70
 
 // Maximum block sizes supported by LZ4
 #define MAX_BSIZE_64KB (64*1024)
@@ -92,11 +96,11 @@ class xil_lz4 {
     public:
         int init(const std::string& binaryFile);
         int release();
-        uint64_t compress_sequential(uint8_t *in, uint8_t *out, uint64_t actual_size);
+        uint64_t compress_sequential(uint8_t *in, uint8_t *out, uint64_t actual_size, uint32_t host_buffer_size);
         uint64_t compress(uint8_t *in, uint8_t *out, uint64_t actual_size, uint32_t host_buffer_size);
         uint64_t compress_file(std::string & inFile_name, std::string & outFile_name, uint64_t actual_size);
         uint64_t decompress_file(std::string & inFile_name, std::string & outFile_name, uint64_t actual_size);
-        uint64_t decompress_sequential(uint8_t *in, uint8_t *out, uint64_t actual_size, uint64_t original_size);
+        uint64_t decompress_sequential(uint8_t *in, uint8_t *out, uint64_t actual_size, uint64_t original_size, uint32_t host_buffer_size);
         uint64_t decompress(uint8_t *in, uint8_t *out, uint64_t actual_size, uint64_t original_size, uint32_t host_buffer_size);
         uint64_t get_event_duration_ns(const cl::Event &event);
         void buffer_extension_assignments(bool flow);

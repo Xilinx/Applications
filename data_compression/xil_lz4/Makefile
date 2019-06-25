@@ -60,13 +60,14 @@ HOST_HDRS+=./src/xil_lz4_config.h
 HOST_HDRS+=./src/xil_lz4.h
 HOST_HDRS+=./xxhash/xxhash.h
 HOST_HDRS+=$(stream_utils_HDRS) $(lz_compress_HDRS)
-HOST_HDRS+=./src/xil_compress_engine.h ./src/xil_decompress_engine.h
+HOST_HDRS+=./src/xil_lz4_compress_engine.h ./src/xil_lz4_decompress_engine.h
 CXXFLAGS=-I./src/ $(logger_CXXFLAGS) $(cmdparser_CXXFLAGS) $(xcl2_CXXFLAGS) $(opencl_CXXFLAGS)
 CXXFLAGS+=-I./xxhash/ 
 CXXFLAGS+= -DPARALLEL_BLOCK=$(PARALLEL_BLOCK)
 CXXFLAGS+= -DC_COMPUTE_UNIT=$(C_COMPUTE_UNITS)
 CXXFLAGS+= -DD_COMPUTE_UNIT=$(D_COMPUTE_UNITS)
 CXXFLAGS+= -DSINGLE_XCLBIN=$(SINGLE_XCLBIN)
+CXXFLAGS+= -DOVERLAP_HOST_DEVICE
 CLFLAGS= -t $(TARGET) --platform $(DEVICE)
 # Enable following flag if kernel, read, write events
 # information is required, by default disabled
@@ -122,7 +123,6 @@ C_LDCLFLAGS+= --sp xil_lz4_cu1_1.m_axi_gmem1:bank0
 D_LDCLFLAGS= --sp xil_lz4_dec_cu1_1.m_axi_gmem0:bank1
 D_LDCLFLAGS+= --sp xil_lz4_dec_cu1_1.m_axi_gmem1:bank1
 LDCLFLAGS+= --xp vivado_param:project.writeIntermediateCheckpoints=1 
-LDCLFLAGS+= --kernel_frequency=230
 	
 ifeq ($(strip $(C_COMPUTE_UNITS)), 2)
 	C_LDCLFLAGS+= --sp xil_lz4_cu2_1.m_axi_gmem0:bank3
@@ -133,45 +133,49 @@ ifeq ($(strip $(D_COMPUTE_UNITS)), 2)
 	D_LDCLFLAGS+= --sp xil_lz4_dec_cu2_1.m_axi_gmem1:bank2
 endif
 
-K_CLFLAGS=--kernel_frequency=230 --xp "param:compiler.enableAutoPipelining=false" -I./src/ -DPARALLEL_BLOCK=$(PARALLEL_BLOCK) 
+BUILD_DIR := ./_x.$(TARGET).$(DSA)
+BUILD_DIR_compress := $(BUILD_DIR)/compress
+BUILD_DIR_decompress := $(BUILD_DIR)/decompress
+
+K_CLFLAGS=--xp "param:compiler.enableAutoPipelining=false" -I./src/ -DPARALLEL_BLOCK=$(PARALLEL_BLOCK) 
 K_CLFLAGS+=$(stream_utils_CLFLAGS) $(lz_compress_CLFLAGS)
 
-$(XCLBIN)/xil_lz4_xo_compress_$(NPB)_cu1.$(TARGET).$(DSA).xo: ./src/xil_lz4_compress_kernel.cpp ./src/xil_lz4_config.h $(stream_utils_HDRS) $(lz_compress_HDRS) ./src/xil_compress_engine.h
-	$(XOCC) -c -s -k xil_lz4_cu1 $(K_CLFLAGS) -DC_COMPUTE_UNIT=1 -o'$@' $(CLFLAGS) -I'$(<D)' '$<'
+$(XCLBIN)/xil_lz4_xo_compress_$(NPB)_cu1.$(TARGET).$(DSA).xo: ./src/xil_lz4_compress_kernel.cpp ./src/xil_lz4_config.h $(stream_utils_HDRS) $(lz_compress_HDRS) ./src/xil_lz4_compress_engine.h
+	$(XOCC) --temp_dir $(BUILD_DIR_compress) --report_dir reports/$(BUILD_DIR_compress) -c -s -k xil_lz4_cu1 $(K_CLFLAGS) -DC_COMPUTE_UNIT=1 -o'$@' $(CLFLAGS) -I'$(<D)' '$<'
    	
-$(XCLBIN)/xil_lz4_xo_compress_$(NPB)_cu2.$(TARGET).$(DSA).xo: ./src/xil_lz4_compress_kernel.cpp ./src/xil_lz4_config.h $(stream_utils_HDRS) $(lz_compress_HDRS) ./src/xil_compress_engine.h
-	$(XOCC) -c -s -k xil_lz4_cu2 $(K_CLFLAGS) -DC_COMPUTE_UNIT=2 -o'$@' $(CLFLAGS) -I'$(<D)' '$<' 
+$(XCLBIN)/xil_lz4_xo_compress_$(NPB)_cu2.$(TARGET).$(DSA).xo: ./src/xil_lz4_compress_kernel.cpp ./src/xil_lz4_config.h $(stream_utils_HDRS) $(lz_compress_HDRS) ./src/xil_lz4_compress_engine.h
+	$(XOCC) --temp_dir $(BUILD_DIR_compress) --report_dir reports/$(BUILD_DIR_compress) -c -s -k xil_lz4_cu2 $(K_CLFLAGS) -DC_COMPUTE_UNIT=2 -o'$@' $(CLFLAGS) -I'$(<D)' '$<' 
 
-$(XCLBIN)/xil_lz4_xo_decompress_$(NPB)_cu1.$(TARGET).$(DSA).xo: ./src/xil_lz4_decompress_kernel.cpp ./src/xil_lz4_config.h $(stream_utils_HDRS) $(lz_compress_HDRS) ./src/xil_decompress_engine.h
-	$(XOCC) -c -s -k xil_lz4_dec_cu1 $(K_CLFLAGS) -DD_COMPUTE_UNIT=1 -o'$@' $(CLFLAGS) -I'$(<D)' '$<' 
+$(XCLBIN)/xil_lz4_xo_decompress_$(NPB)_cu1.$(TARGET).$(DSA).xo: ./src/xil_lz4_decompress_kernel.cpp ./src/xil_lz4_config.h $(stream_utils_HDRS) $(lz_compress_HDRS) ./src/xil_lz4_decompress_engine.h
+	$(XOCC) --temp_dir $(BUILD_DIR_decompress) --report_dir reports/$(BUILD_DIR_decompress) -c -s -k xil_lz4_dec_cu1 $(K_CLFLAGS) -DD_COMPUTE_UNIT=1 -o'$@' $(CLFLAGS) -I'$(<D)' '$<' 
 
-$(XCLBIN)/xil_lz4_xo_decompress_$(NPB)_cu2.$(TARGET).$(DSA).xo: ./src/xil_lz4_decompress_kernel.cpp ./src/xil_lz4_config.h $(stream_utils_HDRS) $(lz_compress_HDRS) ./src/xil_decompress_engine.h
-	$(XOCC) -c -s -k xil_lz4_dec_cu2 $(K_CLFLAGS) -DD_COMPUTE_UNIT=2 -o'$@' $(CLFLAGS) -I'$(<D)' '$<' 
+$(XCLBIN)/xil_lz4_xo_decompress_$(NPB)_cu2.$(TARGET).$(DSA).xo: ./src/xil_lz4_decompress_kernel.cpp ./src/xil_lz4_config.h $(stream_utils_HDRS) $(lz_compress_HDRS) ./src/xil_lz4_decompress_engine.h
+	$(XOCC) --temp_dir $(BUILD_DIR_decompress) --report_dir reports/$(BUILD_DIR_decompress) -c -s -k xil_lz4_dec_cu2 $(K_CLFLAGS) -DD_COMPUTE_UNIT=2 -o'$@' $(CLFLAGS) -I'$(<D)' '$<' 
 
 
 ifeq ($(strip $(SINGLE_XCLBIN)),true)
 $(XCLBIN)/xil_lz4_compress_decompress_$(NPB).$(TARGET).$(DSA).xclbin: $(BINARY_CONTAINERS_xil_lz4_compress_decompress_OBJS)
 	mkdir -p $(XCLBIN)
 ifeq ($(strip $(C_COMPUTE_UNITS)), 1)
-	$(XOCC) $(CLFLAGS) -l $(LDCLFLAGS) $(C_LDCLFLAGS) $(D_LDCLFLAGS) --xp param:compiler.userPostSysLinkTcl=$(CURDIR)/scripts/single_compute_units/userPostSysLink.tcl -o'$@' $(+)
+	$(XOCC) --report_dir reports/$(BUILD_DIR_compress) $(CLFLAGS) -l $(LDCLFLAGS) $(C_LDCLFLAGS) $(D_LDCLFLAGS) --xp param:compiler.userPostSysLinkTcl=$(CURDIR)/scripts/single_compute_units/userPostSysLink.tcl -o'$@' $(+)
 else
-	$(XOCC) $(CLFLAGS) -l $(LDCLFLAGS) $(C_LDCLFLAGS) $(D_LDCLFLAGS) --xp param:compiler.userPostSysLinkTcl=$(CURDIR)/scripts/two_compute_units/userPostSysLink.tcl -o'$@' $(+)
+	$(XOCC) --report_dir reports/$(BUILD_DIR_compress) $(CLFLAGS) -l $(LDCLFLAGS) $(C_LDCLFLAGS) $(D_LDCLFLAGS) --xp param:compiler.userPostSysLinkTcl=$(CURDIR)/scripts/two_compute_units/userPostSysLink.tcl -o'$@' $(+)
 endif
 else    
 $(XCLBIN)/xil_lz4_compress_$(NPB).$(TARGET).$(DSA).xclbin: $(BINARY_CONTAINERS_xil_lz4_compress_OBJS)
 	mkdir -p $(XCLBIN)
 ifeq ($(strip $(C_COMPUTE_UNITS)), 1)
-	$(XOCC) $(CLFLAGS) -l $(LDCLFLAGS) $(C_LDCLFLAGS) --xp param:compiler.userPostSysLinkTcl=$(CURDIR)/scripts/single_compute_units/userPostSysLinkcomp.tcl -o'$@' $(+)
+	$(XOCC) $(CLFLAGS) --temp_dir $(BUILD_DIR_compress) --report_dir reports/$(BUILD_DIR_compress) -l $(LDCLFLAGS) $(C_LDCLFLAGS) --xp param:compiler.userPostSysLinkTcl=$(CURDIR)/scripts/single_compute_units/userPostSysLinkcomp.tcl -o'$@' $(+)
 else
-	$(XOCC) $(CLFLAGS) -l $(LDCLFLAGS) $(C_LDCLFLAGS) --xp param:compiler.userPostSysLinkTcl=$(CURDIR)/scripts/two_compute_units/userPostSysLinkcomp.tcl -o'$@' $(+)
+	$(XOCC) $(CLFLAGS) --temp_dir $(BUILD_DIR_compress) --report_dir reports/$(BUILD_DIR_compress) -l $(LDCLFLAGS) $(C_LDCLFLAGS) --xp param:compiler.userPostSysLinkTcl=$(CURDIR)/scripts/two_compute_units/userPostSysLinkcomp.tcl -o'$@' $(+)
 endif
 
 $(XCLBIN)/xil_lz4_decompress_$(NPB).$(TARGET).$(DSA).xclbin: $(BINARY_CONTAINERS_xil_lz4_decompress_OBJS)
 	mkdir -p $(XCLBIN)
-ifeq ($(strip $(C_COMPUTE_UNITS)), 1)
-	$(XOCC) $(CLFLAGS) -l $(LDCLFLAGS) $(D_LDCLFLAGS) --xp param:compiler.userPostSysLinkTcl=$(CURDIR)/scripts/single_compute_units/userPostSysLinkdecomp.tcl -o'$@' $(+)
+ifeq ($(strip $(D_COMPUTE_UNITS)), 1)
+	$(XOCC) $(CLFLAGS) --temp_dir $(BUILD_DIR_decompress) --report_dir reports/$(BUILD_DIR_decompress) -l $(LDCLFLAGS) $(D_LDCLFLAGS) --xp param:compiler.userPostSysLinkTcl=$(CURDIR)/scripts/single_compute_units/userPostSysLinkdecomp.tcl -o'$@' $(+)
 else
-	$(XOCC) $(CLFLAGS) -l $(LDCLFLAGS) $(D_LDCLFLAGS) --xp param:compiler.userPostSysLinkTcl=$(CURDIR)/scripts/two_compute_units/userPostSysLinkdecomp.tcl -o'$@' $(+)
+	$(XOCC) $(CLFLAGS) --temp_dir $(BUILD_DIR_decompress) --report_dir reports/$(BUILD_DIR_decompress) -l $(LDCLFLAGS) $(D_LDCLFLAGS) --xp param:compiler.userPostSysLinkTcl=$(CURDIR)/scripts/two_compute_units/userPostSysLinkdecomp.tcl -o'$@' $(+)
 endif
 endif
 
@@ -200,6 +204,6 @@ clean:
 
 cleanall: clean
 	-$(RMDIR) $(XCLBIN)
-	-$(RMDIR) ./_x
+	-$(RMDIR) ./_x*
 	-$(RMDIR) ../benchmark/cantrbry/*.lz4* ../benchmark/silesia/*.lz4*
 

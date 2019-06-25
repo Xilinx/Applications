@@ -59,13 +59,19 @@ typedef ap_uint<64> snappy_compressd_dt;
 void snappy_compress(hls::stream<uint8_t> &in_lit_inStream,
                   hls::stream<snappy_compressd_dt> &in_lenOffset_Stream,
                   hls::stream<ap_uint<8> > &outStream,
-                  hls::stream<uint16_t> &outStreamSize,
+                  hls::stream<bool>        &endOfStream,
+                  hls::stream<uint32_t> &compressdSizeStream,
                   uint32_t input_size
                  ) {
-    if(input_size == 0) { outStreamSize << 0; return; }
+    if(input_size == 0) { 
+        outStream << 0; 
+        endOfStream << 1; 
+        compressdSizeStream << 0; 
+        return; 
+    }
 
-    ap_uint<10> outCntr =0; // outCntr can max be 512
-    uint32_t outSize =0;
+    //ap_uint<10> outCntr =0; // outCntr can max be 512
+    uint32_t compressedSize =0;
     uint8_t next_state = WRITE_TOKEN;
     ap_uint<16> litSecLength = 0;
     uint16_t match_length = 0;
@@ -94,36 +100,36 @@ void snappy_compress(hls::stream<uint8_t> &in_lit_inStream,
         outInSize.range(6,0) = blkInputSize.range(6,0);
         outInSize.range(7,7) = 1;
         outStream << outInSize;
-        outCntr++;
-        outSize++;
+        endOfStream << 0;
+        compressedSize++;
         outInSize.range (6,0) = blkInputSize.range(13,7);
         outInSize.range(7,7) = 1;
         outStream << outInSize;
-        outCntr++;
-        outSize++;
+        endOfStream << 0;
+        compressedSize++;
         outInSize = blkInputSize.range(21,14);
         outStream << outInSize;
-        outCntr++;
-        outSize++;
+        endOfStream << 0;
+        compressedSize++;
     } else if (input_size>=INSIZE_RANGE_7BIT){
         // If input size range is greater than 7bit (128) but less than 14bit (16384)  
         // --- 2 bytes needed
         outInSize.range(6,0) = blkInputSize.range(6,0);
         outInSize.range(7,7) = 1;
         outStream << outInSize;
-        outCntr++;
-        outSize++;
+        endOfStream << 0;
+        compressedSize++;
         outInSize = blkInputSize.range(14,7);
         outStream << outInSize;
-        outCntr++;
-        outSize++;
+        endOfStream << 0;
+        compressedSize++;
     } else {
         // If input size is less than 128 = 7bit 
         // --- 1 byte is enough
         outInSize = blkInputSize.range(7,0);
         outStream << outInSize;
-        outCntr++;
-        outSize++;
+        endOfStream << 0;
+        compressedSize++;
     }
 
     // Read lenOffset stream to begin processing literal and sequence sections
@@ -280,23 +286,18 @@ void snappy_compress(hls::stream<uint8_t> &in_lit_inStream,
         
         // Send output put every cycle
         // Skip the 
-        if (flagOutWrite && outSize<input_size) {
+        if (flagOutWrite && compressedSize<input_size) {
             outStream << outValue;
-            outCntr++;
-            outSize++;
+            endOfStream << 0;
+            compressedSize++;
         }
 
-        if (outCntr >= 512){
-            outStreamSize << outCntr;
-            outCntr = 0 ;
-        }
     } // Main FOR LOOP ENDS here
 
-
-    if (outCntr) 
-        outStreamSize << outCntr;
-    
-    outStreamSize << 0; 
+    //printf("%s:CompressSize:%d\n",__FUNCTION__,compressedSize);                    
+    compressdSizeStream << compressedSize;
+    outStream << 0;
+    endOfStream << 1;
 }
 
 inline void snappy_divide(

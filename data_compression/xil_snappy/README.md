@@ -11,7 +11,7 @@ This application is accelerated using generic hardware architecture for LZ based
 
 ![LZx decompress select](../img/lzx_decomp.png) <br />
 
-For more details refer this [link](https://github.com/Xilinx/Applications/tree/master/data_compression)
+For more details refer this [link](https://gitenterprise.xilinx.com/heeran/xil_snappy/blob/master/README.md)
 
 
 ## Results
@@ -25,7 +25,9 @@ kernels with 8 engines for single compute unit. It is possible to extend number 
 | Design | LUT | LUTMEM | REG | BRAM | URAM| DSP | Fmax (MHz) |
 | --------------- | --- | ------ | --- | ---- | --- | -----| -----|
 | Compression on F1      | 72372(7.35%) | 16589(2.92%)|71489(3.46%)|146(7.68%) | 48(5.23%)|1(0.01%)|258.3|
+| Compression on U200     | 54124(5.35%) | 14303(2.50%)|66429(3.12%)|146(8.04%) | 48(5.00%)|1(0.01%)|273.2|
 | Decompression on F1 | 36284 (3.63%) | 13774 (2.40%) | 43462 (2.06%) | 146 (7.6%) | 0 | 1 (0.01%) | 
+| DeCompression on U200   | 35651(3.45%) | 13762(2.40%)|40924(1.90%)|146(7.93%) | 0|1(0.01%)|300|
 
 
 ### Throughput & Compression Ratio
@@ -34,9 +36,9 @@ Table below presents the best kernel throughput achieved with single compute uni
 
 | Topic| Results| 
 |-------|--------|
-|Best Compression Throughput|1.84 GB/s|
+|Best Compression Throughput|1.63 GB/s|
 |Best Decompression Throughput|1.72 GB/s|
-|Average Compression Ratio| 2.15x (Silesia Benchmark)|
+|Average Compression Ratio| 2.13x (Silesia Benchmark)|
 
 Note: Overall throughput can still be increased with multiple compute units.
 
@@ -45,6 +47,9 @@ Note: Overall throughput can still be increased with multiple compute units.
 ```
   Software: Xilinx SDx 2018.2
   Hardware: xilinx_aws-vu9p-f1-04261818_dynamic_5_0 (AWS VU9p F1 DSA)
+
+  Software: Xilinx SDx 2018.3
+  Hardware: xilinx_u200_xdma_201830_1 (Xilinx Alveo U200)
 ```
  
 ## Usage
@@ -104,12 +109,9 @@ While using PARALLEL_BLOCK (8 default) the generated executable would be
 
 ### Limitations
 
-- CRC32 is not included
-
 #### Decompression
 
 - Single block per chunk is supported at present
-
 
 
 

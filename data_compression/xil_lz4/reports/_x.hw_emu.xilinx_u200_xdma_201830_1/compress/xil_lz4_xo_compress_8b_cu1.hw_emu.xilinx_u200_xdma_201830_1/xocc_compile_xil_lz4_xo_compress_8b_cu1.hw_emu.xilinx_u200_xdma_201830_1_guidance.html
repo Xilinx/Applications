@@ -1,0 +1,916 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html><head><meta content="text/html; charset=ISO-8859-1" http-equiv="content-type">
+<title>Design Guidance Report</title>
+<link rel="stylesheet" href="file:///proj/xbuilds/2018.3_1207_2324/installs/lin64/SDx/2018.3/data/rulecheck/rulecheck.css">
+<script type="text/javascript" src="file:///proj/xbuilds/2018.3_1207_2324/installs/lin64/SDx/2018.3/data/rulecheck/rulecheck.js"></script>
+</head><body>
+<center><h1>Design Guidance Report</h1></center><center><table class="header" border="0">
+<tr><td><b>Copyright</b></td><td>Copyright 1986-2018 Xilinx, Inc. All Rights Reserved.</td></tr>
+<tr><td><b>Tool Version</b></td><td>xrcserver v.2018.3 (lin64) Build 0 </td></tr>
+<tr><td><b>Date</b></td><td>Tue Apr 16 15:50:07 2019</td></tr>
+<tr><td><b>Host</b></td><td>xhdrdevl135 running 64-bit CentOS Linux release 7.5.1804 (Core)</td></tr>
+<tr><td><b>Command</b></td><td>xocc  --temp_dir ./_x.hw_emu.xilinx_u200_xdma_201830_1/compress --report_dir reports/./_x.hw_emu.xilinx_u200_xdma_201830_1/compress -c -s -k xil_lz4_cu1 --xp param:compiler.enableAutoPipelining=false -I./src/ -DPARALLEL_BLOCK=8 -I..//libs/stream_utils -I..//libs/lz_compress -DC_COMPUTE_UNIT=1 -oxclbin/xil_lz4_xo_compress_8b_cu1.hw_emu.xilinx_u200_xdma_201830_1.xo -t hw_emu --platform /proj/xbuilds/2018.3_released/internal_platforms/xilinx_u200_xdma_201830_1/xilinx_u200_xdma_201830_1.xpfm -Isrc src/xil_lz4_compress_kernel.cpp </td></tr>
+</table></center><br>
+<table class="toc" border="1"><tr><td><b>Table of Contents</b></td></tr>
+<tr><td><a href="#REPORT SUMMARY">1 REPORT SUMMARY</a></tr></td>
+<tr><td><a href="#VIOLATION DETAILS">2 VIOLATION DETAILS</a></tr></td>
+</table>
+<a name="REPORT SUMMARY"></a><h1>1 REPORT SUMMARY</h1>
+<pre>Violations found: 70
+</pre>
+<pre>Rule Specs Violated: 5
+</pre>
+<a name="VIOLATION DETAILS"></a><h1>2 VIOLATION DETAILS</h1>
+<table border="1">
+<caption>Items that may require attention</caption>
+<tr class="ns-sort">
+<th align="left">Id</th>
+<th align="left">Name</th>
+<th align="left">Severity</th>
+<th align="left" width="170">Full Name</th>
+<th align="left">Categories</th>
+<th align="left" width="350">Details</th>
+<th align="left" width="380">Resolution</th>
+</tr>
+<tr>
+<td align="left">1</td>
+<td align="left">Kernel</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Kernel Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Kernel</td>
+<td align="left">Streams will behave like static variables inside a dataflow region: <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=77">xil_lz4_compress_kernel.cpp</a>
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">2</td>
+<td align="left">Kernel</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Kernel Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Kernel</td>
+<td align="left">Since the only kind of statements allowed in a dataflow region are variable declarations and function calls, the compiler may not be able to correctly handle the region: <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=145">xil_lz4_compress_kernel.cpp</a>
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">3</td>
+<td align="left">Kernel</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Kernel Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Kernel</td>
+<td align="left">Dataflow form checks found 2 issue(s) in file /wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">4</td>
+<td align="left">Array</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Array Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Array</td>
+<td align="left">Completely partitioning array 'outBuffer_int.V' (<a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=324">stream_utils.h</a>) accessed through non-constant indices on dimension 1 (<a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=343">stream_utils.h</a>), which may result in long runtime and suboptimal QoR due to large multiplexers. Please consider wrapping the array access into a function or using a register file core instead.
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">5</td>
+<td align="left">Array</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Array Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Array</td>
+<td align="left">Completely partitioning array 'outBuffer_int.V' (<a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=324">stream_utils.h</a>) accessed through non-constant indices on dimension 1 (<a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=343">stream_utils.h</a>), which may result in long runtime and suboptimal QoR due to large multiplexers. Please consider wrapping the array access into a function or using a register file core instead.
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">6</td>
+<td align="left">Array</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Array Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Array</td>
+<td align="left">Completely partitioning array 'outBuffer_int.V' (<a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=324">stream_utils.h</a>) accessed through non-constant indices on dimension 1 (<a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=343">stream_utils.h</a>), which may result in long runtime and suboptimal QoR due to large multiplexers. Please consider wrapping the array access into a function or using a register file core instead.
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">7</td>
+<td align="left">Array</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Array Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Array</td>
+<td align="left">Completely partitioning array 'outBuffer_int.V' (<a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=324">stream_utils.h</a>) accessed through non-constant indices on dimension 1 (<a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=343">stream_utils.h</a>), which may result in long runtime and suboptimal QoR due to large multiplexers. Please consider wrapping the array access into a function or using a register file core instead.
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">8</td>
+<td align="left">Array</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Array Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Array</td>
+<td align="left">Completely partitioning array 'outBuffer_int.V' (<a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=324">stream_utils.h</a>) accessed through non-constant indices on dimension 1 (<a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=343">stream_utils.h</a>), which may result in long runtime and suboptimal QoR due to large multiplexers. Please consider wrapping the array access into a function or using a register file core instead.
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">9</td>
+<td align="left">Array</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Array Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Array</td>
+<td align="left">Completely partitioning array 'outBuffer_int.V' (<a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=324">stream_utils.h</a>) accessed through non-constant indices on dimension 1 (<a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=343">stream_utils.h</a>), which may result in long runtime and suboptimal QoR due to large multiplexers. Please consider wrapping the array access into a function or using a register file core instead.
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">10</td>
+<td align="left">Array</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Array Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Array</td>
+<td align="left">Completely partitioning array 'outBuffer_int.V' (<a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=324">stream_utils.h</a>) accessed through non-constant indices on dimension 1 (<a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=343">stream_utils.h</a>), which may result in long runtime and suboptimal QoR due to large multiplexers. Please consider wrapping the array access into a function or using a register file core instead.
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">11</td>
+<td align="left">Array</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Array Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Array</td>
+<td align="left">Completely partitioning array 'outBuffer_int.V' (<a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=324">stream_utils.h</a>) accessed through non-constant indices on dimension 1 (<a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=343">stream_utils.h</a>), which may result in long runtime and suboptimal QoR due to large multiplexers. Please consider wrapping the array access into a function or using a register file core instead.
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">12</td>
+<td align="left">Loop</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Loop Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Loop</td>
+<td align="left">Cannot flatten a loop nest 'Loop-1.2' (<a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=407">stream_utils.h</a>) in function 's2mm_nb<unsigned int, 16, 512, 8>' : 
+
+the outer loop is not a perfect loop because there is nontrivial logic before entering the inner loop.
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">13</td>
+<td align="left">Loop</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Loop Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Loop</td>
+<td align="left">Cannot flatten a loop nest 'Loop-1' (<a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=397">stream_utils.h</a>) in function 's2mm_nb<unsigned int, 16, 512, 8>' : 
+
+more than one sub loop.
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">14</td>
+<td align="left">Loop</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Loop Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Loop</td>
+<td align="left">Cannot flatten a loop nest 'Loop-1.1' (<a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=121">stream_utils.h</a>) in function 'mm2s_nb<512, 16, 8>249' : 
+
+the outer loop is not a perfect loop because there is nontrivial logic before entering the inner loop.
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">15</td>
+<td align="left">Loop</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Loop Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Loop</td>
+<td align="left">Cannot flatten a loop nest 'Loop-1' (<a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=119">stream_utils.h</a>) in function 'mm2s_nb<512, 16, 8>249' : 
+
+more than one sub loop.
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">16</td>
+<td align="left">Interface</td>
+<td align="left">ADVISORY</td>
+<td align="left">HLS Interface Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Interface</td>
+<td align="left">Inferring multiple bus burst write of variable length on port 'in.V' (<a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=415">stream_utils.h</a>). These data requests might be further partitioned to multiple requests during RTL generation, based on max_read_burst_length or max_write_burst_length settings.
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">17</td>
+<td align="left">Interface</td>
+<td align="left">ADVISORY</td>
+<td align="left">HLS Interface Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Interface</td>
+<td align="left">Inferring multiple bus burst read of variable length on port 'in.V' (<a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=130">stream_utils.h</a>). These data requests might be further partitioned to multiple requests during RTL generation, based on max_read_burst_length or max_write_burst_length settings.
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">18</td>
+<td align="left">Loop</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Loop Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Loop</td>
+<td align="left">The II Violation in module 'mm2s_nb_512_16_8_24910': Unable to enforce a carried dependence constraint (II = 1, distance = 1, offset = 1)
+   between fifo write on port 'inStreamMemWidth_0_V_V' (<a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=145">stream_utils.h</a>) and fifo request on port 'inStreamMemWidth_0_V_V' (<a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=145">stream_utils.h</a>).
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">19</td>
+<td align="left">General</td>
+<td align="left">ADVISORY</td>
+<td align="left">HLS General Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.General</td>
+<td align="left">Only 2 loops out of a total 4 loops have been pipelined in this design.
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">20</td>
+<td align="left">Kernel</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Kernel Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Kernel</td>
+<td align="left">Cannot meet target clock period from 'icmp' operation ('tmp_96_i') to 'load' operation ('match_ch') on array 'local_mem' (combination delay: 3.284 ns) to honor II or Latency constraint in region 'lz_booster'.
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">21</td>
+<td align="left">Kernel</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Kernel Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Kernel</td>
+<td align="left">Estimated clock period (3.839ns) exceeds the target (target clock period: 3.333ns, clock uncertainty: 0.9ns, effective delay budget: 2.433ns).
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">22</td>
+<td align="left">Kernel</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Kernel Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Kernel</td>
+<td align="left">The critical path in module 'lz_booster_255_16384_97' consists of the following:
+	'load' operation ('match_ch', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=231">lz_compress.h</a>) on array 'local_mem', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=210">lz_compress.h</a> [44]  (1.16 ns)
+	'icmp' operation ('tmp_96_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=237">lz_compress.h</a>) [50]  (0.581 ns)
+	'and' operation ('tmp', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=237">lz_compress.h</a>) [51]  (0 ns)
+	'and' operation ('or_cond3_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=237">lz_compress.h</a>) [52]  (0.122 ns)
+	'xor' operation ('sel_tmp4', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=237">lz_compress.h</a>) [65]  (0 ns)
+	'and' operation ('sel_tmp5', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=237">lz_compress.h</a>) [66]  (0.122 ns)
+	'and' operation ('sel_tmp6', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=250">lz_compress.h</a>) [67]  (0.122 ns)
+	'or' operation ('or_cond', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=223">lz_compress.h</a>) [71]  (0.122 ns)
+	'select' operation ('newSel19', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=246">lz_compress.h</a>) [95]  (0.227 ns)
+	'select' operation ('match_loc', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=246">lz_compress.h</a>) [96]  (0.227 ns)
+	'phi' operation ('match_loc') with incoming values : ('match_loc', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=246">lz_compress.h</a>) [23]  (0 ns)
+	'getelementptr' operation ('local_mem_addr', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=231">lz_compress.h</a>) [43]  (0 ns)
+	'load' operation ('match_ch', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=231">lz_compress.h</a>) on array 'local_mem', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=210">lz_compress.h</a> [44]  (1.16 ns)
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">23</td>
+<td align="left">Kernel</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Kernel Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Kernel</td>
+<td align="left">Cannot meet target clock period from fifo read on port 'in_lenOffset_Stream_V_V' to 'store' operation of variable 'next_state_2_cast_i' on local variable 'next_state_i' (combination delay: 3.1241 ns) to honor II or Latency constraint in region 'lz4_compress'.
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">24</td>
+<td align="left">Kernel</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Kernel Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Kernel</td>
+<td align="left">Estimated clock period (3.5625ns) exceeds the target (target clock period: 3.333ns, clock uncertainty: 0.9ns, effective delay budget: 2.433ns).
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">25</td>
+<td align="left">Kernel</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Kernel Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Kernel</td>
+<td align="left">The critical path in module 'lz4_compress99' consists of the following:
+	fifo read on port 'in_lenOffset_Stream_V_V' (<a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_engine.h#line=75">xil_lz4_compress_engine.h</a>) [124]  (1.22 ns)
+	'add' operation ('tmp13', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_engine.h#line=79">xil_lz4_compress_engine.h</a>) [131]  (0.785 ns)
+	'add' operation ('inIdx', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_engine.h#line=79">xil_lz4_compress_engine.h</a>) [133]  (0.731 ns)
+	'select' operation ('input_size_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_engine.h#line=81">xil_lz4_compress_engine.h</a>) [137]  (0.227 ns)
+	'store' operation (<a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_engine.h#line=81">xil_lz4_compress_engine.h</a>) of variable 'input_size_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_engine.h#line=81">xil_lz4_compress_engine.h</a> on local variable 'inIdx_i' [164]  (0.603 ns)
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">26</td>
+<td align="left">Kernel</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Kernel Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Kernel</td>
+<td align="left">Cannot meet target clock period from 'icmp' operation ('tmp_111_i') to 'load' operation ('match_ch') on array 'local_mem' (combination delay: 3.284 ns) to honor II or Latency constraint in region 'lz_booster'.
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">27</td>
+<td align="left">Kernel</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Kernel Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Kernel</td>
+<td align="left">Estimated clock period (3.839ns) exceeds the target (target clock period: 3.333ns, clock uncertainty: 0.9ns, effective delay budget: 2.433ns).
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">28</td>
+<td align="left">Kernel</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Kernel Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Kernel</td>
+<td align="left">The critical path in module 'lz_booster_255_16384_104' consists of the following:
+	'load' operation ('match_ch', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=231">lz_compress.h</a>) on array 'local_mem', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=210">lz_compress.h</a> [44]  (1.16 ns)
+	'icmp' operation ('tmp_111_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=237">lz_compress.h</a>) [50]  (0.581 ns)
+	'and' operation ('tmp', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=237">lz_compress.h</a>) [51]  (0 ns)
+	'and' operation ('or_cond3_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=237">lz_compress.h</a>) [52]  (0.122 ns)
+	'xor' operation ('sel_tmp4', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=237">lz_compress.h</a>) [65]  (0 ns)
+	'and' operation ('sel_tmp5', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=237">lz_compress.h</a>) [66]  (0.122 ns)
+	'and' operation ('sel_tmp6', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=250">lz_compress.h</a>) [67]  (0.122 ns)
+	'or' operation ('or_cond', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=223">lz_compress.h</a>) [71]  (0.122 ns)
+	'select' operation ('newSel68', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=246">lz_compress.h</a>) [95]  (0.227 ns)
+	'select' operation ('match_loc', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=246">lz_compress.h</a>) [96]  (0.227 ns)
+	'phi' operation ('match_loc') with incoming values : ('match_loc', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=246">lz_compress.h</a>) [23]  (0 ns)
+	'getelementptr' operation ('local_mem_addr', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=231">lz_compress.h</a>) [43]  (0 ns)
+	'load' operation ('match_ch', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=231">lz_compress.h</a>) on array 'local_mem', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=210">lz_compress.h</a> [44]  (1.16 ns)
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">29</td>
+<td align="left">Kernel</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Kernel Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Kernel</td>
+<td align="left">Cannot meet target clock period from fifo read on port 'in_lenOffset_Stream_V_V' to 'store' operation of variable 'next_state_2_cast_i' on local variable 'next_state_i' (combination delay: 3.1241 ns) to honor II or Latency constraint in region 'lz4_compress'.
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">30</td>
+<td align="left">Kernel</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Kernel Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Kernel</td>
+<td align="left">Estimated clock period (3.5625ns) exceeds the target (target clock period: 3.333ns, clock uncertainty: 0.9ns, effective delay budget: 2.433ns).
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">31</td>
+<td align="left">Kernel</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Kernel Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Kernel</td>
+<td align="left">The critical path in module 'lz4_compress106' consists of the following:
+	fifo read on port 'in_lenOffset_Stream_V_V' (<a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_engine.h#line=75">xil_lz4_compress_engine.h</a>) [124]  (1.22 ns)
+	'add' operation ('tmp13', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_engine.h#line=79">xil_lz4_compress_engine.h</a>) [131]  (0.785 ns)
+	'add' operation ('inIdx', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_engine.h#line=79">xil_lz4_compress_engine.h</a>) [133]  (0.731 ns)
+	'select' operation ('input_size_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_engine.h#line=81">xil_lz4_compress_engine.h</a>) [137]  (0.227 ns)
+	'store' operation (<a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_engine.h#line=81">xil_lz4_compress_engine.h</a>) of variable 'input_size_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_engine.h#line=81">xil_lz4_compress_engine.h</a> on local variable 'inIdx_i' [164]  (0.603 ns)
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">32</td>
+<td align="left">Kernel</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Kernel Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Kernel</td>
+<td align="left">Cannot meet target clock period from 'icmp' operation ('tmp_111_i') to 'load' operation ('match_ch') on array 'local_mem' (combination delay: 3.284 ns) to honor II or Latency constraint in region 'lz_booster'.
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">33</td>
+<td align="left">Kernel</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Kernel Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Kernel</td>
+<td align="left">Estimated clock period (3.839ns) exceeds the target (target clock period: 3.333ns, clock uncertainty: 0.9ns, effective delay budget: 2.433ns).
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">34</td>
+<td align="left">Kernel</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Kernel Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Kernel</td>
+<td align="left">The critical path in module 'lz_booster_255_16384_111' consists of the following:
+	'load' operation ('match_ch', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=231">lz_compress.h</a>) on array 'local_mem', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=210">lz_compress.h</a> [44]  (1.16 ns)
+	'icmp' operation ('tmp_111_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=237">lz_compress.h</a>) [50]  (0.581 ns)
+	'and' operation ('tmp', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=237">lz_compress.h</a>) [51]  (0 ns)
+	'and' operation ('or_cond3_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=237">lz_compress.h</a>) [52]  (0.122 ns)
+	'xor' operation ('sel_tmp4', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=237">lz_compress.h</a>) [65]  (0 ns)
+	'and' operation ('sel_tmp5', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=237">lz_compress.h</a>) [66]  (0.122 ns)
+	'and' operation ('sel_tmp6', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=250">lz_compress.h</a>) [67]  (0.122 ns)
+	'or' operation ('or_cond', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=223">lz_compress.h</a>) [71]  (0.122 ns)
+	'select' operation ('newSel61', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=246">lz_compress.h</a>) [95]  (0.227 ns)
+	'select' operation ('match_loc', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=246">lz_compress.h</a>) [96]  (0.227 ns)
+	'phi' operation ('match_loc') with incoming values : ('match_loc', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=246">lz_compress.h</a>) [23]  (0 ns)
+	'getelementptr' operation ('local_mem_addr', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=231">lz_compress.h</a>) [43]  (0 ns)
+	'load' operation ('match_ch', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=231">lz_compress.h</a>) on array 'local_mem', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=210">lz_compress.h</a> [44]  (1.16 ns)
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">35</td>
+<td align="left">Kernel</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Kernel Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Kernel</td>
+<td align="left">Cannot meet target clock period from fifo read on port 'in_lenOffset_Stream_V_V' to 'store' operation of variable 'next_state_2_cast_i' on local variable 'next_state_i' (combination delay: 3.1241 ns) to honor II or Latency constraint in region 'lz4_compress'.
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">36</td>
+<td align="left">Kernel</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Kernel Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Kernel</td>
+<td align="left">Estimated clock period (3.5625ns) exceeds the target (target clock period: 3.333ns, clock uncertainty: 0.9ns, effective delay budget: 2.433ns).
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">37</td>
+<td align="left">Kernel</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Kernel Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Kernel</td>
+<td align="left">The critical path in module 'lz4_compress113' consists of the following:
+	fifo read on port 'in_lenOffset_Stream_V_V' (<a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_engine.h#line=75">xil_lz4_compress_engine.h</a>) [124]  (1.22 ns)
+	'add' operation ('tmp13', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_engine.h#line=79">xil_lz4_compress_engine.h</a>) [131]  (0.785 ns)
+	'add' operation ('inIdx', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_engine.h#line=79">xil_lz4_compress_engine.h</a>) [133]  (0.731 ns)
+	'select' operation ('input_size_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_engine.h#line=81">xil_lz4_compress_engine.h</a>) [137]  (0.227 ns)
+	'store' operation (<a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_engine.h#line=81">xil_lz4_compress_engine.h</a>) of variable 'input_size_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_engine.h#line=81">xil_lz4_compress_engine.h</a> on local variable 'inIdx_i' [164]  (0.603 ns)
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">38</td>
+<td align="left">Kernel</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Kernel Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Kernel</td>
+<td align="left">Cannot meet target clock period from 'icmp' operation ('tmp_111_i') to 'load' operation ('match_ch') on array 'local_mem' (combination delay: 3.284 ns) to honor II or Latency constraint in region 'lz_booster'.
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">39</td>
+<td align="left">Kernel</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Kernel Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Kernel</td>
+<td align="left">Estimated clock period (3.839ns) exceeds the target (target clock period: 3.333ns, clock uncertainty: 0.9ns, effective delay budget: 2.433ns).
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">40</td>
+<td align="left">Kernel</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Kernel Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Kernel</td>
+<td align="left">The critical path in module 'lz_booster_255_16384_118' consists of the following:
+	'load' operation ('match_ch', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=231">lz_compress.h</a>) on array 'local_mem', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=210">lz_compress.h</a> [44]  (1.16 ns)
+	'icmp' operation ('tmp_111_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=237">lz_compress.h</a>) [50]  (0.581 ns)
+	'and' operation ('tmp', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=237">lz_compress.h</a>) [51]  (0 ns)
+	'and' operation ('or_cond3_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=237">lz_compress.h</a>) [52]  (0.122 ns)
+	'xor' operation ('sel_tmp4', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=237">lz_compress.h</a>) [65]  (0 ns)
+	'and' operation ('sel_tmp5', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=237">lz_compress.h</a>) [66]  (0.122 ns)
+	'and' operation ('sel_tmp6', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=250">lz_compress.h</a>) [67]  (0.122 ns)
+	'or' operation ('or_cond', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=223">lz_compress.h</a>) [71]  (0.122 ns)
+	'select' operation ('newSel54', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=246">lz_compress.h</a>) [95]  (0.227 ns)
+	'select' operation ('match_loc', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=246">lz_compress.h</a>) [96]  (0.227 ns)
+	'phi' operation ('match_loc') with incoming values : ('match_loc', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=246">lz_compress.h</a>) [23]  (0 ns)
+	'getelementptr' operation ('local_mem_addr', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=231">lz_compress.h</a>) [43]  (0 ns)
+	'load' operation ('match_ch', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=231">lz_compress.h</a>) on array 'local_mem', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=210">lz_compress.h</a> [44]  (1.16 ns)
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">41</td>
+<td align="left">Kernel</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Kernel Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Kernel</td>
+<td align="left">Cannot meet target clock period from fifo read on port 'in_lenOffset_Stream_V_V' to 'store' operation of variable 'next_state_2_cast_i' on local variable 'next_state_i' (combination delay: 3.1241 ns) to honor II or Latency constraint in region 'lz4_compress'.
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">42</td>
+<td align="left">Kernel</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Kernel Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Kernel</td>
+<td align="left">Estimated clock period (3.5625ns) exceeds the target (target clock period: 3.333ns, clock uncertainty: 0.9ns, effective delay budget: 2.433ns).
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">43</td>
+<td align="left">Kernel</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Kernel Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Kernel</td>
+<td align="left">The critical path in module 'lz4_compress120' consists of the following:
+	fifo read on port 'in_lenOffset_Stream_V_V' (<a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_engine.h#line=75">xil_lz4_compress_engine.h</a>) [124]  (1.22 ns)
+	'add' operation ('tmp13', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_engine.h#line=79">xil_lz4_compress_engine.h</a>) [131]  (0.785 ns)
+	'add' operation ('inIdx', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_engine.h#line=79">xil_lz4_compress_engine.h</a>) [133]  (0.731 ns)
+	'select' operation ('input_size_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_engine.h#line=81">xil_lz4_compress_engine.h</a>) [137]  (0.227 ns)
+	'store' operation (<a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_engine.h#line=81">xil_lz4_compress_engine.h</a>) of variable 'input_size_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_engine.h#line=81">xil_lz4_compress_engine.h</a> on local variable 'inIdx_i' [164]  (0.603 ns)
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">44</td>
+<td align="left">Kernel</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Kernel Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Kernel</td>
+<td align="left">Cannot meet target clock period from 'icmp' operation ('tmp_111_i') to 'load' operation ('match_ch') on array 'local_mem' (combination delay: 3.284 ns) to honor II or Latency constraint in region 'lz_booster'.
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">45</td>
+<td align="left">Kernel</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Kernel Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Kernel</td>
+<td align="left">Estimated clock period (3.839ns) exceeds the target (target clock period: 3.333ns, clock uncertainty: 0.9ns, effective delay budget: 2.433ns).
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">46</td>
+<td align="left">Kernel</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Kernel Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Kernel</td>
+<td align="left">The critical path in module 'lz_booster_255_16384_125' consists of the following:
+	'load' operation ('match_ch', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=231">lz_compress.h</a>) on array 'local_mem', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=210">lz_compress.h</a> [44]  (1.16 ns)
+	'icmp' operation ('tmp_111_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=237">lz_compress.h</a>) [50]  (0.581 ns)
+	'and' operation ('tmp', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=237">lz_compress.h</a>) [51]  (0 ns)
+	'and' operation ('or_cond3_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=237">lz_compress.h</a>) [52]  (0.122 ns)
+	'xor' operation ('sel_tmp4', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=237">lz_compress.h</a>) [65]  (0 ns)
+	'and' operation ('sel_tmp5', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=237">lz_compress.h</a>) [66]  (0.122 ns)
+	'and' operation ('sel_tmp6', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=250">lz_compress.h</a>) [67]  (0.122 ns)
+	'or' operation ('or_cond', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=223">lz_compress.h</a>) [71]  (0.122 ns)
+	'select' operation ('newSel47', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=246">lz_compress.h</a>) [95]  (0.227 ns)
+	'select' operation ('match_loc', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=246">lz_compress.h</a>) [96]  (0.227 ns)
+	'phi' operation ('match_loc') with incoming values : ('match_loc', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=246">lz_compress.h</a>) [23]  (0 ns)
+	'getelementptr' operation ('local_mem_addr', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=231">lz_compress.h</a>) [43]  (0 ns)
+	'load' operation ('match_ch', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=231">lz_compress.h</a>) on array 'local_mem', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=210">lz_compress.h</a> [44]  (1.16 ns)
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">47</td>
+<td align="left">Kernel</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Kernel Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Kernel</td>
+<td align="left">Cannot meet target clock period from fifo read on port 'in_lenOffset_Stream_V_V' to 'store' operation of variable 'next_state_2_cast_i' on local variable 'next_state_i' (combination delay: 3.1241 ns) to honor II or Latency constraint in region 'lz4_compress'.
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">48</td>
+<td align="left">Kernel</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Kernel Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Kernel</td>
+<td align="left">Estimated clock period (3.5625ns) exceeds the target (target clock period: 3.333ns, clock uncertainty: 0.9ns, effective delay budget: 2.433ns).
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">49</td>
+<td align="left">Kernel</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Kernel Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Kernel</td>
+<td align="left">The critical path in module 'lz4_compress127' consists of the following:
+	fifo read on port 'in_lenOffset_Stream_V_V' (<a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_engine.h#line=75">xil_lz4_compress_engine.h</a>) [124]  (1.22 ns)
+	'add' operation ('tmp13', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_engine.h#line=79">xil_lz4_compress_engine.h</a>) [131]  (0.785 ns)
+	'add' operation ('inIdx', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_engine.h#line=79">xil_lz4_compress_engine.h</a>) [133]  (0.731 ns)
+	'select' operation ('input_size_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_engine.h#line=81">xil_lz4_compress_engine.h</a>) [137]  (0.227 ns)
+	'store' operation (<a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_engine.h#line=81">xil_lz4_compress_engine.h</a>) of variable 'input_size_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_engine.h#line=81">xil_lz4_compress_engine.h</a> on local variable 'inIdx_i' [164]  (0.603 ns)
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">50</td>
+<td align="left">Kernel</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Kernel Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Kernel</td>
+<td align="left">Cannot meet target clock period from 'icmp' operation ('tmp_111_i') to 'load' operation ('match_ch') on array 'local_mem' (combination delay: 3.284 ns) to honor II or Latency constraint in region 'lz_booster'.
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">51</td>
+<td align="left">Kernel</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Kernel Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Kernel</td>
+<td align="left">Estimated clock period (3.839ns) exceeds the target (target clock period: 3.333ns, clock uncertainty: 0.9ns, effective delay budget: 2.433ns).
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">52</td>
+<td align="left">Kernel</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Kernel Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Kernel</td>
+<td align="left">The critical path in module 'lz_booster_255_16384_132' consists of the following:
+	'load' operation ('match_ch', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=231">lz_compress.h</a>) on array 'local_mem', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=210">lz_compress.h</a> [44]  (1.16 ns)
+	'icmp' operation ('tmp_111_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=237">lz_compress.h</a>) [50]  (0.581 ns)
+	'and' operation ('tmp', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=237">lz_compress.h</a>) [51]  (0 ns)
+	'and' operation ('or_cond3_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=237">lz_compress.h</a>) [52]  (0.122 ns)
+	'xor' operation ('sel_tmp4', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=237">lz_compress.h</a>) [65]  (0 ns)
+	'and' operation ('sel_tmp5', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=237">lz_compress.h</a>) [66]  (0.122 ns)
+	'and' operation ('sel_tmp6', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=250">lz_compress.h</a>) [67]  (0.122 ns)
+	'or' operation ('or_cond', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=223">lz_compress.h</a>) [71]  (0.122 ns)
+	'select' operation ('newSel40', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=246">lz_compress.h</a>) [95]  (0.227 ns)
+	'select' operation ('match_loc', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=246">lz_compress.h</a>) [96]  (0.227 ns)
+	'phi' operation ('match_loc') with incoming values : ('match_loc', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=246">lz_compress.h</a>) [23]  (0 ns)
+	'getelementptr' operation ('local_mem_addr', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=231">lz_compress.h</a>) [43]  (0 ns)
+	'load' operation ('match_ch', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=231">lz_compress.h</a>) on array 'local_mem', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=210">lz_compress.h</a> [44]  (1.16 ns)
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">53</td>
+<td align="left">Kernel</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Kernel Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Kernel</td>
+<td align="left">Cannot meet target clock period from fifo read on port 'in_lenOffset_Stream_V_V' to 'store' operation of variable 'next_state_2_cast_i' on local variable 'next_state_i' (combination delay: 3.1241 ns) to honor II or Latency constraint in region 'lz4_compress'.
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">54</td>
+<td align="left">Kernel</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Kernel Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Kernel</td>
+<td align="left">Estimated clock period (3.5625ns) exceeds the target (target clock period: 3.333ns, clock uncertainty: 0.9ns, effective delay budget: 2.433ns).
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">55</td>
+<td align="left">Kernel</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Kernel Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Kernel</td>
+<td align="left">The critical path in module 'lz4_compress134' consists of the following:
+	fifo read on port 'in_lenOffset_Stream_V_V' (<a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_engine.h#line=75">xil_lz4_compress_engine.h</a>) [124]  (1.22 ns)
+	'add' operation ('tmp13', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_engine.h#line=79">xil_lz4_compress_engine.h</a>) [131]  (0.785 ns)
+	'add' operation ('inIdx', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_engine.h#line=79">xil_lz4_compress_engine.h</a>) [133]  (0.731 ns)
+	'select' operation ('input_size_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_engine.h#line=81">xil_lz4_compress_engine.h</a>) [137]  (0.227 ns)
+	'store' operation (<a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_engine.h#line=81">xil_lz4_compress_engine.h</a>) of variable 'input_size_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_engine.h#line=81">xil_lz4_compress_engine.h</a> on local variable 'inIdx_i' [164]  (0.603 ns)
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">56</td>
+<td align="left">Kernel</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Kernel Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Kernel</td>
+<td align="left">Cannot meet target clock period from 'icmp' operation ('tmp_111_i') to 'load' operation ('match_ch') on array 'local_mem' (combination delay: 3.284 ns) to honor II or Latency constraint in region 'lz_booster'.
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">57</td>
+<td align="left">Kernel</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Kernel Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Kernel</td>
+<td align="left">Estimated clock period (3.839ns) exceeds the target (target clock period: 3.333ns, clock uncertainty: 0.9ns, effective delay budget: 2.433ns).
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">58</td>
+<td align="left">Kernel</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Kernel Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Kernel</td>
+<td align="left">The critical path in module 'lz_booster_255_16384_139' consists of the following:
+	'load' operation ('match_ch', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=231">lz_compress.h</a>) on array 'local_mem', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=210">lz_compress.h</a> [44]  (1.16 ns)
+	'icmp' operation ('tmp_111_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=237">lz_compress.h</a>) [50]  (0.581 ns)
+	'and' operation ('tmp', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=237">lz_compress.h</a>) [51]  (0 ns)
+	'and' operation ('or_cond3_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=237">lz_compress.h</a>) [52]  (0.122 ns)
+	'xor' operation ('sel_tmp4', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=237">lz_compress.h</a>) [65]  (0 ns)
+	'and' operation ('sel_tmp5', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=237">lz_compress.h</a>) [66]  (0.122 ns)
+	'and' operation ('sel_tmp6', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=250">lz_compress.h</a>) [67]  (0.122 ns)
+	'or' operation ('or_cond', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=223">lz_compress.h</a>) [71]  (0.122 ns)
+	'select' operation ('newSel33', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=246">lz_compress.h</a>) [95]  (0.227 ns)
+	'select' operation ('match_loc', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=246">lz_compress.h</a>) [96]  (0.227 ns)
+	'phi' operation ('match_loc') with incoming values : ('match_loc', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=246">lz_compress.h</a>) [23]  (0 ns)
+	'getelementptr' operation ('local_mem_addr', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=231">lz_compress.h</a>) [43]  (0 ns)
+	'load' operation ('match_ch', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=231">lz_compress.h</a>) on array 'local_mem', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=210">lz_compress.h</a> [44]  (1.16 ns)
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">59</td>
+<td align="left">Kernel</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Kernel Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Kernel</td>
+<td align="left">Cannot meet target clock period from fifo read on port 'in_lenOffset_Stream_V_V' to 'store' operation of variable 'next_state_2_cast_i' on local variable 'next_state_i' (combination delay: 3.1241 ns) to honor II or Latency constraint in region 'lz4_compress'.
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">60</td>
+<td align="left">Kernel</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Kernel Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Kernel</td>
+<td align="left">Estimated clock period (3.5625ns) exceeds the target (target clock period: 3.333ns, clock uncertainty: 0.9ns, effective delay budget: 2.433ns).
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">61</td>
+<td align="left">Kernel</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Kernel Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Kernel</td>
+<td align="left">The critical path in module 'lz4_compress141' consists of the following:
+	fifo read on port 'in_lenOffset_Stream_V_V' (<a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_engine.h#line=75">xil_lz4_compress_engine.h</a>) [124]  (1.22 ns)
+	'add' operation ('tmp13', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_engine.h#line=79">xil_lz4_compress_engine.h</a>) [131]  (0.785 ns)
+	'add' operation ('inIdx', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_engine.h#line=79">xil_lz4_compress_engine.h</a>) [133]  (0.731 ns)
+	'select' operation ('input_size_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_engine.h#line=81">xil_lz4_compress_engine.h</a>) [137]  (0.227 ns)
+	'store' operation (<a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_engine.h#line=81">xil_lz4_compress_engine.h</a>) of variable 'input_size_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_engine.h#line=81">xil_lz4_compress_engine.h</a> on local variable 'inIdx_i' [164]  (0.603 ns)
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">62</td>
+<td align="left">Kernel</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Kernel Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Kernel</td>
+<td align="left">Cannot meet target clock period from 'icmp' operation ('tmp_107_i') to 'load' operation ('match_ch') on array 'local_mem' (combination delay: 3.284 ns) to honor II or Latency constraint in region 'lz_booster'.
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">63</td>
+<td align="left">Kernel</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Kernel Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Kernel</td>
+<td align="left">Estimated clock period (3.839ns) exceeds the target (target clock period: 3.333ns, clock uncertainty: 0.9ns, effective delay budget: 2.433ns).
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">64</td>
+<td align="left">Kernel</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Kernel Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Kernel</td>
+<td align="left">The critical path in module 'lz_booster_255_16384_146' consists of the following:
+	'load' operation ('match_ch', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=231">lz_compress.h</a>) on array 'local_mem', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=210">lz_compress.h</a> [44]  (1.16 ns)
+	'icmp' operation ('tmp_107_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=237">lz_compress.h</a>) [50]  (0.581 ns)
+	'and' operation ('tmp', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=237">lz_compress.h</a>) [51]  (0 ns)
+	'and' operation ('or_cond3_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=237">lz_compress.h</a>) [52]  (0.122 ns)
+	'xor' operation ('sel_tmp4', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=237">lz_compress.h</a>) [65]  (0 ns)
+	'and' operation ('sel_tmp5', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=237">lz_compress.h</a>) [66]  (0.122 ns)
+	'and' operation ('sel_tmp6', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=250">lz_compress.h</a>) [67]  (0.122 ns)
+	'or' operation ('or_cond', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=223">lz_compress.h</a>) [71]  (0.122 ns)
+	'select' operation ('newSel26', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=246">lz_compress.h</a>) [95]  (0.227 ns)
+	'select' operation ('match_loc', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=246">lz_compress.h</a>) [96]  (0.227 ns)
+	'phi' operation ('match_loc') with incoming values : ('match_loc', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=246">lz_compress.h</a>) [23]  (0 ns)
+	'getelementptr' operation ('local_mem_addr', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=231">lz_compress.h</a>) [43]  (0 ns)
+	'load' operation ('match_ch', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=231">lz_compress.h</a>) on array 'local_mem', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/lz_compress/lz_compress.h#line=210">lz_compress.h</a> [44]  (1.16 ns)
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">65</td>
+<td align="left">Kernel</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Kernel Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Kernel</td>
+<td align="left">Cannot meet target clock period from fifo read on port 'in_lenOffset_Stream_V_V' to 'store' operation of variable 'next_state_2_cast_i' on local variable 'next_state_i' (combination delay: 3.1241 ns) to honor II or Latency constraint in region 'lz4_compress'.
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">66</td>
+<td align="left">Kernel</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Kernel Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Kernel</td>
+<td align="left">Estimated clock period (3.5625ns) exceeds the target (target clock period: 3.333ns, clock uncertainty: 0.9ns, effective delay budget: 2.433ns).
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">67</td>
+<td align="left">Kernel</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Kernel Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Kernel</td>
+<td align="left">The critical path in module 'lz4_compress148' consists of the following:
+	fifo read on port 'in_lenOffset_Stream_V_V' (<a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_engine.h#line=75">xil_lz4_compress_engine.h</a>) [124]  (1.22 ns)
+	'add' operation ('tmp13', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_engine.h#line=79">xil_lz4_compress_engine.h</a>) [131]  (0.785 ns)
+	'add' operation ('inIdx', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_engine.h#line=79">xil_lz4_compress_engine.h</a>) [133]  (0.731 ns)
+	'select' operation ('input_size_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_engine.h#line=81">xil_lz4_compress_engine.h</a>) [137]  (0.227 ns)
+	'store' operation (<a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_engine.h#line=81">xil_lz4_compress_engine.h</a>) of variable 'input_size_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_engine.h#line=81">xil_lz4_compress_engine.h</a> on local variable 'inIdx_i' [164]  (0.603 ns)
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">68</td>
+<td align="left">Kernel</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Kernel Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Kernel</td>
+<td align="left">Cannot meet target clock period from 'select' operation ('p_Val2_3_i_i_i') to 'br' operation (combination delay: 3.321 ns) to honor II or Latency constraint in region 'Loop 1.1'.
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">69</td>
+<td align="left">Kernel</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Kernel Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Kernel</td>
+<td align="left">Estimated clock period (7.851ns) exceeds the target (target clock period: 3.333ns, clock uncertainty: 0.9ns, effective delay budget: 2.433ns).
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+<tr>
+<td align="left">70</td>
+<td align="left">Kernel</td>
+<td align="left">WARNING</td>
+<td align="left">HLS Kernel Related</td>
+<td align="left">Accelerator.xil_lz4_cu1.Kernel</td>
+<td align="left">The critical path in module 's2mm_nb_unsigned_int_16_512_8_s' consists of the following:
+	'load' operation ('__Val2__', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=424">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) on local variable '__Val2__' [198]  (0 ns)
+	'select' operation ('p_Val2_3_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) [218]  (0.303 ns)
+	multiplexor before 'phi' operation ('__Val2__') with incoming values : ('__Val2__', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=424">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) [239]  (0.603 ns)
+	'phi' operation ('__Val2__') with incoming values : ('__Val2__', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=424">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) [239]  (0 ns)
+	'select' operation ('p_Val2_3_1_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) [256]  (0.303 ns)
+	multiplexor before 'phi' operation ('p_082_4_1_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) with incoming values : ('__Val2__', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=424">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_1_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) [278]  (0.603 ns)
+	'phi' operation ('p_082_4_1_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) with incoming values : ('__Val2__', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=424">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_1_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) [278]  (0 ns)
+	'select' operation ('p_Val2_3_2_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) [295]  (0.303 ns)
+	multiplexor before 'phi' operation ('p_082_4_2_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) with incoming values : ('__Val2__', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=424">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_1_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_2_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) [317]  (0.603 ns)
+	'phi' operation ('p_082_4_2_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) with incoming values : ('__Val2__', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=424">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_1_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_2_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) [317]  (0 ns)
+	'select' operation ('p_Val2_3_3_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) [334]  (0.303 ns)
+	multiplexor before 'phi' operation ('p_082_4_3_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) with incoming values : ('__Val2__', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=424">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_1_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_2_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_3_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) [356]  (0.603 ns)
+	'phi' operation ('p_082_4_3_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) with incoming values : ('__Val2__', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=424">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_1_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_2_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_3_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) [356]  (0 ns)
+	'select' operation ('p_Val2_3_4_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) [373]  (0.303 ns)
+	multiplexor before 'phi' operation ('p_082_4_4_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) with incoming values : ('__Val2__', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=424">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_1_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_2_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_3_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_4_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) [395]  (0.603 ns)
+	'phi' operation ('p_082_4_4_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) with incoming values : ('__Val2__', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=424">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_1_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_2_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_3_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_4_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) [395]  (0 ns)
+	'select' operation ('p_Val2_3_5_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) [412]  (0.303 ns)
+	multiplexor before 'phi' operation ('p_082_4_5_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) with incoming values : ('__Val2__', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=424">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_1_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_2_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_3_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_4_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_5_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) [434]  (0.603 ns)
+	'phi' operation ('p_082_4_5_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) with incoming values : ('__Val2__', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=424">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_1_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_2_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_3_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_4_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_5_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) [434]  (0 ns)
+	'select' operation ('p_Val2_3_6_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) [451]  (0.303 ns)
+	multiplexor before 'phi' operation ('p_082_4_6_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) with incoming values : ('__Val2__', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=424">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_1_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_2_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_3_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_4_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_5_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_6_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) [473]  (0.603 ns)
+	'phi' operation ('p_082_4_6_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) with incoming values : ('__Val2__', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=424">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_1_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_2_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_3_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_4_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_5_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_6_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) [473]  (0 ns)
+	'select' operation ('p_Val2_3_7_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) [490]  (0.303 ns)
+	multiplexor before 'phi' operation ('p_082_4_7_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) with incoming values : ('__Val2__', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=424">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_1_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_2_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_3_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_4_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_5_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_6_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_7_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) [512]  (0.603 ns)
+	'phi' operation ('p_082_4_7_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) with incoming values : ('__Val2__', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=424">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_1_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_2_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_3_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_4_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_5_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_6_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) ('p_Val2_3_7_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) [512]  (0 ns)
+	'store' operation (<a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=424">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a>) of variable 'p_082_4_7_i_i_i', <a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/libs/stream_utils/stream_utils.h#line=403">stream_utils.h</a>-><a href="file:///wrk/xhdhdnobkup1/hatchuta/git_repo/compression/lz4/array_stream_fix/xil_lz4/xil_lz4/src/xil_lz4_compress_kernel.cpp#line=151">xil_lz4_compress_kernel.cpp</a> on local variable '__Val2__' [515]  (0.603 ns)
+</td>
+<td align="left">Consult the <a href="http://www.xilinx.com/support/documentation/sw_manuals/xilinx2018_3/ug902-vivado-high-level-synthesis.pdf">Vivado HLS User Guide (UG902)</a>.</td>
+</tr>
+</table>
+<br>
+</body></html>

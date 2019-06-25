@@ -1,0 +1,168 @@
+===============================================================================
+Version:    xocc v2018.3 (64-bit)
+Build:      SW Build 2405991 on Thu Dec  6 23:36:41 MST 2018
+Copyright:  Copyright 1986-2018 Xilinx, Inc. All Rights Reserved.
+Created:    Tue Apr 16 16:16:16 2019
+===============================================================================
+
+-------------------------------------------------------------------------------
+Design Name:             xil_lz4_decompress_8b.hw_emu.xilinx_u200_xdma_201830_1
+Target Device:           xilinx:u200:xdma:201830.1
+Target Clock:            300.000000MHz
+Total number of kernels: 1
+-------------------------------------------------------------------------------
+
+Kernel Summary
+Kernel Name      Type  Target              OpenCL Library                                          Compute Units
+---------------  ----  ------------------  ------------------------------------------------------  -------------
+xil_lz4_dec_cu1  c     fpga0:OCL_REGION_0  xil_lz4_decompress_8b.hw_emu.xilinx_u200_xdma_201830_1  1
+
+
+-------------------------------------------------------------------------------
+OpenCL Binary:     xil_lz4_decompress_8b.hw_emu.xilinx_u200_xdma_201830_1
+Kernels mapped to: clc_region
+
+Timing Information (MHz)
+Compute Unit       Kernel Name      Module Name                                 Target Frequency  Estimated Frequency
+-----------------  ---------------  ------------------------------------------  ----------------  -------------------
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  mm2s_nb_512_16_8_17510                      300.300293        411.015198
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  stream_downsizer_unsigned_int_512_8_75135   300.300293        411.015198
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz4_decompressr76                           300.300293        370.096252
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz_decompress_65536_0_1_2_8_77              300.300293        374.111481
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  stream_upsizer_unsigned_int_8_512_78        300.300293        489.476257
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz4_core67                                  300.300293        370.096252
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  stream_downsizer_unsigned_int_512_8_79140   300.300293        411.015198
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz4_decompressr80                           300.300293        370.096252
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz_decompress_65536_0_1_2_8_81              300.300293        374.111481
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  stream_upsizer_unsigned_int_8_512_82        300.300293        489.476257
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz4_core68                                  300.300293        370.096252
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  stream_downsizer_unsigned_int_512_8_83145   300.300293        411.015198
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz4_decompressr84                           300.300293        370.096252
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz_decompress_65536_0_1_2_8_85              300.300293        374.111481
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  stream_upsizer_unsigned_int_8_512_86        300.300293        489.476257
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz4_core69                                  300.300293        370.096252
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  stream_downsizer_unsigned_int_512_8_87150   300.300293        411.015198
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz4_decompressr88                           300.300293        370.096252
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz_decompress_65536_0_1_2_8_89              300.300293        374.111481
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  stream_upsizer_unsigned_int_8_512_90        300.300293        489.476257
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz4_core70                                  300.300293        370.096252
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  stream_downsizer_unsigned_int_512_8_91155   300.300293        411.015198
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz4_decompressr92                           300.300293        370.096252
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz_decompress_65536_0_1_2_8_93              300.300293        374.111481
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  stream_upsizer_unsigned_int_8_512_94        300.300293        489.476257
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz4_core71                                  300.300293        370.096252
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  stream_downsizer_unsigned_int_512_8_95160   300.300293        411.015198
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz4_decompressr96                           300.300293        370.096252
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz_decompress_65536_0_1_2_8_97              300.300293        374.111481
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  stream_upsizer_unsigned_int_8_512_98        300.300293        489.476257
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz4_core72                                  300.300293        370.096252
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  stream_downsizer_unsigned_int_512_8_99165   300.300293        411.015198
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz4_decompressr100                          300.300293        370.096252
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz_decompress_65536_0_1_2_8_101             300.300293        374.111481
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  stream_upsizer_unsigned_int_8_512_102       300.300293        489.476257
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz4_core73                                  300.300293        370.096252
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  stream_downsizer_unsigned_int_512_8_103170  300.300293        411.015198
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz4_decompressr104                          300.300293        370.096252
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz_decompress_65536_0_1_2_8_105             300.300293        374.111481
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  stream_upsizer_unsigned_int_8_512_106       300.300293        489.476257
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz4_core74                                  300.300293        370.096252
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  s2mm_nb_noSize_unsigned_int_16_512_8_s      300.300293        169.090286
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz4_dec                                     300.300293        169.090286
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  xil_lz4_dec_cu1                             300.300293        169.090286
+
+Latency Information (clock cycles)
+Compute Unit       Kernel Name      Module Name                                 Start Interval  Best Case  Avg Case  Worst Case
+-----------------  ---------------  ------------------------------------------  --------------  ---------  --------  ----------
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  mm2s_nb_512_16_8_17510                      undef           undef      undef     undef
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  stream_downsizer_unsigned_int_512_8_75135   undef           undef      undef     undef
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz4_decompressr76                           undef           undef      undef     undef
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz_decompress_65536_0_1_2_8_77              undef           undef      undef     undef
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  stream_upsizer_unsigned_int_8_512_78        undef           undef      undef     undef
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz4_core67                                  undef           undef      undef     undef
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  stream_downsizer_unsigned_int_512_8_79140   undef           undef      undef     undef
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz4_decompressr80                           undef           undef      undef     undef
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz_decompress_65536_0_1_2_8_81              undef           undef      undef     undef
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  stream_upsizer_unsigned_int_8_512_82        undef           undef      undef     undef
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz4_core68                                  undef           undef      undef     undef
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  stream_downsizer_unsigned_int_512_8_83145   undef           undef      undef     undef
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz4_decompressr84                           undef           undef      undef     undef
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz_decompress_65536_0_1_2_8_85              undef           undef      undef     undef
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  stream_upsizer_unsigned_int_8_512_86        undef           undef      undef     undef
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz4_core69                                  undef           undef      undef     undef
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  stream_downsizer_unsigned_int_512_8_87150   undef           undef      undef     undef
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz4_decompressr88                           undef           undef      undef     undef
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz_decompress_65536_0_1_2_8_89              undef           undef      undef     undef
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  stream_upsizer_unsigned_int_8_512_90        undef           undef      undef     undef
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz4_core70                                  undef           undef      undef     undef
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  stream_downsizer_unsigned_int_512_8_91155   undef           undef      undef     undef
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz4_decompressr92                           undef           undef      undef     undef
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz_decompress_65536_0_1_2_8_93              undef           undef      undef     undef
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  stream_upsizer_unsigned_int_8_512_94        undef           undef      undef     undef
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz4_core71                                  undef           undef      undef     undef
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  stream_downsizer_unsigned_int_512_8_95160   undef           undef      undef     undef
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz4_decompressr96                           undef           undef      undef     undef
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz_decompress_65536_0_1_2_8_97              undef           undef      undef     undef
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  stream_upsizer_unsigned_int_8_512_98        undef           undef      undef     undef
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz4_core72                                  undef           undef      undef     undef
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  stream_downsizer_unsigned_int_512_8_99165   undef           undef      undef     undef
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz4_decompressr100                          undef           undef      undef     undef
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz_decompress_65536_0_1_2_8_101             undef           undef      undef     undef
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  stream_upsizer_unsigned_int_8_512_102       undef           undef      undef     undef
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz4_core73                                  undef           undef      undef     undef
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  stream_downsizer_unsigned_int_512_8_103170  undef           undef      undef     undef
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz4_decompressr104                          undef           undef      undef     undef
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz_decompress_65536_0_1_2_8_105             undef           undef      undef     undef
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  stream_upsizer_unsigned_int_8_512_106       undef           undef      undef     undef
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz4_core74                                  undef           undef      undef     undef
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  s2mm_nb_noSize_unsigned_int_16_512_8_s      undef           undef      undef     undef
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz4_dec                                     undef           undef      undef     undef
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  xil_lz4_dec_cu1                             undef           undef      undef     undef
+
+Area Information
+Compute Unit       Kernel Name      Module Name                                 FF      LUT     DSP  BRAM
+-----------------  ---------------  ------------------------------------------  ------  ------  ---  ----
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  mm2s_nb_512_16_8_17510                      11073   6011    0    4
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  stream_downsizer_unsigned_int_512_8_75135   688     5672    0    0
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz4_decompressr76                           227     631     0    0
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz_decompress_65536_0_1_2_8_77              501     707     0    32
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  stream_upsizer_unsigned_int_8_512_78        719     9929    0    0
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz4_core67                                  2168    17162   0    32
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  stream_downsizer_unsigned_int_512_8_79140   688     5672    0    0
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz4_decompressr80                           227     631     0    0
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz_decompress_65536_0_1_2_8_81              501     707     0    32
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  stream_upsizer_unsigned_int_8_512_82        719     9929    0    0
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz4_core68                                  2168    17162   0    32
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  stream_downsizer_unsigned_int_512_8_83145   688     5672    0    0
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz4_decompressr84                           227     631     0    0
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz_decompress_65536_0_1_2_8_85              501     707     0    32
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  stream_upsizer_unsigned_int_8_512_86        719     9929    0    0
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz4_core69                                  2168    17162   0    32
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  stream_downsizer_unsigned_int_512_8_87150   688     5672    0    0
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz4_decompressr88                           227     631     0    0
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz_decompress_65536_0_1_2_8_89              501     707     0    32
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  stream_upsizer_unsigned_int_8_512_90        719     9929    0    0
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz4_core70                                  2168    17162   0    32
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  stream_downsizer_unsigned_int_512_8_91155   688     5672    0    0
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz4_decompressr92                           227     631     0    0
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz_decompress_65536_0_1_2_8_93              501     707     0    32
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  stream_upsizer_unsigned_int_8_512_94        719     9929    0    0
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz4_core71                                  2168    17162   0    32
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  stream_downsizer_unsigned_int_512_8_95160   688     5672    0    0
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz4_decompressr96                           227     631     0    0
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz_decompress_65536_0_1_2_8_97              501     707     0    32
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  stream_upsizer_unsigned_int_8_512_98        719     9929    0    0
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz4_core72                                  2168    17162   0    32
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  stream_downsizer_unsigned_int_512_8_99165   688     5672    0    0
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz4_decompressr100                          227     631     0    0
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz_decompress_65536_0_1_2_8_101             501     707     0    32
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  stream_upsizer_unsigned_int_8_512_102       719     9929    0    0
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz4_core73                                  2168    17162   0    32
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  stream_downsizer_unsigned_int_512_8_103170  688     5672    0    0
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz4_decompressr104                          227     631     0    0
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz_decompress_65536_0_1_2_8_105             501     707     0    32
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  stream_upsizer_unsigned_int_8_512_106       719     9929    0    0
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz4_core74                                  2168    17162   0    32
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  s2mm_nb_noSize_unsigned_int_16_512_8_s      11344   6638    0    0
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  lz4_dec                                     127430  217107  0    260
+xil_lz4_dec_cu1_1  xil_lz4_dec_cu1  xil_lz4_dec_cu1                             132318  222537  4    264
+-------------------------------------------------------------------------------

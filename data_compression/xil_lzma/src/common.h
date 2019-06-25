@@ -25,7 +25,7 @@
         for (uint32_t bt_i = 0; bt_i < (1 << (bit_levels)); ++bt_i) \
                 bit_reset((probs)[bt_i])
 
-#define UINT32_MAX -1 //(1<<32)-1
+//#define UINT32_MAX -1 //(1<<32)-1
 //#define RC_BIT_0 0
 //#define RC_BIT_1 1
 //#define RC_DIRECT_0 2

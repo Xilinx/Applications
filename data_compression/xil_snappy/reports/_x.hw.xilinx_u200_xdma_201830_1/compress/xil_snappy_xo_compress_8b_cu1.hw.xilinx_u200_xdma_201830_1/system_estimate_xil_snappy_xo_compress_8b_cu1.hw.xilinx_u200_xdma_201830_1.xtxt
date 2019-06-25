@@ -1,0 +1,240 @@
+===============================================================================
+Version:    xocc v2018.3 (64-bit)
+Build:      SW Build 2405991 on Thu Dec  6 23:36:41 MST 2018
+Copyright:  Copyright 1986-2018 Xilinx, Inc. All Rights Reserved.
+Created:    Wed Apr 24 12:37:05 2019
+===============================================================================
+
+-------------------------------------------------------------------------------
+Design Name:             xil_snappy_xo_compress_8b_cu1.hw.xilinx_u200_xdma_201830_1
+Target Device:           xilinx:u200:xdma:201830.1
+Target Clock:            300.000000MHz
+Total number of kernels: 1
+-------------------------------------------------------------------------------
+
+Kernel Summary
+Kernel Name     Type  Target              OpenCL Library                                              Compute Units
+--------------  ----  ------------------  ----------------------------------------------------------  -------------
+xil_snappy_cu1  c     fpga0:OCL_REGION_0  xil_snappy_xo_compress_8b_cu1.hw.xilinx_u200_xdma_201830_1  1
+
+
+-------------------------------------------------------------------------------
+OpenCL Binary:     xil_snappy_xo_compress_8b_cu1.hw.xilinx_u200_xdma_201830_1
+Kernels mapped to: clc_region
+
+Timing Information (MHz)
+Compute Unit      Kernel Name     Module Name                              Target Frequency  Estimated Frequency
+----------------  --------------  ---------------------------------------  ----------------  -------------------
+xil_snappy_cu1_1  xil_snappy_cu1  mm2s_nb_512_16_8_25210                   300.300293        411.015198
+xil_snappy_cu1_1  xil_snappy_cu1  stream_downsizer_unsigned_int_512_8_97   300.300293        411.015198
+xil_snappy_cu1_1  xil_snappy_cu1  lz_compress_6_6_4096_8_1_4_65536_98      300.300293        411.015198
+xil_snappy_cu1_1  xil_snappy_cu1  lz_bestMatchFilter_6_65536_99            300.300293        411.015198
+xil_snappy_cu1_1  xil_snappy_cu1  lz_booster_64_65536_100                  300.300293        287.191254
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_divide101                         300.300293        411.015198
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_compress102                       300.300293        411.015198
+xil_snappy_cu1_1  xil_snappy_cu1  upsizer_eos_unsigned_short_8_512_103     300.300293        549.450562
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_core89                            300.300293        287.191254
+xil_snappy_cu1_1  xil_snappy_cu1  stream_downsizer_unsigned_int_512_8_104  300.300293        411.015198
+xil_snappy_cu1_1  xil_snappy_cu1  lz_compress_6_6_4096_8_1_4_65536_105     300.300293        411.015198
+xil_snappy_cu1_1  xil_snappy_cu1  lz_bestMatchFilter_6_65536_106           300.300293        411.015198
+xil_snappy_cu1_1  xil_snappy_cu1  lz_booster_64_65536_107                  300.300293        287.191254
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_divide108                         300.300293        411.015198
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_compress109                       300.300293        411.015198
+xil_snappy_cu1_1  xil_snappy_cu1  upsizer_eos_unsigned_short_8_512_110     300.300293        549.450562
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_core90                            300.300293        287.191254
+xil_snappy_cu1_1  xil_snappy_cu1  stream_downsizer_unsigned_int_512_8_111  300.300293        411.015198
+xil_snappy_cu1_1  xil_snappy_cu1  lz_compress_6_6_4096_8_1_4_65536_112     300.300293        411.015198
+xil_snappy_cu1_1  xil_snappy_cu1  lz_bestMatchFilter_6_65536_113           300.300293        411.015198
+xil_snappy_cu1_1  xil_snappy_cu1  lz_booster_64_65536_114                  300.300293        287.191254
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_divide115                         300.300293        411.015198
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_compress116                       300.300293        411.015198
+xil_snappy_cu1_1  xil_snappy_cu1  upsizer_eos_unsigned_short_8_512_117     300.300293        549.450562
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_core91                            300.300293        287.191254
+xil_snappy_cu1_1  xil_snappy_cu1  stream_downsizer_unsigned_int_512_8_118  300.300293        411.015198
+xil_snappy_cu1_1  xil_snappy_cu1  lz_compress_6_6_4096_8_1_4_65536_119     300.300293        411.015198
+xil_snappy_cu1_1  xil_snappy_cu1  lz_bestMatchFilter_6_65536_120           300.300293        411.015198
+xil_snappy_cu1_1  xil_snappy_cu1  lz_booster_64_65536_121                  300.300293        287.191254
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_divide122                         300.300293        411.015198
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_compress123                       300.300293        411.015198
+xil_snappy_cu1_1  xil_snappy_cu1  upsizer_eos_unsigned_short_8_512_124     300.300293        549.450562
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_core92                            300.300293        287.191254
+xil_snappy_cu1_1  xil_snappy_cu1  stream_downsizer_unsigned_int_512_8_125  300.300293        411.015198
+xil_snappy_cu1_1  xil_snappy_cu1  lz_compress_6_6_4096_8_1_4_65536_126     300.300293        411.015198
+xil_snappy_cu1_1  xil_snappy_cu1  lz_bestMatchFilter_6_65536_127           300.300293        411.015198
+xil_snappy_cu1_1  xil_snappy_cu1  lz_booster_64_65536_128                  300.300293        287.191254
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_divide129                         300.300293        411.015198
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_compress130                       300.300293        411.015198
+xil_snappy_cu1_1  xil_snappy_cu1  upsizer_eos_unsigned_short_8_512_131     300.300293        549.450562
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_core93                            300.300293        287.191254
+xil_snappy_cu1_1  xil_snappy_cu1  stream_downsizer_unsigned_int_512_8_132  300.300293        411.015198
+xil_snappy_cu1_1  xil_snappy_cu1  lz_compress_6_6_4096_8_1_4_65536_133     300.300293        411.015198
+xil_snappy_cu1_1  xil_snappy_cu1  lz_bestMatchFilter_6_65536_134           300.300293        411.015198
+xil_snappy_cu1_1  xil_snappy_cu1  lz_booster_64_65536_135                  300.300293        287.191254
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_divide136                         300.300293        411.015198
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_compress137                       300.300293        411.015198
+xil_snappy_cu1_1  xil_snappy_cu1  upsizer_eos_unsigned_short_8_512_138     300.300293        549.450562
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_core94                            300.300293        287.191254
+xil_snappy_cu1_1  xil_snappy_cu1  stream_downsizer_unsigned_int_512_8_139  300.300293        411.015198
+xil_snappy_cu1_1  xil_snappy_cu1  lz_compress_6_6_4096_8_1_4_65536_140     300.300293        411.015198
+xil_snappy_cu1_1  xil_snappy_cu1  lz_bestMatchFilter_6_65536_141           300.300293        411.015198
+xil_snappy_cu1_1  xil_snappy_cu1  lz_booster_64_65536_142                  300.300293        287.191254
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_divide143                         300.300293        411.015198
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_compress144                       300.300293        411.015198
+xil_snappy_cu1_1  xil_snappy_cu1  upsizer_eos_unsigned_short_8_512_145     300.300293        549.450562
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_core95                            300.300293        287.191254
+xil_snappy_cu1_1  xil_snappy_cu1  stream_downsizer_unsigned_int_512_8_146  300.300293        411.015198
+xil_snappy_cu1_1  xil_snappy_cu1  lz_compress_6_6_4096_8_1_4_65536_147     300.300293        411.015198
+xil_snappy_cu1_1  xil_snappy_cu1  lz_bestMatchFilter_6_65536_148           300.300293        411.015198
+xil_snappy_cu1_1  xil_snappy_cu1  lz_booster_64_65536_149                  300.300293        287.191254
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_divide150                         300.300293        411.015198
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_compress151                       300.300293        411.015198
+xil_snappy_cu1_1  xil_snappy_cu1  upsizer_eos_unsigned_short_8_512_152     300.300293        549.450562
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_core96                            300.300293        287.191254
+xil_snappy_cu1_1  xil_snappy_cu1  s2mm_eos_nb_unsigned_int_16_512_8_s      300.300293        127.372314
+xil_snappy_cu1_1  xil_snappy_cu1  snappy                                   300.300293        127.372314
+xil_snappy_cu1_1  xil_snappy_cu1  xil_snappy_cu1                           300.300293        127.372314
+
+Latency Information (clock cycles)
+Compute Unit      Kernel Name     Module Name                              Start Interval  Best Case  Avg Case  Worst Case
+----------------  --------------  ---------------------------------------  --------------  ---------  --------  ----------
+xil_snappy_cu1_1  xil_snappy_cu1  mm2s_nb_512_16_8_25210                   undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  stream_downsizer_unsigned_int_512_8_97   undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  lz_compress_6_6_4096_8_1_4_65536_98      undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  lz_bestMatchFilter_6_65536_99            undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  lz_booster_64_65536_100                  undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_divide101                         undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_compress102                       undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  upsizer_eos_unsigned_short_8_512_103     undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_core89                            undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  stream_downsizer_unsigned_int_512_8_104  undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  lz_compress_6_6_4096_8_1_4_65536_105     undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  lz_bestMatchFilter_6_65536_106           undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  lz_booster_64_65536_107                  undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_divide108                         undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_compress109                       undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  upsizer_eos_unsigned_short_8_512_110     undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_core90                            undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  stream_downsizer_unsigned_int_512_8_111  undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  lz_compress_6_6_4096_8_1_4_65536_112     undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  lz_bestMatchFilter_6_65536_113           undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  lz_booster_64_65536_114                  undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_divide115                         undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_compress116                       undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  upsizer_eos_unsigned_short_8_512_117     undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_core91                            undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  stream_downsizer_unsigned_int_512_8_118  undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  lz_compress_6_6_4096_8_1_4_65536_119     undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  lz_bestMatchFilter_6_65536_120           undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  lz_booster_64_65536_121                  undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_divide122                         undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_compress123                       undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  upsizer_eos_unsigned_short_8_512_124     undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_core92                            undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  stream_downsizer_unsigned_int_512_8_125  undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  lz_compress_6_6_4096_8_1_4_65536_126     undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  lz_bestMatchFilter_6_65536_127           undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  lz_booster_64_65536_128                  undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_divide129                         undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_compress130                       undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  upsizer_eos_unsigned_short_8_512_131     undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_core93                            undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  stream_downsizer_unsigned_int_512_8_132  undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  lz_compress_6_6_4096_8_1_4_65536_133     undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  lz_bestMatchFilter_6_65536_134           undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  lz_booster_64_65536_135                  undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_divide136                         undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_compress137                       undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  upsizer_eos_unsigned_short_8_512_138     undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_core94                            undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  stream_downsizer_unsigned_int_512_8_139  undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  lz_compress_6_6_4096_8_1_4_65536_140     undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  lz_bestMatchFilter_6_65536_141           undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  lz_booster_64_65536_142                  undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_divide143                         undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_compress144                       undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  upsizer_eos_unsigned_short_8_512_145     undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_core95                            undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  stream_downsizer_unsigned_int_512_8_146  undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  lz_compress_6_6_4096_8_1_4_65536_147     undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  lz_bestMatchFilter_6_65536_148           undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  lz_booster_64_65536_149                  undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_divide150                         undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_compress151                       undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  upsizer_eos_unsigned_short_8_512_152     undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_core96                            undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  s2mm_eos_nb_unsigned_int_16_512_8_s      undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  snappy                                   undef           undef      undef     undef
+xil_snappy_cu1_1  xil_snappy_cu1  xil_snappy_cu1                           undef           undef      undef     undef
+
+Area Information
+Compute Unit      Kernel Name     Module Name                              FF      LUT     DSP  BRAM
+----------------  --------------  ---------------------------------------  ------  ------  ---  ----
+xil_snappy_cu1_1  xil_snappy_cu1  mm2s_nb_512_16_8_25210                   11073   5867    0    4
+xil_snappy_cu1_1  xil_snappy_cu1  stream_downsizer_unsigned_int_512_8_97   688     5654    0    0
+xil_snappy_cu1_1  xil_snappy_cu1  lz_compress_6_6_4096_8_1_4_65536_98      1818    2576    0    12
+xil_snappy_cu1_1  xil_snappy_cu1  lz_bestMatchFilter_6_65536_99            500     622     0    0
+xil_snappy_cu1_1  xil_snappy_cu1  lz_booster_64_65536_100                  374     912     0    32
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_divide101                         267     529     0    0
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_compress102                       285     887     0    0
+xil_snappy_cu1_1  xil_snappy_cu1  upsizer_eos_unsigned_short_8_512_103     1066    299     0    0
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_core89                            6009    12635   0    44
+xil_snappy_cu1_1  xil_snappy_cu1  stream_downsizer_unsigned_int_512_8_104  688     5654    0    0
+xil_snappy_cu1_1  xil_snappy_cu1  lz_compress_6_6_4096_8_1_4_65536_105     1818    2576    0    12
+xil_snappy_cu1_1  xil_snappy_cu1  lz_bestMatchFilter_6_65536_106           500     622     0    0
+xil_snappy_cu1_1  xil_snappy_cu1  lz_booster_64_65536_107                  374     912     0    32
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_divide108                         267     529     0    0
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_compress109                       285     887     0    0
+xil_snappy_cu1_1  xil_snappy_cu1  upsizer_eos_unsigned_short_8_512_110     1066    299     0    0
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_core90                            6009    12635   0    44
+xil_snappy_cu1_1  xil_snappy_cu1  stream_downsizer_unsigned_int_512_8_111  688     5654    0    0
+xil_snappy_cu1_1  xil_snappy_cu1  lz_compress_6_6_4096_8_1_4_65536_112     1818    2576    0    12
+xil_snappy_cu1_1  xil_snappy_cu1  lz_bestMatchFilter_6_65536_113           500     622     0    0
+xil_snappy_cu1_1  xil_snappy_cu1  lz_booster_64_65536_114                  374     912     0    32
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_divide115                         267     529     0    0
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_compress116                       285     887     0    0
+xil_snappy_cu1_1  xil_snappy_cu1  upsizer_eos_unsigned_short_8_512_117     1066    299     0    0
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_core91                            6009    12635   0    44
+xil_snappy_cu1_1  xil_snappy_cu1  stream_downsizer_unsigned_int_512_8_118  688     5654    0    0
+xil_snappy_cu1_1  xil_snappy_cu1  lz_compress_6_6_4096_8_1_4_65536_119     1818    2576    0    12
+xil_snappy_cu1_1  xil_snappy_cu1  lz_bestMatchFilter_6_65536_120           500     622     0    0
+xil_snappy_cu1_1  xil_snappy_cu1  lz_booster_64_65536_121                  374     912     0    32
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_divide122                         267     529     0    0
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_compress123                       285     887     0    0
+xil_snappy_cu1_1  xil_snappy_cu1  upsizer_eos_unsigned_short_8_512_124     1066    299     0    0
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_core92                            6009    12635   0    44
+xil_snappy_cu1_1  xil_snappy_cu1  stream_downsizer_unsigned_int_512_8_125  688     5654    0    0
+xil_snappy_cu1_1  xil_snappy_cu1  lz_compress_6_6_4096_8_1_4_65536_126     1818    2576    0    12
+xil_snappy_cu1_1  xil_snappy_cu1  lz_bestMatchFilter_6_65536_127           500     622     0    0
+xil_snappy_cu1_1  xil_snappy_cu1  lz_booster_64_65536_128                  374     912     0    32
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_divide129                         267     529     0    0
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_compress130                       285     887     0    0
+xil_snappy_cu1_1  xil_snappy_cu1  upsizer_eos_unsigned_short_8_512_131     1066    299     0    0
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_core93                            6009    12635   0    44
+xil_snappy_cu1_1  xil_snappy_cu1  stream_downsizer_unsigned_int_512_8_132  688     5654    0    0
+xil_snappy_cu1_1  xil_snappy_cu1  lz_compress_6_6_4096_8_1_4_65536_133     1818    2576    0    12
+xil_snappy_cu1_1  xil_snappy_cu1  lz_bestMatchFilter_6_65536_134           500     622     0    0
+xil_snappy_cu1_1  xil_snappy_cu1  lz_booster_64_65536_135                  374     912     0    32
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_divide136                         267     529     0    0
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_compress137                       285     887     0    0
+xil_snappy_cu1_1  xil_snappy_cu1  upsizer_eos_unsigned_short_8_512_138     1066    299     0    0
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_core94                            6009    12635   0    44
+xil_snappy_cu1_1  xil_snappy_cu1  stream_downsizer_unsigned_int_512_8_139  688     5654    0    0
+xil_snappy_cu1_1  xil_snappy_cu1  lz_compress_6_6_4096_8_1_4_65536_140     1818    2576    0    12
+xil_snappy_cu1_1  xil_snappy_cu1  lz_bestMatchFilter_6_65536_141           500     622     0    0
+xil_snappy_cu1_1  xil_snappy_cu1  lz_booster_64_65536_142                  374     912     0    32
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_divide143                         267     529     0    0
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_compress144                       285     887     0    0
+xil_snappy_cu1_1  xil_snappy_cu1  upsizer_eos_unsigned_short_8_512_145     1066    299     0    0
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_core95                            6009    12635   0    44
+xil_snappy_cu1_1  xil_snappy_cu1  stream_downsizer_unsigned_int_512_8_146  688     5654    0    0
+xil_snappy_cu1_1  xil_snappy_cu1  lz_compress_6_6_4096_8_1_4_65536_147     1818    2576    0    12
+xil_snappy_cu1_1  xil_snappy_cu1  lz_bestMatchFilter_6_65536_148           500     622     0    0
+xil_snappy_cu1_1  xil_snappy_cu1  lz_booster_64_65536_149                  374     912     0    32
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_divide150                         267     529     0    0
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_compress151                       285     887     0    0
+xil_snappy_cu1_1  xil_snappy_cu1  upsizer_eos_unsigned_short_8_512_152     1066    299     0    0
+xil_snappy_cu1_1  xil_snappy_cu1  snappy_core96                            6009    12635   0    44
+xil_snappy_cu1_1  xil_snappy_cu1  s2mm_eos_nb_unsigned_int_16_512_8_s      11877   6661    0    0
+xil_snappy_cu1_1  xil_snappy_cu1  snappy                                   158691  180550  0    356
+xil_snappy_cu1_1  xil_snappy_cu1  xil_snappy_cu1                           163935  185832  4    360
+-------------------------------------------------------------------------------

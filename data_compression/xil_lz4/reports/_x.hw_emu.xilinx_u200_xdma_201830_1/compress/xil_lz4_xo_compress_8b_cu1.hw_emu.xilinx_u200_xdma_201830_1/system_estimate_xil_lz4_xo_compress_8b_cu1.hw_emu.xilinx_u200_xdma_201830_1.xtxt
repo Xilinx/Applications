@@ -1,0 +1,240 @@
+===============================================================================
+Version:    xocc v2018.3 (64-bit)
+Build:      SW Build 2405991 on Thu Dec  6 23:36:41 MST 2018
+Copyright:  Copyright 1986-2018 Xilinx, Inc. All Rights Reserved.
+Created:    Tue Apr 16 15:50:06 2019
+===============================================================================
+
+-------------------------------------------------------------------------------
+Design Name:             xil_lz4_xo_compress_8b_cu1.hw_emu.xilinx_u200_xdma_201830_1
+Target Device:           xilinx:u200:xdma:201830.1
+Target Clock:            300.000000MHz
+Total number of kernels: 1
+-------------------------------------------------------------------------------
+
+Kernel Summary
+Kernel Name  Type  Target              OpenCL Library                                               Compute Units
+-----------  ----  ------------------  -----------------------------------------------------------  -------------
+xil_lz4_cu1  c     fpga0:OCL_REGION_0  xil_lz4_xo_compress_8b_cu1.hw_emu.xilinx_u200_xdma_201830_1  1
+
+
+-------------------------------------------------------------------------------
+OpenCL Binary:     xil_lz4_xo_compress_8b_cu1.hw_emu.xilinx_u200_xdma_201830_1
+Kernels mapped to: clc_region
+
+Timing Information (MHz)
+Compute Unit   Kernel Name  Module Name                              Target Frequency  Estimated Frequency
+-------------  -----------  ---------------------------------------  ----------------  -------------------
+xil_lz4_cu1_1  xil_lz4_cu1  mm2s_nb_512_16_8_24910                   300.300293        411.015198
+xil_lz4_cu1_1  xil_lz4_cu1  stream_downsizer_unsigned_int_512_8_94   300.300293        411.015198
+xil_lz4_cu1_1  xil_lz4_cu1  lz_compress_6_6_4096_8_1_4_65536_95      300.300293        411.015198
+xil_lz4_cu1_1  xil_lz4_cu1  lz_bestMatchFilter_6_65536_96            300.300293        411.015198
+xil_lz4_cu1_1  xil_lz4_cu1  lz_booster_255_16384_97                  300.300293        260.484497
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_divide98                             300.300293        411.015198
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_compress99                           300.300293        280.662354
+xil_lz4_cu1_1  xil_lz4_cu1  upsizer_eos_unsigned_short_8_512_100     300.300293        549.450562
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_core86                               300.300293        260.484497
+xil_lz4_cu1_1  xil_lz4_cu1  stream_downsizer_unsigned_int_512_8_101  300.300293        411.015198
+xil_lz4_cu1_1  xil_lz4_cu1  lz_compress_6_6_4096_8_1_4_65536_102     300.300293        411.015198
+xil_lz4_cu1_1  xil_lz4_cu1  lz_bestMatchFilter_6_65536_103           300.300293        411.015198
+xil_lz4_cu1_1  xil_lz4_cu1  lz_booster_255_16384_104                 300.300293        260.484497
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_divide105                            300.300293        411.015198
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_compress106                          300.300293        280.662354
+xil_lz4_cu1_1  xil_lz4_cu1  upsizer_eos_unsigned_short_8_512_107     300.300293        549.450562
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_core87                               300.300293        260.484497
+xil_lz4_cu1_1  xil_lz4_cu1  stream_downsizer_unsigned_int_512_8_108  300.300293        411.015198
+xil_lz4_cu1_1  xil_lz4_cu1  lz_compress_6_6_4096_8_1_4_65536_109     300.300293        411.015198
+xil_lz4_cu1_1  xil_lz4_cu1  lz_bestMatchFilter_6_65536_110           300.300293        411.015198
+xil_lz4_cu1_1  xil_lz4_cu1  lz_booster_255_16384_111                 300.300293        260.484497
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_divide112                            300.300293        411.015198
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_compress113                          300.300293        280.662354
+xil_lz4_cu1_1  xil_lz4_cu1  upsizer_eos_unsigned_short_8_512_114     300.300293        549.450562
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_core88                               300.300293        260.484497
+xil_lz4_cu1_1  xil_lz4_cu1  stream_downsizer_unsigned_int_512_8_115  300.300293        411.015198
+xil_lz4_cu1_1  xil_lz4_cu1  lz_compress_6_6_4096_8_1_4_65536_116     300.300293        411.015198
+xil_lz4_cu1_1  xil_lz4_cu1  lz_bestMatchFilter_6_65536_117           300.300293        411.015198
+xil_lz4_cu1_1  xil_lz4_cu1  lz_booster_255_16384_118                 300.300293        260.484497
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_divide119                            300.300293        411.015198
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_compress120                          300.300293        280.662354
+xil_lz4_cu1_1  xil_lz4_cu1  upsizer_eos_unsigned_short_8_512_121     300.300293        549.450562
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_core89                               300.300293        260.484497
+xil_lz4_cu1_1  xil_lz4_cu1  stream_downsizer_unsigned_int_512_8_122  300.300293        411.015198
+xil_lz4_cu1_1  xil_lz4_cu1  lz_compress_6_6_4096_8_1_4_65536_123     300.300293        411.015198
+xil_lz4_cu1_1  xil_lz4_cu1  lz_bestMatchFilter_6_65536_124           300.300293        411.015198
+xil_lz4_cu1_1  xil_lz4_cu1  lz_booster_255_16384_125                 300.300293        260.484497
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_divide126                            300.300293        411.015198
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_compress127                          300.300293        280.662354
+xil_lz4_cu1_1  xil_lz4_cu1  upsizer_eos_unsigned_short_8_512_128     300.300293        549.450562
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_core90                               300.300293        260.484497
+xil_lz4_cu1_1  xil_lz4_cu1  stream_downsizer_unsigned_int_512_8_129  300.300293        411.015198
+xil_lz4_cu1_1  xil_lz4_cu1  lz_compress_6_6_4096_8_1_4_65536_130     300.300293        411.015198
+xil_lz4_cu1_1  xil_lz4_cu1  lz_bestMatchFilter_6_65536_131           300.300293        411.015198
+xil_lz4_cu1_1  xil_lz4_cu1  lz_booster_255_16384_132                 300.300293        260.484497
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_divide133                            300.300293        411.015198
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_compress134                          300.300293        280.662354
+xil_lz4_cu1_1  xil_lz4_cu1  upsizer_eos_unsigned_short_8_512_135     300.300293        549.450562
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_core91                               300.300293        260.484497
+xil_lz4_cu1_1  xil_lz4_cu1  stream_downsizer_unsigned_int_512_8_136  300.300293        411.015198
+xil_lz4_cu1_1  xil_lz4_cu1  lz_compress_6_6_4096_8_1_4_65536_137     300.300293        411.015198
+xil_lz4_cu1_1  xil_lz4_cu1  lz_bestMatchFilter_6_65536_138           300.300293        411.015198
+xil_lz4_cu1_1  xil_lz4_cu1  lz_booster_255_16384_139                 300.300293        260.484497
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_divide140                            300.300293        411.015198
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_compress141                          300.300293        280.662354
+xil_lz4_cu1_1  xil_lz4_cu1  upsizer_eos_unsigned_short_8_512_142     300.300293        549.450562
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_core92                               300.300293        260.484497
+xil_lz4_cu1_1  xil_lz4_cu1  stream_downsizer_unsigned_int_512_8_143  300.300293        411.015198
+xil_lz4_cu1_1  xil_lz4_cu1  lz_compress_6_6_4096_8_1_4_65536_144     300.300293        411.015198
+xil_lz4_cu1_1  xil_lz4_cu1  lz_bestMatchFilter_6_65536_145           300.300293        411.015198
+xil_lz4_cu1_1  xil_lz4_cu1  lz_booster_255_16384_146                 300.300293        260.484497
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_divide147                            300.300293        411.015198
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_compress148                          300.300293        280.662354
+xil_lz4_cu1_1  xil_lz4_cu1  upsizer_eos_unsigned_short_8_512_149     300.300293        549.450562
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_core93                               300.300293        260.484497
+xil_lz4_cu1_1  xil_lz4_cu1  s2mm_nb_unsigned_int_16_512_8_s          300.300293        127.372314
+xil_lz4_cu1_1  xil_lz4_cu1  lz4                                      300.300293        127.372314
+xil_lz4_cu1_1  xil_lz4_cu1  xil_lz4_cu1                              300.300293        127.372314
+
+Latency Information (clock cycles)
+Compute Unit   Kernel Name  Module Name                              Start Interval  Best Case  Avg Case  Worst Case
+-------------  -----------  ---------------------------------------  --------------  ---------  --------  ----------
+xil_lz4_cu1_1  xil_lz4_cu1  mm2s_nb_512_16_8_24910                   undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  stream_downsizer_unsigned_int_512_8_94   undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  lz_compress_6_6_4096_8_1_4_65536_95      undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  lz_bestMatchFilter_6_65536_96            undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  lz_booster_255_16384_97                  undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_divide98                             undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_compress99                           undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  upsizer_eos_unsigned_short_8_512_100     undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_core86                               undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  stream_downsizer_unsigned_int_512_8_101  undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  lz_compress_6_6_4096_8_1_4_65536_102     undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  lz_bestMatchFilter_6_65536_103           undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  lz_booster_255_16384_104                 undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_divide105                            undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_compress106                          undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  upsizer_eos_unsigned_short_8_512_107     undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_core87                               undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  stream_downsizer_unsigned_int_512_8_108  undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  lz_compress_6_6_4096_8_1_4_65536_109     undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  lz_bestMatchFilter_6_65536_110           undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  lz_booster_255_16384_111                 undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_divide112                            undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_compress113                          undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  upsizer_eos_unsigned_short_8_512_114     undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_core88                               undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  stream_downsizer_unsigned_int_512_8_115  undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  lz_compress_6_6_4096_8_1_4_65536_116     undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  lz_bestMatchFilter_6_65536_117           undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  lz_booster_255_16384_118                 undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_divide119                            undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_compress120                          undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  upsizer_eos_unsigned_short_8_512_121     undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_core89                               undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  stream_downsizer_unsigned_int_512_8_122  undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  lz_compress_6_6_4096_8_1_4_65536_123     undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  lz_bestMatchFilter_6_65536_124           undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  lz_booster_255_16384_125                 undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_divide126                            undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_compress127                          undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  upsizer_eos_unsigned_short_8_512_128     undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_core90                               undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  stream_downsizer_unsigned_int_512_8_129  undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  lz_compress_6_6_4096_8_1_4_65536_130     undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  lz_bestMatchFilter_6_65536_131           undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  lz_booster_255_16384_132                 undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_divide133                            undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_compress134                          undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  upsizer_eos_unsigned_short_8_512_135     undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_core91                               undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  stream_downsizer_unsigned_int_512_8_136  undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  lz_compress_6_6_4096_8_1_4_65536_137     undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  lz_bestMatchFilter_6_65536_138           undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  lz_booster_255_16384_139                 undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_divide140                            undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_compress141                          undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  upsizer_eos_unsigned_short_8_512_142     undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_core92                               undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  stream_downsizer_unsigned_int_512_8_143  undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  lz_compress_6_6_4096_8_1_4_65536_144     undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  lz_bestMatchFilter_6_65536_145           undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  lz_booster_255_16384_146                 undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_divide147                            undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_compress148                          undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  upsizer_eos_unsigned_short_8_512_149     undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_core93                               undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  s2mm_nb_unsigned_int_16_512_8_s          undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  lz4                                      undef           undef      undef     undef
+xil_lz4_cu1_1  xil_lz4_cu1  xil_lz4_cu1                              undef           undef      undef     undef
+
+Area Information
+Compute Unit   Kernel Name  Module Name                              FF      LUT     DSP  BRAM
+-------------  -----------  ---------------------------------------  ------  ------  ---  ----
+xil_lz4_cu1_1  xil_lz4_cu1  mm2s_nb_512_16_8_24910                   11073   5867    0    4
+xil_lz4_cu1_1  xil_lz4_cu1  stream_downsizer_unsigned_int_512_8_94   688     5654    0    0
+xil_lz4_cu1_1  xil_lz4_cu1  lz_compress_6_6_4096_8_1_4_65536_95      1818    2576    0    12
+xil_lz4_cu1_1  xil_lz4_cu1  lz_bestMatchFilter_6_65536_96            500     622     0    0
+xil_lz4_cu1_1  xil_lz4_cu1  lz_booster_255_16384_97                  511     1069    0    8
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_divide98                             272     555     0    0
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_compress99                           280     1002    0    0
+xil_lz4_cu1_1  xil_lz4_cu1  upsizer_eos_unsigned_short_8_512_100     1066    299     0    0
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_core86                               5969    12951   0    22
+xil_lz4_cu1_1  xil_lz4_cu1  stream_downsizer_unsigned_int_512_8_101  688     5654    0    0
+xil_lz4_cu1_1  xil_lz4_cu1  lz_compress_6_6_4096_8_1_4_65536_102     1818    2576    0    12
+xil_lz4_cu1_1  xil_lz4_cu1  lz_bestMatchFilter_6_65536_103           500     622     0    0
+xil_lz4_cu1_1  xil_lz4_cu1  lz_booster_255_16384_104                 511     1069    0    8
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_divide105                            272     555     0    0
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_compress106                          280     1002    0    0
+xil_lz4_cu1_1  xil_lz4_cu1  upsizer_eos_unsigned_short_8_512_107     1066    299     0    0
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_core87                               5969    12951   0    22
+xil_lz4_cu1_1  xil_lz4_cu1  stream_downsizer_unsigned_int_512_8_108  688     5654    0    0
+xil_lz4_cu1_1  xil_lz4_cu1  lz_compress_6_6_4096_8_1_4_65536_109     1818    2576    0    12
+xil_lz4_cu1_1  xil_lz4_cu1  lz_bestMatchFilter_6_65536_110           500     622     0    0
+xil_lz4_cu1_1  xil_lz4_cu1  lz_booster_255_16384_111                 511     1069    0    8
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_divide112                            272     555     0    0
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_compress113                          280     1002    0    0
+xil_lz4_cu1_1  xil_lz4_cu1  upsizer_eos_unsigned_short_8_512_114     1066    299     0    0
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_core88                               5969    12951   0    22
+xil_lz4_cu1_1  xil_lz4_cu1  stream_downsizer_unsigned_int_512_8_115  688     5654    0    0
+xil_lz4_cu1_1  xil_lz4_cu1  lz_compress_6_6_4096_8_1_4_65536_116     1818    2576    0    12
+xil_lz4_cu1_1  xil_lz4_cu1  lz_bestMatchFilter_6_65536_117           500     622     0    0
+xil_lz4_cu1_1  xil_lz4_cu1  lz_booster_255_16384_118                 511     1069    0    8
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_divide119                            272     555     0    0
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_compress120                          280     1002    0    0
+xil_lz4_cu1_1  xil_lz4_cu1  upsizer_eos_unsigned_short_8_512_121     1066    299     0    0
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_core89                               5969    12951   0    22
+xil_lz4_cu1_1  xil_lz4_cu1  stream_downsizer_unsigned_int_512_8_122  688     5654    0    0
+xil_lz4_cu1_1  xil_lz4_cu1  lz_compress_6_6_4096_8_1_4_65536_123     1818    2576    0    12
+xil_lz4_cu1_1  xil_lz4_cu1  lz_bestMatchFilter_6_65536_124           500     622     0    0
+xil_lz4_cu1_1  xil_lz4_cu1  lz_booster_255_16384_125                 511     1069    0    8
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_divide126                            272     555     0    0
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_compress127                          280     1002    0    0
+xil_lz4_cu1_1  xil_lz4_cu1  upsizer_eos_unsigned_short_8_512_128     1066    299     0    0
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_core90                               5969    12951   0    22
+xil_lz4_cu1_1  xil_lz4_cu1  stream_downsizer_unsigned_int_512_8_129  688     5654    0    0
+xil_lz4_cu1_1  xil_lz4_cu1  lz_compress_6_6_4096_8_1_4_65536_130     1818    2576    0    12
+xil_lz4_cu1_1  xil_lz4_cu1  lz_bestMatchFilter_6_65536_131           500     622     0    0
+xil_lz4_cu1_1  xil_lz4_cu1  lz_booster_255_16384_132                 511     1069    0    8
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_divide133                            272     555     0    0
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_compress134                          280     1002    0    0
+xil_lz4_cu1_1  xil_lz4_cu1  upsizer_eos_unsigned_short_8_512_135     1066    299     0    0
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_core91                               5969    12951   0    22
+xil_lz4_cu1_1  xil_lz4_cu1  stream_downsizer_unsigned_int_512_8_136  688     5654    0    0
+xil_lz4_cu1_1  xil_lz4_cu1  lz_compress_6_6_4096_8_1_4_65536_137     1818    2576    0    12
+xil_lz4_cu1_1  xil_lz4_cu1  lz_bestMatchFilter_6_65536_138           500     622     0    0
+xil_lz4_cu1_1  xil_lz4_cu1  lz_booster_255_16384_139                 511     1069    0    8
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_divide140                            272     555     0    0
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_compress141                          280     1002    0    0
+xil_lz4_cu1_1  xil_lz4_cu1  upsizer_eos_unsigned_short_8_512_142     1066    299     0    0
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_core92                               5969    12951   0    22
+xil_lz4_cu1_1  xil_lz4_cu1  stream_downsizer_unsigned_int_512_8_143  688     5654    0    0
+xil_lz4_cu1_1  xil_lz4_cu1  lz_compress_6_6_4096_8_1_4_65536_144     1818    2576    0    12
+xil_lz4_cu1_1  xil_lz4_cu1  lz_bestMatchFilter_6_65536_145           500     622     0    0
+xil_lz4_cu1_1  xil_lz4_cu1  lz_booster_255_16384_146                 511     1069    0    8
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_divide147                            272     555     0    0
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_compress148                          280     1002    0    0
+xil_lz4_cu1_1  xil_lz4_cu1  upsizer_eos_unsigned_short_8_512_149     1066    299     0    0
+xil_lz4_cu1_1  xil_lz4_cu1  lz4_core93                               5969    12951   0    22
+xil_lz4_cu1_1  xil_lz4_cu1  s2mm_nb_unsigned_int_16_512_8_s          11877   6661    0    0
+xil_lz4_cu1_1  xil_lz4_cu1  lz4                                      158371  183078  0    180
+xil_lz4_cu1_1  xil_lz4_cu1  xil_lz4_cu1                              164014  188130  4    184
+-------------------------------------------------------------------------------

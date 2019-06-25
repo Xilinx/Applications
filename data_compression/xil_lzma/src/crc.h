@@ -136,12 +136,19 @@ size_t decode(const uint8_t buf[], size_t size_max, uint64_t *num)
     return i;
 }
 
-void fileWrite(std::ofstream &ofs, uint8_t *buf, size_t size)
+void fileWrite(std::ofstream *ofs, uint8_t *buf, size_t size, uint8_t* out,uint64_t outindex)
 {
-	ofs.write((char*)buf,size);
+    if(ofs)
+	    ofs->write((char*)buf,size);
+    if(out)
+        memcpy(&out[outindex],buf,size);
 }
 
-void fileWrite(std::ofstream &ofs, uint8_t data)
+void fileWrite(std::ofstream *ofs, uint8_t data, uint8_t *out, uint64_t outindex)
 {
-	ofs << data;
+    if(ofs)
+	    (*ofs) << data;
+    if(out)
+        out[outindex] = data;
+    
 }

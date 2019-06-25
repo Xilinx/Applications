@@ -5,7 +5,7 @@ REPORT:=none
 
 # Default C++ Compiler Flags and xocc compiler flags
 CXXFLAGS:=-Wall -O0 -g
-CLFLAGS:= --xp "param:compiler.preserveHlsOutput=1" --xp "param:compiler.generateExtraRunData=true" -s
+CLFLAGS:= -s
 
 ifneq ($(REPORT),none)
 CLFLAGS += --report $(REPORT)
@@ -36,10 +36,8 @@ ifeq ($(ARCH),POWER)
 DEVICES:= xilinx:adm-pcie-7v3:1ddr-ppc64le:2.1
 CXX:=$(XILINX_SDACCEL)/gnu/ppc64le/4.9.3/lnx64/bin/powerpc64le-linux-gnu-g++
 else
-#DEVICES:= xilinx:xil-accel-rd-vu9p:4ddr-xpr:4.1
-#DEVICES:= xilinx:xil-accel-rd-ku115:4ddr-xpr:4.0
 DEVICES:= xilinx_vcu1525_dynamic_5_1
-CXX:=$(XILINX_SDACCEL)/bin/xcpp
+CXX:=g++
 endif
 
 #if COMMON_REPO is not defined use the default value support existing Designs

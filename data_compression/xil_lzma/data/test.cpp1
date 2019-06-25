@@ -1,0 +1,27 @@
+#include <iostream>
+#include<bits/stdc++.h>
+#include <string>
+#include <vector>
+using namespace std;
+int main(int argc, char** argv)
+{
+    size_t rlen = atoi(argv[2]);
+    char val;
+    std::ifstream in(argv[1]);
+    if (!in) perror(argv[1]), exit(1);
+    in.seekg(0, std::ios::end);
+    size_t alen = in.tellg();
+    //if (alen<0 || alen>=(1<<32)) {
+    //    cout<<"reference must be smaller than 1 GB\n";
+    //    exit(1);
+    //}
+    in.seekg(0);
+    cout<<"rlen:"<<rlen<<endl ;
+    rlen = (rlen < alen)? rlen:alen;
+    while(rlen--) {
+        in.read(&val,1);
+        printf("%.2X ", val);
+    }
+    cout<<"\n";
+    in.close();
+}
