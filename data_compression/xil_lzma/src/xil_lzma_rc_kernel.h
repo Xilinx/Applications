@@ -74,7 +74,7 @@ typedef ap_uint<11> probability;
 #define RC_IS_REP0(x)			(rc_is_rep0_OFFSET + x)
 #define RC_IS_REP1(x)			(rc_is_rep1_OFFSET + x)
 #define RC_IS_REP2(x)			(rc_is_rep2_OFFSET + x)
-#define RC_POS_SLOT(x,y)		(rc_pos_slot_OFFSET + (x*POS_SLOTS) + y)
+//#define RC_POS_SLOT(x,y)		(rc_pos_slot_OFFSET + (x*POS_SLOTS) + y)
 #define RC_POS_SLOT(x)			(rc_pos_slot_OFFSET + (x*POS_SLOTS))
 #define RC_POS_SPECIAL(x)		(rc_pos_special_OFFSET + x)
 #define RC_POS_ALIGN(x)			(rc_pos_align_OFFSET + x)
@@ -93,6 +93,17 @@ typedef ap_uint<11> probability;
 
 #define literal_subcoder1(lc, lp_mask, pos, prev_byte) \
 	(RC_LITERAL_x((((pos) & lp_mask) << lc) + ((prev_byte) >> (8 - lc))))
+
+#if (C_COMPUTE_UNIT == 1)
+namespace cu1
+#elif (C_COMPUTE_UNIT == 2)
+namespace cu2
+#elif (C_COMPUTE_UNIT == 3)
+namespace cu3
+#elif (C_COMPUTE_UNIT == 4)
+namespace cu4
+#endif
+{
 
 typedef struct {
         uint32_t pos_mask;
@@ -557,7 +568,7 @@ enum PACKAGE {
     RC_PACKAGE_FLUSH
 };
 
-/*
+
 void lzma_rc_1_1 (
 		hls::stream<compressd_dt> &inStream,		
 		hls::stream<uint16_t>  &inStreamSize,
@@ -635,7 +646,7 @@ void lzma_rc_1_1 (
 		ssize = 0;
 		//LITERAL ENCODE	
         len = (tLen == 0)? 1:tLen;
-        if(tOffset == 4294967295) {//UINT32_MAX) {
+        if(tOffset == UINT32_MAX) {
 
 			//rc_bit(symStream,probsStream,outStreamSize,RC_IS_MATCH(rc.state,pos_state), 0);	
 			sdata[cadta++] = RC_PACKAGE_BIT;
@@ -1201,7 +1212,7 @@ void lzma_rc_1_2 (
 	}
 	outStreamSize64 << 0;
 }
-*/
+
 void lzma_rc_converter (
         hls::stream<ap_uint<512> > &symStream64,
         hls::stream<ap_uint<1024> > &probsStream64,
@@ -1265,6 +1276,9 @@ void lzma_rc_2 (
 {
     uint64_t rc_low = 0;
     uint32_t rc_range = 0xffffffff;
+    uint32_t temp_rc_range;
+    ap_uint<32> p;
+    probability prob;
     probability rc_allprobs[(LITERAL_CODERS_MAX*LITERAL_CODER_SIZE)	//rc_literal
                            +(STATES*POS_STATES_MAX)					//rc_is_match
                            +(STATES*POS_STATES_MAX)					//rc_is_rep0_long
@@ -1293,19 +1307,22 @@ void lzma_rc_2 (
         #pragma HLS dependence variable=rc_allprobs inter false
 
         ap_uint<8> symb = symStream.read();
+
+        if(symb == RC_BIT_0 || symb == RC_BIT_1){
+            p = probsStream.read();
+            prob = rc_allprobs[p];
+            temp_rc_range = (rc_range >> RC_BIT_MODEL_TOTAL_BITS)* prob; 
+        }
+
         switch (symb) {
         case RC_BIT_0: {
-            ap_uint<32> p = probsStream.read();
-            probability prob = rc_allprobs[p];
-            rc_range = (rc_range >> RC_BIT_MODEL_TOTAL_BITS)* prob;
+            rc_range = temp_rc_range;
             prob += (RC_BIT_MODEL_TOTAL - prob) >> RC_MOVE_BITS;
             rc_allprobs[p] = prob;
             break;
         }
         case RC_BIT_1: {
-            ap_uint<32> p = probsStream.read();
-            probability prob = rc_allprobs[p];
-            const uint32_t bound = prob * (rc_range >> RC_BIT_MODEL_TOTAL_BITS);
+            const uint32_t bound = temp_rc_range;
             rc_low += bound;
             rc_range -= bound;
             prob -= prob >> RC_MOVE_BITS;
@@ -1341,24 +1358,27 @@ void lzma_rc_3 (
         hls::stream<ap_uint<64> > &lowStream,
         hls::stream<uint16_t> &outStreamSize2,
         hls::stream<ap_uint<8> > &rcStream,
-        hls::stream<uint16_t> &rcOutSize
+        hls::stream<uint16_t> &rcOutSize,
+        uint32_t input_size
         )
 {
     uint32_t rc_cache_size = 0;
     uint64_t rc_low;
     uint32_t range;
     uint8_t rc_cache = 0;
+    uint32_t outcount = 0;
     lzma_rc_3:for (uint16_t size = outStreamSize2.read() ; size != 0 ; size = outStreamSize2.read()) {
         #pragma HLS PIPELINE II=1
         rc_low = lowStream.read().range(63,0);
         range = rangeStream.read().range(31,0);
         if ((uint32_t)(rc_low) < (uint32_t)(0xFF000000)
                 || (uint32_t)(rc_low >> 32) != 0) {
-            rc_shift_low:for(int i = 0;i<rc_cache_size;i++) {
+            rc_shift_low:for(int i = 0;i<rc_cache_size && outcount < input_size;i++) {
                 #pragma HLS PIPELINE II=1
                 uint8_t val = (((i==0)?rc_cache:0xFF) + (uint8_t)(rc_low >> 32));
                 rcStream << val;
                 rcOutSize << 1;
+                outcount++;
             }
             rc_cache = (rc_low >> 24) & 0xFF;
             rc_cache_size = 0;
@@ -1457,3 +1477,4 @@ void lzma_rc_2 (
 	rcOutSize << 0;
 }
 */
+} // End of namespace

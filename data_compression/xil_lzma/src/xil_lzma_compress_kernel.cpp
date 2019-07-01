@@ -38,6 +38,7 @@
 #include <ap_int.h>
 #include "xil_lzma_config.h"
 #include "xil_lzma_rc_kernel.h"
+#include "xil_lzma_stream_utils.h"
 
 #define MIN_BLOCK_SIZE 128
 
@@ -55,35 +56,25 @@
 #define BIT 8
 #define MIN_OFFSET 1
 #define MIN_MATCH 4
-//#define LZ_MAX_OFFSET_LIMIT 1048576//65536//1048576//65536//8388608 //65536
-#define LZ_HASH_BIT 24//25//27//26//24//12
-#define LZ_DICT_SIZE (1 << LZ_HASH_BIT) //(50331648)//
-#define LZ_MAX_OFFSET_LIMIT 1073741824//7340032//1048576//65536//65536//1048576//65536
-//#define MATCH_LEN (1*VEC)
+#define LZ_HASH_BIT 26
+#define LZ_DICT_SIZE (1 << LZ_HASH_BIT)
+#define LZ_MAX_OFFSET_LIMIT 0x40000000
 #define MAX_MATCH_LEN 255
-#define OFFSET_WINDOW 1073741824//7340032//1048576//65536//1048576//65536
+#define OFFSET_WINDOW 0x40000000
 #define MATCH_LEN 12 
-#define MIN_MATCH 2
-typedef ap_uint<VEC * BIT> uintV_t;
-typedef ap_uint<MATCH_LEN * BIT> uintMatchV_t;
 #define MATCH_LEVEL 4 
-#define DICT_ELE_WIDTH (MATCH_LEN*BIT + 32)//24)
 
-typedef ap_uint<DICT_ELE_WIDTH> uintDict_t;
-typedef ap_uint< MATCH_LEVEL * DICT_ELE_WIDTH> uintDictV_t;
-
-#define OUT_BYTES (4) 
-typedef ap_uint< OUT_BYTES * BIT> uintOut_t;
-typedef ap_uint< 2  * OUT_BYTES * BIT> uintDoubleOut_t;
 typedef ap_uint<GMEM_DWIDTH> uint512_t;
 typedef ap_uint<64> compressd_dt;
-typedef ap_uint<VEC*32> compressdV_dt;
-typedef ap_uint<64> lzma_compressd_dt;
 
 #if (C_COMPUTE_UNIT == 1)
 namespace cu1
 #elif (C_COMPUTE_UNIT == 2)
 namespace cu2
+#elif (C_COMPUTE_UNIT == 3)
+namespace cu3
+#elif (C_COMPUTE_UNIT == 4)
+namespace cu4
 #endif
 {
 
@@ -103,7 +94,11 @@ void lzma_core(
     uint32_t left_bytes = 0;
     hls::stream<ap_uint<BIT> >       inStream("inStream");
     hls::stream<compressd_dt>      compressdStream("compressdStream");
+    hls::stream<compressd_dt>      crImprover959to999Stream("crImprover959to999Stream");
+    hls::stream<compressd_dt>      crImprover965to987Stream("crImprover965to987Stream");
+
     hls::stream<compressd_dt>      boosterStream("boosterStream");
+    hls::stream<compressd_dt>      filterStream("filterStream");
     hls::stream<uint16_t>           compOutSize("compOutSize");
 	
     hls::stream<ap_uint<512> >           packStream("packStream");
@@ -125,7 +120,10 @@ void lzma_core(
     hls::stream<uint16_t>           rcOutSize("rcOutSize");
     #pragma HLS STREAM variable=inStream             depth=c_gmem_burst_size
     #pragma HLS STREAM variable=compressdStream      depth=c_gmem_burst_size
+    #pragma HLS STREAM variable=crImprover959to999Stream    depth=c_gmem_burst_size
+    #pragma HLS STREAM variable=crImprover965to987Stream    depth=c_gmem_burst_size
     #pragma HLS STREAM variable=boosterStream        depth=c_gmem_burst_size
+    #pragma HLS STREAM variable=filterStream        depth=c_gmem_burst_size
     #pragma HLS STREAM variable=compOutSize          depth=c_gmem_burst_size
     #pragma HLS STREAM variable=rcStream             depth=c_gmem_burst_size
     #pragma HLS STREAM variable=rcOutSize            depth=c_gmem_burst_size
@@ -149,6 +147,9 @@ void lzma_core(
     #pragma HLS RESOURCE variable=inStream            core=FIFO_SRL
     #pragma HLS RESOURCE variable=compressdStream     core=FIFO_SRL
     #pragma HLS RESOURCE variable=boosterStream       core=FIFO_SRL
+    #pragma HLS RESOURCE variable=filterStream       core=FIFO_SRL
+    #pragma HLS RESOURCE variable=crImprover959to999Stream       core=FIFO_SRL
+    #pragma HLS RESOURCE variable=crImprover965to987Stream       core=FIFO_SRL
     #pragma HLS RESOURCE variable=compOutSize         core=FIFO_SRL
     #pragma HLS RESOURCE variable=rcStream            core=FIFO_SRL
     #pragma HLS RESOURCE variable=rcOutSize           core=FIFO_SRL
@@ -171,14 +172,18 @@ void lzma_core(
 #pragma HLS dataflow
     stream_downsizer<uint32_t, GMEM_DWIDTH, 8>(inStream512,inStream,input_size);
     lz_compress<MATCH_LEN,MATCH_LEVEL,LZ_DICT_SIZE,BIT,MIN_OFFSET,MIN_MATCH,LZ_MAX_OFFSET_LIMIT>(inStream,compressdStream,dict_buff1,/*dict_buff2,dict_buff3,*/input_size,left_bytes,last_index);
-    lz_filter(compressdStream, boosterStream,input_size,left_bytes,compOutSize);
+    lz_cr_improve_959to999<MATCH_LEN, OFFSET_WINDOW>(compressdStream, crImprover959to999Stream, input_size, left_bytes);
+    lz_cr_improve_965to987<MATCH_LEN, OFFSET_WINDOW>(crImprover959to999Stream, crImprover965to987Stream, input_size, left_bytes);
+    lz_booster_999to11109<MAX_MATCH_LEN, OFFSET_WINDOW, MATCH_LEN>(crImprover965to987Stream, boosterStream,input_size,left_bytes);
+    //lz_booster_999to11<MAX_MATCH_LEN, OFFSET_WINDOW, MATCH_LEN>(crImprover965to987Stream, boosterStream,input_size,left_bytes,compOutSize);
+    lz_filter(boosterStream, filterStream, input_size,left_bytes,compOutSize);
 
-    lzma_rc_1(boosterStream,compOutSize, symStream64,probsStream64,outStreamSize64, input_size,last_index);
+    lzma_rc_1(filterStream,compOutSize, symStream64,probsStream64,outStreamSize64, input_size,last_index);
     //lzma_rc_1_1(boosterStream,compOutSize, packStream,packsizeStream, input_size,last_index);
     //lzma_rc_1_2(packStream,packsizeStream,symStream64,probsStream64,outStreamSize64);
     lzma_rc_converter(symStream64,probsStream64,outStreamSize64,symStream,probsStream,outStreamSize);
     lzma_rc_2(symStream,probsStream,outStreamSize,rangeStream,lowStream,outStreamSize2);
-    lzma_rc_3(rangeStream,lowStream,outStreamSize2,rcStream,rcOutSize);
+    lzma_rc_3(rangeStream,lowStream,outStreamSize2,rcStream,rcOutSize,input_size);
     upsizer_sizestream<uint16_t, 8, GMEM_DWIDTH>(rcStream,rcOutSize,outStream512,outStream512Size);
 }
 
@@ -196,167 +201,36 @@ void lzma(
                 uint32_t last_index
                 )
 {
-    hls::stream<uint512_t>   inStream512_0("inStream512_0");
-    hls::stream<uint16_t >  outStream512Size_0("outStream512Size_0");
-    hls::stream<uint512_t>   outStream512_0("outStream512_0");
-    #pragma HLS STREAM variable=outStream512Size_0      depth=c_gmem_burst_size
-    #pragma HLS STREAM variable=inStream512_0           depth=c_gmem_burst_size
-    #pragma HLS STREAM variable=outStream512_0          depth=c_gmem_burst_size
+    hls::stream<uint512_t>   inStream512[PARALLEL_BLOCK];
+    hls::stream<uint16_t >  outStream512Size[PARALLEL_BLOCK];
+    hls::stream<uint512_t>   outStream512[PARALLEL_BLOCK];
+    #pragma HLS STREAM variable=outStream512Size      depth=c_gmem_burst_size
+    #pragma HLS STREAM variable=inStream512           depth=c_gmem_burst_size
+    #pragma HLS STREAM variable=outStream512          depth=c_gmem_burst_size
     
-    #pragma HLS RESOURCE variable=outStream512Size_0      core=FIFO_SRL
-    #pragma HLS RESOURCE variable=inStream512_0           core=FIFO_SRL
-    #pragma HLS RESOURCE variable=outStream512_0          core=FIFO_SRL
-
-#if PARALLEL_BLOCK > 1
-    hls::stream<uint512_t>   inStream512_1("inStream512_1");
-    hls::stream<uint16_t >  outStream512Size_1("outStream512Size_1");
-    hls::stream<uint512_t>   outStream512_1("outStream512_1");
-    #pragma HLS STREAM variable=outStream512Size_1      depth=c_gmem_burst_size
-    #pragma HLS STREAM variable=inStream512_1           depth=c_gmem_burst_size
-    #pragma HLS STREAM variable=outStream512_1          depth=c_gmem_burst_size
-    
-    #pragma HLS RESOURCE variable=outStream512Size_1      core=FIFO_SRL
-    #pragma HLS RESOURCE variable=inStream512_1           core=FIFO_SRL
-    #pragma HLS RESOURCE variable=outStream512_1          core=FIFO_SRL
-#endif
-#if PARALLEL_BLOCK > 2
-    hls::stream<uint512_t>   inStream512_2("inStream512_2");
-    hls::stream<uint16_t >  outStream512Size_2("outStream512Size_2");
-    hls::stream<uint512_t>   outStream512_2("outStream512_2");
-    #pragma HLS STREAM variable=outStream512Size_2      depth=c_gmem_burst_size
-    #pragma HLS STREAM variable=inStream512_2           depth=c_gmem_burst_size
-    #pragma HLS STREAM variable=outStream512_2          depth=c_gmem_burst_size
-    
-    #pragma HLS RESOURCE variable=outStream512Size_2      core=FIFO_SRL
-    #pragma HLS RESOURCE variable=inStream512_2           core=FIFO_SRL
-    #pragma HLS RESOURCE variable=outStream512_2          core=FIFO_SRL
-
-    hls::stream<uint512_t>   inStream512_3("inStream512_3");
-    hls::stream<uint16_t >  outStream512Size_3("outStream512Size_3");
-    hls::stream<uint512_t>   outStream512_3("outStream512_3");
-    #pragma HLS STREAM variable=outStream512Size_3      depth=c_gmem_burst_size
-    #pragma HLS STREAM variable=inStream512_3           depth=c_gmem_burst_size
-    #pragma HLS STREAM variable=outStream512_3          depth=c_gmem_burst_size
-    
-    #pragma HLS RESOURCE variable=outStream512Size_3      core=FIFO_SRL
-    #pragma HLS RESOURCE variable=inStream512_3           core=FIFO_SRL
-    #pragma HLS RESOURCE variable=outStream512_3          core=FIFO_SRL
-#endif
-#if PARALLEL_BLOCK > 4
-    hls::stream<uint512_t>   inStream512_4("inStream512_4");
-    hls::stream<uint16_t >  outStream512Size_4("outStream512Size_4");
-    hls::stream<uint512_t>   outStream512_4("outStream512_4");
-    #pragma HLS STREAM variable=outStream512Size_4      depth=c_gmem_burst_size
-    #pragma HLS STREAM variable=inStream512_4           depth=c_gmem_burst_size
-    #pragma HLS STREAM variable=outStream512_4          depth=c_gmem_burst_size
-    
-    #pragma HLS RESOURCE variable=outStream512Size_4      core=FIFO_SRL
-    #pragma HLS RESOURCE variable=inStream512_4           core=FIFO_SRL
-    #pragma HLS RESOURCE variable=outStream512_4          core=FIFO_SRL
-
-    hls::stream<uint512_t>   inStream512_5("inStream512_5");
-    hls::stream<uint16_t >  outStream512Size_5("outStream512Size_5");
-    hls::stream<uint512_t>   outStream512_5("outStream512_5");
-    #pragma HLS STREAM variable=outStream512Size_5      depth=c_gmem_burst_size
-    #pragma HLS STREAM variable=inStream512_5           depth=c_gmem_burst_size
-    #pragma HLS STREAM variable=outStream512_5          depth=c_gmem_burst_size
-    
-    #pragma HLS RESOURCE variable=outStream512Size_5      core=FIFO_SRL
-    #pragma HLS RESOURCE variable=inStream512_5           core=FIFO_SRL
-    #pragma HLS RESOURCE variable=outStream512_5          core=FIFO_SRL
-
-    hls::stream<uint512_t>   inStream512_6("inStream512_6");
-    hls::stream<uint16_t >  outStream512Size_6("outStream512Size_6");
-    hls::stream<uint512_t>   outStream512_6("outStream512_6");
-    #pragma HLS STREAM variable=outStream512Size_6      depth=c_gmem_burst_size
-    #pragma HLS STREAM variable=inStream512_6           depth=c_gmem_burst_size
-    #pragma HLS STREAM variable=outStream512_6          depth=c_gmem_burst_size
-    
-    #pragma HLS RESOURCE variable=outStream512Size_6      core=FIFO_SRL
-    #pragma HLS RESOURCE variable=inStream512_6           core=FIFO_SRL
-    #pragma HLS RESOURCE variable=outStream512_6          core=FIFO_SRL
-
-    hls::stream<uint512_t>   inStream512_7("inStream512_7");
-    hls::stream<uint16_t >  outStream512Size_7("outStream512Size_7");
-    hls::stream<uint512_t>   outStream512_7("outStream512_7");
-    #pragma HLS STREAM variable=outStream512Size_7      depth=c_gmem_burst_size
-    #pragma HLS STREAM variable=inStream512_7           depth=c_gmem_burst_size
-    #pragma HLS STREAM variable=outStream512_7          depth=c_gmem_burst_size
-    
-    #pragma HLS RESOURCE variable=outStream512Size_7      core=FIFO_SRL
-    #pragma HLS RESOURCE variable=inStream512_7           core=FIFO_SRL
-    #pragma HLS RESOURCE variable=outStream512_7          core=FIFO_SRL
-#endif
+    #pragma HLS RESOURCE variable=outStream512Size      core=FIFO_SRL
+    #pragma HLS RESOURCE variable=inStream512           core=FIFO_SRL
+    #pragma HLS RESOURCE variable=outStream512          core=FIFO_SRL
 
     uint32_t left_bytes = 64;
 
     #pragma HLS dataflow
-    mm2s<GMEM_DWIDTH, GMEM_BURST_SIZE>(in,
+    mm2s_nb<GMEM_DWIDTH, GMEM_BURST_SIZE,PARALLEL_BLOCK>(in,
                                        input_idx,
-                                       inStream512_0, 
-#if PARALLEL_BLOCK > 1
-                                       inStream512_1, 
-#endif
-#if PARALLEL_BLOCK > 2
-                                       inStream512_2, 
-                                       inStream512_3, 
-#endif
-#if PARALLEL_BLOCK > 4
-                                       inStream512_4, 
-                                       inStream512_5, 
-                                       inStream512_6, 
-                                       inStream512_7, 
-#endif
+                                       inStream512, 
                                        input_size
                                       );
-    lzma_core(inStream512_0,dict_buff1,/*dict_buff2,dict_buff3,*/max_lit_limit,input_size[0],0,outStream512_0,outStream512Size_0,last_index);
-
-#if PARALLEL_BLOCK > 1
-    lzma_core(inStream512_1,outStream512_1,outStream512Size_1,max_lit_limit,input_size[1],1);
-#endif
-#if PARALLEL_BLOCK > 2
-    lzma_core(inStream512_2,outStream512_2,outStream512Size_2,max_lit_limit,input_size[2],2);
-    lzma_core(inStream512_3,outStream512_3,outStream512Size_3,max_lit_limit,input_size[3],3);
-#endif
-#if PARALLEL_BLOCK > 4
-    lzma_core(inStream512_4,outStream512_4,outStream512Size_4,max_lit_limit,input_size[4],4);
-    lzma_core(inStream512_5,outStream512_5,outStream512Size_5,max_lit_limit,input_size[5],5);
-    lzma_core(inStream512_6,outStream512_6,outStream512Size_6,max_lit_limit,input_size[6],6);
-    lzma_core(inStream512_7,outStream512_7,outStream512Size_7,max_lit_limit,input_size[7],7);
-#endif
+    for(uint8_t i = 0; i < PARALLEL_BLOCK; i++){
+        #pragma HLS UNROLL
+        lzma_core(inStream512[i],dict_buff1,/*dict_buff2,dict_buff3,*/max_lit_limit,input_size[i],i,outStream512[i],outStream512Size[i],last_index);
+    }
 
     s2mm_compress<uint32_t, GMEM_BURST_SIZE, GMEM_DWIDTH>(out,
-                                                 output_idx,
-                                                 outStream512_0,
-#if PARALLEL_BLOCK > 1
-                                                 outStream512_1,
-#endif
-#if PARALLEL_BLOCK > 2
-                                                 outStream512_2,
-                                                 outStream512_3,
-#endif
-#if PARALLEL_BLOCK > 4
-                                                 outStream512_4,
-                                                 outStream512_5,
-                                                 outStream512_6,
-                                                 outStream512_7,
-#endif
-                                                 outStream512Size_0,
-#if PARALLEL_BLOCK > 1
-                                                 outStream512Size_1,
-#endif
-#if PARALLEL_BLOCK > 2
-                                                 outStream512Size_2,
-                                                 outStream512Size_3,
-#endif
-#if PARALLEL_BLOCK > 4
-                                                 outStream512Size_4,
-                                                 outStream512Size_5,
-                                                 outStream512Size_6,
-                                                 outStream512Size_7,
-#endif
-                                                 output_size
-                                                );
+                                                   output_idx,
+                                                   outStream512,
+                                                   outStream512Size,
+                                                   output_size
+                                                  );
 
 }
 } // End of namespace
@@ -366,6 +240,10 @@ extern "C" {
 void xil_lzma_cu1
 #elif (C_COMPUTE_UNIT == 2)
 void xil_lzma_cu2
+#elif (C_COMPUTE_UNIT == 3)
+void xil_lzma_cu3
+#elif (C_COMPUTE_UNIT == 4)
+void xil_lzma_cu4
 #endif
 (
                 const uint512_t *in,      
@@ -423,6 +301,12 @@ void xil_lzma_cu2
     #pragma HLS ARRAY_PARTITION variable=max_lit_limit dim=0 complete
 	// Figure out total blocks & block sizes
 	//printf("=======================================================================dataprocessed:%u\n",dataprocessed);
+	
+	if(dataprocessed == 0) {
+		for(uint32_t a1 = 0;a1<LZ_DICT_SIZE;++a1) {
+				dict_buff1[a1] = -1;
+			}
+	}
 /*	
 	if(dataprocessed == 0) {
 		for(uint32_t a1 = 0;a1<16384;++a1) {
@@ -465,12 +349,16 @@ void xil_lzma_cu2
             max_lit_limit[j] = 0;
         }
     	// Call for parallel compression
-#if (C_COMPUTE_UNIT == 1)
         last_index = i*max_block_size;
         last_index += dataprocessed;
+#if (C_COMPUTE_UNIT == 1)
         cu1::lzma(in,out,dict_buff1,/*dict_buff2,dict_buff3,*/input_idx,output_idx,input_block_size,output_block_size,max_lit_limit,last_index);
 #elif (C_COMPUTE_UNIT == 2)
-        cu2::lzma(in,out,input_idx,output_idx,input_block_size,output_block_size,max_lit_limit);
+        cu2::lzma(in,out,dict_buff1,/*dict_buff2,dict_buff3,*/input_idx,output_idx,input_block_size,output_block_size,max_lit_limit,last_index);
+#elif (C_COMPUTE_UNIT == 3)
+        cu3::lzma(in,out,dict_buff1,/*dict_buff2,dict_buff3,*/input_idx,output_idx,input_block_size,output_block_size,max_lit_limit,last_index);
+#elif (C_COMPUTE_UNIT == 4)
+        cu4::lzma(in,out,dict_buff1,/*dict_buff2,dict_buff3,*/input_idx,output_idx,input_block_size,output_block_size,max_lit_limit,last_index);
 #endif
         for(int k = 0; k < nblocks; k++) {
             compressd_size[block_idx] = output_block_size[k]; 

@@ -95,115 +95,29 @@ void snappy_dec(
                 const uint32_t  output_size1[PARALLEL_BLOCK]
                 )
 {
-    hls::stream<uintMemWidth_t> inStreamMemWidth_0("inStreamMemWidth_0"); 
-    hls::stream<uintMemWidth_t> outStreamMemWidth_0("outStreamMemWidth_0"); 
-    #pragma HLS STREAM variable=inStreamMemWidth_0 depth=c_gmem_burst_size
-    #pragma HLS STREAM variable=outStreamMemWidth_0 depth=c_gmem_burst_size
-    #pragma HLS RESOURCE variable=inStreamMemWidth_0  core=FIFO_SRL
-    #pragma HLS RESOURCE variable=outStreamMemWidth_0 core=FIFO_SRL
-#if PARALLEL_BLOCK > 1
-    hls::stream<uintMemWidth_t> inStreamMemWidth_1("inStreamMemWidth_1");
-    hls::stream<uintMemWidth_t> outStreamMemWidth_1("outStreamMemWidth_1"); 
-    #pragma HLS STREAM variable=inStreamMemWidth_1 depth=c_gmem_burst_size
-    #pragma HLS STREAM variable=outStreamMemWidth_1 depth=c_gmem_burst_size
-	#pragma HLS RESOURCE variable=inStreamMemWidth_1  core=FIFO_SRL
-    #pragma HLS RESOURCE variable=outStreamMemWidth_1 core=FIFO_SRL
-#endif 
-#if PARALLEL_BLOCK > 2
-    hls::stream<uintMemWidth_t> inStreamMemWidth_2("inStreamMemWidth_2"); 
-    hls::stream<uintMemWidth_t> inStreamMemWidth_3("inStreamMemWidth_3"); 
-    hls::stream<uintMemWidth_t> outStreamMemWidth_2("outStreamMemWidth_2"); 
-    hls::stream<uintMemWidth_t> outStreamMemWidth_3("outStreamMemWidth_3"); 
-    #pragma HLS STREAM variable=inStreamMemWidth_2 depth=c_gmem_burst_size
-    #pragma HLS STREAM variable=inStreamMemWidth_3 depth=c_gmem_burst_size
-    #pragma HLS STREAM variable=outStreamMemWidth_2 depth=c_gmem_burst_size
-    #pragma HLS STREAM variable=outStreamMemWidth_3 depth=c_gmem_burst_size
-	#pragma HLS RESOURCE variable=inStreamMemWidth_2  core=FIFO_SRL
-    #pragma HLS RESOURCE variable=outStreamMemWidth_2 core=FIFO_SRL
-    #pragma HLS RESOURCE variable=inStreamMemWidth_3  core=FIFO_SRL
-    #pragma HLS RESOURCE variable=outStreamMemWidth_3 core=FIFO_SRL
-#endif
-#if PARALLEL_BLOCK > 4
-    hls::stream<uintMemWidth_t> inStreamMemWidth_4("inStreamMemWidth_4"); 
-    hls::stream<uintMemWidth_t> inStreamMemWidth_5("inStreamMemWidth_5"); 
-    hls::stream<uintMemWidth_t> inStreamMemWidth_6("inStreamMemWidth_6"); 
-    hls::stream<uintMemWidth_t> inStreamMemWidth_7("inStreamMemWidth_7"); 
-    hls::stream<uintMemWidth_t> outStreamMemWidth_4("outStreamMemWidth_4"); 
-    hls::stream<uintMemWidth_t> outStreamMemWidth_5("outStreamMemWidth_5"); 
-    hls::stream<uintMemWidth_t> outStreamMemWidth_6("outStreamMemWidth_6"); 
-    hls::stream<uintMemWidth_t> outStreamMemWidth_7("outStreamMemWidth_7"); 
-    #pragma HLS STREAM variable=inStreamMemWidth_4 depth=c_gmem_burst_size
-    #pragma HLS STREAM variable=inStreamMemWidth_5 depth=c_gmem_burst_size
-    #pragma HLS STREAM variable=inStreamMemWidth_6 depth=c_gmem_burst_size
-    #pragma HLS STREAM variable=inStreamMemWidth_7 depth=c_gmem_burst_size
-    #pragma HLS STREAM variable=outStreamMemWidth_4 depth=c_gmem_burst_size
-    #pragma HLS STREAM variable=outStreamMemWidth_5 depth=c_gmem_burst_size
-    #pragma HLS STREAM variable=outStreamMemWidth_6 depth=c_gmem_burst_size
-    #pragma HLS STREAM variable=outStreamMemWidth_7 depth=c_gmem_burst_size
+    hls::stream<uintMemWidth_t> inStreamMemWidth[PARALLEL_BLOCK]; 
+    hls::stream<uintMemWidth_t> outStreamMemWidth[PARALLEL_BLOCK]; 
 
-    #pragma HLS RESOURCE variable=inStreamMemWidth_4  core=FIFO_SRL
-    #pragma HLS RESOURCE variable=outStreamMemWidth_4 core=FIFO_SRL
-	
-    #pragma HLS RESOURCE variable=inStreamMemWidth_5  core=FIFO_SRL
-    #pragma HLS RESOURCE variable=outStreamMemWidth_5 core=FIFO_SRL
-	
-    #pragma HLS RESOURCE variable=inStreamMemWidth_6  core=FIFO_SRL
-    #pragma HLS RESOURCE variable=outStreamMemWidth_6 core=FIFO_SRL
-	
-    #pragma HLS RESOURCE variable=inStreamMemWidth_7  core=FIFO_SRL
-    #pragma HLS RESOURCE variable=outStreamMemWidth_7 core=FIFO_SRL
-#endif
+    #pragma HLS STREAM variable=inStreamMemWidth depth=c_gmem_burst_size
+    #pragma HLS STREAM variable=outStreamMemWidth depth=c_gmem_burst_size
+    #pragma HLS RESOURCE variable=inStreamMemWidth  core=FIFO_SRL
+    #pragma HLS RESOURCE variable=outStreamMemWidth core=FIFO_SRL
+
     #pragma HLS dataflow    
     // Transfer data from global memory to kernel
-    mm2s<GMEM_DWIDTH, GMEM_BURST_SIZE>(in,
+    mm2s_nb<GMEM_DWIDTH, GMEM_BURST_SIZE, PARALLEL_BLOCK>(in,
                                        input_idx,
-                                       inStreamMemWidth_0,
-#if PARALLEL_BLOCK > 1
-                                       inStreamMemWidth_1,
-#endif
-#if PARALLEL_BLOCK > 2
-                                       inStreamMemWidth_2,
-                                       inStreamMemWidth_3,
-#endif
-#if PARALLEL_BLOCK > 4
-                                       inStreamMemWidth_4,
-                                       inStreamMemWidth_5,
-                                       inStreamMemWidth_6,
-                                       inStreamMemWidth_7,
-#endif
+                                       inStreamMemWidth,
                                        input_size
                                       );
-   snappy_core(inStreamMemWidth_0,outStreamMemWidth_0, input_size1[0],output_size1[0]); 
-#if PARALLEL_BLOCK > 1
-   snappy_core(inStreamMemWidth_1,outStreamMemWidth_1, input_size1[1],output_size1[1]); 
-#endif
-#if PARALLEL_BLOCK > 2
-   snappy_core(inStreamMemWidth_2,outStreamMemWidth_2, input_size1[2],output_size1[2]); 
-   snappy_core(inStreamMemWidth_3,outStreamMemWidth_3, input_size1[3],output_size1[3]); 
-#endif
-#if PARALLEL_BLOCK > 4
-   snappy_core(inStreamMemWidth_4,outStreamMemWidth_4, input_size1[4],output_size1[4]); 
-   snappy_core(inStreamMemWidth_5,outStreamMemWidth_5, input_size1[5],output_size1[5]); 
-   snappy_core(inStreamMemWidth_6,outStreamMemWidth_6, input_size1[6],output_size1[6]); 
-   snappy_core(inStreamMemWidth_7,outStreamMemWidth_7, input_size1[7],output_size1[7]); 
-#endif
+    for (uint8_t i = 0; i < PARALLEL_BLOCK; i++){
+    #pragma HLS UNROLL
+       snappy_core(inStreamMemWidth[i],outStreamMemWidth[i], input_size1[i],output_size1[i]);
+    } 
     // Transfer data from kernel to global memory
-   s2mm_decompress<uint32_t, GMEM_BURST_SIZE, GMEM_DWIDTH>(out,
+   s2mm_nb<uint32_t, GMEM_BURST_SIZE, GMEM_DWIDTH, PARALLEL_BLOCK>(out,
                                                  input_idx,
-                                                 outStreamMemWidth_0,
-#if PARALLEL_BLOCK > 1
-                                                 outStreamMemWidth_1,
-#endif
-#if PARALLEL_BLOCK > 2
-                                                 outStreamMemWidth_2,
-                                                 outStreamMemWidth_3,
-#endif
-#if PARALLEL_BLOCK > 4
-                                                 outStreamMemWidth_4,
-                                                 outStreamMemWidth_5,
-                                                 outStreamMemWidth_6,
-                                                 outStreamMemWidth_7,
-#endif
+                                                 outStreamMemWidth,
                                                  output_size
                                                 );
 

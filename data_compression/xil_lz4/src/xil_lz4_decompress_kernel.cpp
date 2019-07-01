@@ -34,7 +34,7 @@
 #include <assert.h>
 #include "hls_stream.h"
 #include <ap_int.h>
-#include "xil_decompress_engine.h"
+#include "xil_lz4_decompress_engine.h"
 
 #define MAX_OFFSET 65536 
 #define HISTORY_SIZE MAX_OFFSET
@@ -71,9 +71,9 @@ void lz4_core(
     hls::stream<uintV_t>    instreamV("instreamV"); 
     hls::stream<compressd_dt> decompressd_stream("decompressd_stream"); 
     hls::stream<uintV_t>    decompressed_stream("decompressed_stream");
-    #pragma HLS STREAM variable=instreamV               depth=2
-    #pragma HLS STREAM variable=decompressd_stream          depth=2
-    #pragma HLS STREAM variable=decompressed_stream     depth=2
+    #pragma HLS STREAM variable=instreamV               depth=8
+    #pragma HLS STREAM variable=decompressd_stream          depth=8
+    #pragma HLS STREAM variable=decompressed_stream     depth=8
     #pragma HLS RESOURCE variable=instreamV             core=FIFO_SRL
     #pragma HLS RESOURCE variable=decompressd_stream        core=FIFO_SRL
     #pragma HLS RESOURCE variable=decompressed_stream   core=FIFO_SRL
@@ -95,117 +95,32 @@ void lz4_dec(
                 const uint32_t  output_size1[PARALLEL_BLOCK]
                 )
 {
-    hls::stream<uintMemWidth_t> inStreamMemWidth_0("inStreamMemWidth_0"); 
-    hls::stream<uintMemWidth_t> outStreamMemWidth_0("outStreamMemWidth_0"); 
+    hls::stream<uintMemWidth_t> inStreamMemWidth[PARALLEL_BLOCK]; 
+    hls::stream<uintMemWidth_t> outStreamMemWidth[PARALLEL_BLOCK]; 
     #pragma HLS STREAM variable=inStreamMemWidth_0 depth=c_gmem_burst_size
     #pragma HLS STREAM variable=outStreamMemWidth_0 depth=c_gmem_burst_size
     #pragma HLS RESOURCE variable=inStreamMemWidth_0  core=FIFO_SRL
     #pragma HLS RESOURCE variable=outStreamMemWidth_0 core=FIFO_SRL
-#if PARALLEL_BLOCK > 1
-    hls::stream<uintMemWidth_t> inStreamMemWidth_1("inStreamMemWidth_1");
-    hls::stream<uintMemWidth_t> outStreamMemWidth_1("outStreamMemWidth_1"); 
-    #pragma HLS STREAM variable=inStreamMemWidth_1 depth=c_gmem_burst_size
-    #pragma HLS STREAM variable=outStreamMemWidth_1 depth=c_gmem_burst_size
-	#pragma HLS RESOURCE variable=inStreamMemWidth_1  core=FIFO_SRL
-    #pragma HLS RESOURCE variable=outStreamMemWidth_1 core=FIFO_SRL
-#endif 
-#if PARALLEL_BLOCK > 2
-    hls::stream<uintMemWidth_t> inStreamMemWidth_2("inStreamMemWidth_2"); 
-    hls::stream<uintMemWidth_t> inStreamMemWidth_3("inStreamMemWidth_3"); 
-    hls::stream<uintMemWidth_t> outStreamMemWidth_2("outStreamMemWidth_2"); 
-    hls::stream<uintMemWidth_t> outStreamMemWidth_3("outStreamMemWidth_3"); 
-    #pragma HLS STREAM variable=inStreamMemWidth_2 depth=c_gmem_burst_size
-    #pragma HLS STREAM variable=inStreamMemWidth_3 depth=c_gmem_burst_size
-    #pragma HLS STREAM variable=outStreamMemWidth_2 depth=c_gmem_burst_size
-    #pragma HLS STREAM variable=outStreamMemWidth_3 depth=c_gmem_burst_size
-	#pragma HLS RESOURCE variable=inStreamMemWidth_2  core=FIFO_SRL
-    #pragma HLS RESOURCE variable=outStreamMemWidth_2 core=FIFO_SRL
-    #pragma HLS RESOURCE variable=inStreamMemWidth_3  core=FIFO_SRL
-    #pragma HLS RESOURCE variable=outStreamMemWidth_3 core=FIFO_SRL
-#endif
-#if PARALLEL_BLOCK > 4
-    hls::stream<uintMemWidth_t> inStreamMemWidth_4("inStreamMemWidth_4"); 
-    hls::stream<uintMemWidth_t> inStreamMemWidth_5("inStreamMemWidth_5"); 
-    hls::stream<uintMemWidth_t> inStreamMemWidth_6("inStreamMemWidth_6"); 
-    hls::stream<uintMemWidth_t> inStreamMemWidth_7("inStreamMemWidth_7"); 
-    hls::stream<uintMemWidth_t> outStreamMemWidth_4("outStreamMemWidth_4"); 
-    hls::stream<uintMemWidth_t> outStreamMemWidth_5("outStreamMemWidth_5"); 
-    hls::stream<uintMemWidth_t> outStreamMemWidth_6("outStreamMemWidth_6"); 
-    hls::stream<uintMemWidth_t> outStreamMemWidth_7("outStreamMemWidth_7"); 
-    #pragma HLS STREAM variable=inStreamMemWidth_4 depth=c_gmem_burst_size
-    #pragma HLS STREAM variable=inStreamMemWidth_5 depth=c_gmem_burst_size
-    #pragma HLS STREAM variable=inStreamMemWidth_6 depth=c_gmem_burst_size
-    #pragma HLS STREAM variable=inStreamMemWidth_7 depth=c_gmem_burst_size
-    #pragma HLS STREAM variable=outStreamMemWidth_4 depth=c_gmem_burst_size
-    #pragma HLS STREAM variable=outStreamMemWidth_5 depth=c_gmem_burst_size
-    #pragma HLS STREAM variable=outStreamMemWidth_6 depth=c_gmem_burst_size
-    #pragma HLS STREAM variable=outStreamMemWidth_7 depth=c_gmem_burst_size
 
-    #pragma HLS RESOURCE variable=inStreamMemWidth_4  core=FIFO_SRL
-    #pragma HLS RESOURCE variable=outStreamMemWidth_4 core=FIFO_SRL
-	
-    #pragma HLS RESOURCE variable=inStreamMemWidth_5  core=FIFO_SRL
-    #pragma HLS RESOURCE variable=outStreamMemWidth_5 core=FIFO_SRL
-	
-    #pragma HLS RESOURCE variable=inStreamMemWidth_6  core=FIFO_SRL
-    #pragma HLS RESOURCE variable=outStreamMemWidth_6 core=FIFO_SRL
-	
-    #pragma HLS RESOURCE variable=inStreamMemWidth_7  core=FIFO_SRL
-    #pragma HLS RESOURCE variable=outStreamMemWidth_7 core=FIFO_SRL
-#endif
     #pragma HLS dataflow    
     // Transfer data from global memory to kernel
-    mm2s<GMEM_DWIDTH, GMEM_BURST_SIZE>(in,
-                                       input_idx,
-                                       inStreamMemWidth_0,
-#if PARALLEL_BLOCK > 1
-                                       inStreamMemWidth_1,
-#endif
-#if PARALLEL_BLOCK > 2
-                                       inStreamMemWidth_2,
-                                       inStreamMemWidth_3,
-#endif
-#if PARALLEL_BLOCK > 4
-                                       inStreamMemWidth_4,
-                                       inStreamMemWidth_5,
-                                       inStreamMemWidth_6,
-                                       inStreamMemWidth_7,
-#endif
-                                       input_size
-                                      );
-   lz4_core(inStreamMemWidth_0,outStreamMemWidth_0, input_size1[0],output_size1[0]); 
-#if PARALLEL_BLOCK > 1
-   lz4_core(inStreamMemWidth_1,outStreamMemWidth_1, input_size1[1],output_size1[1]); 
-#endif
-#if PARALLEL_BLOCK > 2
-   lz4_core(inStreamMemWidth_2,outStreamMemWidth_2, input_size1[2],output_size1[2]); 
-   lz4_core(inStreamMemWidth_3,outStreamMemWidth_3, input_size1[3],output_size1[3]); 
-#endif
-#if PARALLEL_BLOCK > 4
-   lz4_core(inStreamMemWidth_4,outStreamMemWidth_4, input_size1[4],output_size1[4]); 
-   lz4_core(inStreamMemWidth_5,outStreamMemWidth_5, input_size1[5],output_size1[5]); 
-   lz4_core(inStreamMemWidth_6,outStreamMemWidth_6, input_size1[6],output_size1[6]); 
-   lz4_core(inStreamMemWidth_7,outStreamMemWidth_7, input_size1[7],output_size1[7]); 
-#endif
+    mm2s_nb<GMEM_DWIDTH, GMEM_BURST_SIZE,PARALLEL_BLOCK>(in,
+                                                         input_idx,
+                                                         inStreamMemWidth,
+                                                         input_size
+                                                        );
+    for (uint8_t i = 0; i < PARALLEL_BLOCK; i++){
+    #pragma HLS UNROLL
+       // lz4_core is instantiated based on the PARALLEL_BLOCK 
+        lz4_core(inStreamMemWidth[i],outStreamMemWidth[i], input_size1[i],output_size1[i]); 
+    }
+
     // Transfer data from kernel to global memory
-   s2mm_decompress<uint32_t, GMEM_BURST_SIZE, GMEM_DWIDTH>(out,
-                                                 input_idx,
-                                                 outStreamMemWidth_0,
-#if PARALLEL_BLOCK > 1
-                                                 outStreamMemWidth_1,
-#endif
-#if PARALLEL_BLOCK > 2
-                                                 outStreamMemWidth_2,
-                                                 outStreamMemWidth_3,
-#endif
-#if PARALLEL_BLOCK > 4
-                                                 outStreamMemWidth_4,
-                                                 outStreamMemWidth_5,
-                                                 outStreamMemWidth_6,
-                                                 outStreamMemWidth_7,
-#endif
-                                                 output_size
-                                                );
+   s2mm_nb<uint32_t, GMEM_BURST_SIZE, GMEM_DWIDTH, PARALLEL_BLOCK>(out,
+                                                                          input_idx,
+                                                                          outStreamMemWidth,
+                                                                          output_size
+                                                                         );
 
 }
 
@@ -254,14 +169,14 @@ void xil_lz4_dec_cu2
 
     //printf ("In decode compute unit %d no_blocks %d\n", D_COMPUTE_UNIT, no_blocks);   
  
-    for (int i = 0; i < no_blocks; i+=PARALLEL_BLOCK) {
+    for (uint32_t i = 0; i < no_blocks; i+=PARALLEL_BLOCK) {
         
-        int nblocks = PARALLEL_BLOCK;
+        uint32_t nblocks = PARALLEL_BLOCK;
         if((i + PARALLEL_BLOCK) > no_blocks) {
             nblocks = no_blocks - i;
         }
 
-        for (int j = 0; j < PARALLEL_BLOCK; j++) {
+        for (uint32_t j = 0; j < PARALLEL_BLOCK; j++) {
             if(j < nblocks) {
                 uint32_t iSize = in_compress_size[i + j];
                 uint32_t oSize = in_block_size[i + j];

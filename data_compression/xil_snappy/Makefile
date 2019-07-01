@@ -137,41 +137,41 @@ K_CLFLAGS= --xp "param:compiler.enableAutoPipelining=false" -I./src/ -DPARALLEL_
 K_CLFLAGS+=$(stream_utils_CLFLAGS) $(lz_compress_CLFLAGS)
 
 $(XCLBIN)/xil_snappy_xo_compress_$(NPB)_cu1.$(TARGET).$(DSA).xo: ./src/xil_snappy_compress_kernel.cpp ./src/xil_snappy_config.h $(stream_utils_HDRS) $(lz_compress_HDRS) ./src/xil_compress_engine.h
-	$(XOCC) --temp_dir $(BUILD_DIR_compress) -c -s -k xil_snappy_cu1 $(K_CLFLAGS) -DC_COMPUTE_UNIT=1 -o'$@' $(CLFLAGS) -I'$(<D)' '$<'
+	$(XOCC) --temp_dir $(BUILD_DIR_compress) --report_dir reports/$(BUILD_DIR_compress) -c -s -k xil_snappy_cu1 $(K_CLFLAGS) -DC_COMPUTE_UNIT=1 -o'$@' $(CLFLAGS) -I'$(<D)' '$<'
    	
 $(XCLBIN)/xil_snappy_xo_compress_$(NPB)_cu2.$(TARGET).$(DSA).xo: ./src/xil_snappy_compress_kernel.cpp ./src/xil_snappy_config.h $(stream_utils_HDRS) $(lz_compress_HDRS) ./src/xil_compress_engine.h
-	$(XOCC) --temp_dir $(BUILD_DIR_compress) -c -s -k xil_snappy_cu2 $(K_CLFLAGS) -DC_COMPUTE_UNIT=2 -o'$@' $(CLFLAGS) -I'$(<D)' '$<' 
+	$(XOCC) --temp_dir $(BUILD_DIR_compress) --report_dir reports/$(BUILD_DIR_compress) -c -s -k xil_snappy_cu2 $(K_CLFLAGS) -DC_COMPUTE_UNIT=2 -o'$@' $(CLFLAGS) -I'$(<D)' '$<' 
 
 $(XCLBIN)/xil_snappy_xo_decompress_$(NPB)_cu1.$(TARGET).$(DSA).xo: ./src/xil_snappy_decompress_kernel.cpp ./src/xil_snappy_config.h $(stream_utils_HDRS) $(lz_compress_HDRS) ./src/xil_decompress_engine.h
-	$(XOCC) --temp_dir $(BUILD_DIR_decompress) -c -s -k xil_snappy_dec_cu1 $(K_CLFLAGS) -DD_COMPUTE_UNIT=1 -o'$@' $(CLFLAGS) -I'$(<D)' '$<' 
+	$(XOCC) --temp_dir $(BUILD_DIR_decompress) --report_dir reports/$(BUILD_DIR_decompress) -c -s -k xil_snappy_dec_cu1 $(K_CLFLAGS) -DD_COMPUTE_UNIT=1 -o'$@' $(CLFLAGS) -I'$(<D)' '$<' 
 
 $(XCLBIN)/xil_snappy_xo_decompress_$(NPB)_cu2.$(TARGET).$(DSA).xo: ./src/xil_snappy_decompress_kernel.cpp ./src/xil_snappy_config.h $(stream_utils_HDRS) $(lz_compress_HDRS) ./src/xil_decompress_engine.h
-	$(XOCC) --temp_dir $(BUILD_DIR_decompress) -c -s -k xil_snappy_dec_cu2 $(K_CLFLAGS) -DD_COMPUTE_UNIT=2 -o'$@' $(CLFLAGS) -I'$(<D)' '$<' 
+	$(XOCC) --temp_dir $(BUILD_DIR_decompress) --report_dir reports/$(BUILD_DIR_decompress) -c -s -k xil_snappy_dec_cu2 $(K_CLFLAGS) -DD_COMPUTE_UNIT=2 -o'$@' $(CLFLAGS) -I'$(<D)' '$<' 
 
 
 ifeq ($(strip $(SINGLE_XCLBIN)),true)
 $(XCLBIN)/xil_snappy_compress_decompress_$(NPB).$(TARGET).$(DSA).xclbin: $(BINARY_CONTAINERS_xil_snappy_compress_decompress_OBJS)
 	mkdir -p $(XCLBIN)
 ifeq ($(strip $(C_COMPUTE_UNITS)), 1)
-	$(XOCC) $(CLFLAGS) -l $(LDCLFLAGS) $(C_LDCLFLAGS) $(D_LDCLFLAGS) --xp param:compiler.userPostSysLinkTcl=$(CURDIR)/scripts/single_compute_units/userPostSysLink.tcl -o'$@' $(+)
+	$(XOCC) --report_dir reports/$(BUILD_DIR_compress) $(CLFLAGS) -l $(LDCLFLAGS) $(C_LDCLFLAGS) $(D_LDCLFLAGS) --xp param:compiler.userPostSysLinkTcl=$(CURDIR)/scripts/single_compute_units/userPostSysLink.tcl -o'$@' $(+)
 else
-	$(XOCC) $(CLFLAGS) -l $(LDCLFLAGS) $(C_LDCLFLAGS) $(D_LDCLFLAGS) --xp param:compiler.userPostSysLinkTcl=$(CURDIR)/scripts/two_compute_units/userPostSysLink.tcl -o'$@' $(+)
+	$(XOCC) --report_dir reports/$(BUILD_DIR_compress) $(CLFLAGS) -l $(LDCLFLAGS) $(C_LDCLFLAGS) $(D_LDCLFLAGS) --xp param:compiler.userPostSysLinkTcl=$(CURDIR)/scripts/two_compute_units/userPostSysLink.tcl -o'$@' $(+)
 endif
 else    
 $(XCLBIN)/xil_snappy_compress_$(NPB).$(TARGET).$(DSA).xclbin: $(BINARY_CONTAINERS_xil_snappy_compress_OBJS)
 	mkdir -p $(XCLBIN)
 ifeq ($(strip $(C_COMPUTE_UNITS)), 1)
-	$(XOCC) $(CLFLAGS) -l $(LDCLFLAGS) $(C_LDCLFLAGS) --xp param:compiler.userPostSysLinkTcl=$(CURDIR)/scripts/single_compute_units/userPostSysLinkcomp.tcl -o'$@' $(+)
+	$(XOCC) --temp_dir $(BUILD_DIR_compress) --report_dir reports/$(BUILD_DIR_compress) $(CLFLAGS) -l $(LDCLFLAGS) $(C_LDCLFLAGS) --xp param:compiler.userPostSysLinkTcl=$(CURDIR)/scripts/single_compute_units/userPostSysLinkcomp.tcl -o'$@' $(+)
 else
-	$(XOCC) $(CLFLAGS) -l $(LDCLFLAGS) $(C_LDCLFLAGS) --xp param:compiler.userPostSysLinkTcl=$(CURDIR)/scripts/two_compute_units/userPostSysLinkcomp.tcl -o'$@' $(+)
+	$(XOCC) --temp_dir $(BUILD_DIR_compress) --report_dir reports/$(BUILD_DIR_compress) $(CLFLAGS) -l $(LDCLFLAGS) $(C_LDCLFLAGS) --xp param:compiler.userPostSysLinkTcl=$(CURDIR)/scripts/two_compute_units/userPostSysLinkcomp.tcl -o'$@' $(+)
 endif
 
 $(XCLBIN)/xil_snappy_decompress_$(NPB).$(TARGET).$(DSA).xclbin: $(BINARY_CONTAINERS_xil_snappy_decompress_OBJS)
 	mkdir -p $(XCLBIN)
 ifeq ($(strip $(C_COMPUTE_UNITS)), 1)
-	$(XOCC) $(CLFLAGS) -l $(LDCLFLAGS) $(D_LDCLFLAGS) --xp param:compiler.userPostSysLinkTcl=$(CURDIR)/scripts/single_compute_units/userPostSysLinkdecomp.tcl -o'$@' $(+)
+	$(XOCC) --temp_dir $(BUILD_DIR_decompress) --report_dir reports/$(BUILD_DIR_decompress) $(CLFLAGS) -l $(LDCLFLAGS) $(D_LDCLFLAGS) --xp param:compiler.userPostSysLinkTcl=$(CURDIR)/scripts/single_compute_units/userPostSysLinkdecomp.tcl -o'$@' $(+)
 else
-	$(XOCC) $(CLFLAGS) -l $(LDCLFLAGS) $(D_LDCLFLAGS) --xp param:compiler.userPostSysLinkTcl=$(CURDIR)/scripts/two_compute_units/userPostSysLinkdecomp.tcl -o'$@' $(+)
+	$(XOCC) --temp_dir $(BUILD_DIR_decompress) --report_dir reports/$(BUILD_DIR_decompress) $(CLFLAGS) -l $(LDCLFLAGS) $(D_LDCLFLAGS) --xp param:compiler.userPostSysLinkTcl=$(CURDIR)/scripts/two_compute_units/userPostSysLinkdecomp.tcl -o'$@' $(+)
 endif
 endif
 
@@ -187,7 +187,7 @@ $(EMCONFIG_DIR)/emconfig.json:
 check: all
 ifeq ($(TARGET),$(filter $(TARGET),sw_emu hw_emu))
 	$(CP) $(EMCONFIG_DIR)/emconfig.json .
-	XCL_EMULATION_MODE=$(TARGET) ./$(EXECUTABLE) -l ./cantrbry.list
+	XCL_EMULATION_MODE=$(TARGET) ./$(EXECUTABLE) -l ./test.list
 else
 	 ./$(EXECUTABLE) -l ./test.list
 endif

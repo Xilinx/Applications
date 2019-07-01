@@ -59,12 +59,12 @@
 #define BSIZE_STD_4096KB 112
 
 // Maximum block sizes supported by LZMA
-#define MAX_BSIZE_64KB 65536
-#define MAX_BSIZE_256KB 262144
-#define MAX_BSIZE_1024KB 1048576
-#define MAX_BSIZE_4096KB 4194304
+#define MAX_BSIZE_64KB 0x10000
+#define MAX_BSIZE_256KB 0x40000
+#define MAX_BSIZE_1024KB 0x100000
+#define MAX_BSIZE_4096KB 0x400000
 
-#define MEM_ALLOC_CPU (16*4*16*1024*1024)
+#define MEM_ALLOC_CPU (1024*1024*1024)
 
 int validate(std::string & inFile_name, std::string & outFile_name);
 
@@ -76,6 +76,7 @@ static uint32_t get_file_size(std::ifstream &file){
     return file_size;
 }
 */
+
 
 static uint64_t get_bigfile_size(std::ifstream &file){
     file.seekg(0,file.end);
@@ -95,11 +96,11 @@ class xil_lzma {
         int release();
         //uint32_t compress_sequential(uint8_t *in, uint8_t *out, uint32_t actual_size);
         uint32_t compress(uint8_t *in, uint8_t *out, uint32_t actual_size,
-		                  uint32_t host_buffer_size,std::ofstream &ofs,void *Gdict1,
-		                  void *Gdict2,void *Gdict3,void *Gdict4);
-	    uint64_t compress_file(std::string & inFile_name, std::string & outFile_name);
+		                  uint32_t host_buffer_size,std::ofstream *ofs,int cu_run);
+	    uint64_t compress_file(std::string & inFile_name, std::string & outFile_name,int cu_run);
+        uint64_t compress_buffer(char* in,char* out,uint64_t input_size,uint64_t outsize,int cu); 
         uint64_t get_event_duration_ns(const cl::Event &event);
-        void buffer_extension_assignments(bool flow);
+        void buffer_extension_assignments(int cu_run);
         // Binary flow compress/decompress        
         bool m_bin_flow;        
         
@@ -139,6 +140,15 @@ class xil_lzma {
         cl_mem_ext_ptr_t outExt[MAX_COMPUTE_UNITS][OVERLAP_BUF_COUNT];
         cl_mem_ext_ptr_t csExt[MAX_COMPUTE_UNITS][OVERLAP_BUF_COUNT];
         cl_mem_ext_ptr_t bsExt[MAX_COMPUTE_UNITS][OVERLAP_BUF_COUNT];
+        cl_mem_ext_ptr_t dbuf[MAX_COMPUTE_UNITS][3];
+
+        std::vector<uint8_t, aligned_allocator<uint8_t>> Gdict1[MAX_COMPUTE_UNITS];
+        std::vector<uint8_t, aligned_allocator<uint8_t>> Gdict2[MAX_COMPUTE_UNITS];
+        std::vector<uint8_t, aligned_allocator<uint8_t>> Gdict3[MAX_COMPUTE_UNITS];
+
+        cl::Buffer* dict_buffer1[MAX_COMPUTE_UNITS];
+        cl::Buffer* dict_buffer2[MAX_COMPUTE_UNITS];
+        cl::Buffer* dict_buffer3[MAX_COMPUTE_UNITS];
         
         // Read, Write and Kernel events
         cl::Event kernel_events[MAX_COMPUTE_UNITS][OVERLAP_BUF_COUNT];
@@ -158,9 +168,19 @@ class xil_lzma {
         
         // DDR numbers
         std::vector<uint32_t> comp_ddr_nums = {XCL_MEM_DDR_BANK0,
-                                          XCL_MEM_DDR_BANK3,
                                           XCL_MEM_DDR_BANK2,
                                           XCL_MEM_DDR_BANK3,
+                                          XCL_MEM_DDR_BANK1,
+                                          XCL_MEM_DDR_BANK0,
+                                          XCL_MEM_DDR_BANK1,
+                                          XCL_MEM_DDR_BANK2,
+                                          XCL_MEM_DDR_BANK3,
+                                        };
+
+        std::vector<uint32_t> dict_ddr_nums = {XCL_MEM_DDR_BANK0,
+                                          XCL_MEM_DDR_BANK2,
+                                          XCL_MEM_DDR_BANK3,
+                                          XCL_MEM_DDR_BANK1,
                                           XCL_MEM_DDR_BANK0,
                                           XCL_MEM_DDR_BANK1,
                                           XCL_MEM_DDR_BANK2,

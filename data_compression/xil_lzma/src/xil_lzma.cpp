@@ -51,7 +51,8 @@ uint64_t xil_lzma::get_event_duration_ns(const cl::Event &event){
 }
 
 uint64_t xil_lzma::compress_file(std::string & inFile_name, 
-                                std::string & outFile_name
+                                std::string & outFile_name,
+                                int cu
                                ) 
 {
     if (m_switch_flow == 0) { // Xilinx FPGA compression flow
@@ -66,10 +67,6 @@ uint64_t xil_lzma::compress_file(std::string & inFile_name,
             std::cout << "Unable to open file";
             exit(1);
         }
-        std::vector<unsigned char, aligned_allocator<unsigned char>> Gdict1(MEM_ALLOC_CPU,255);
-        std::vector<unsigned char, aligned_allocator<unsigned char>> Gdict2(1*1024*1024,255);
-        std::vector<unsigned char, aligned_allocator<unsigned char>> Gdict3(1*1024*1024,255);
-        std::vector<unsigned char, aligned_allocator<unsigned char>> Gdict4(1*1024*1024,255);
 
         std::vector<uint8_t> in(2147483648);
         uint64_t Full_input_size = get_bigfile_size(inFile);
@@ -90,12 +87,35 @@ uint64_t xil_lzma::compress_file(std::string & inFile_name,
             if (host_buffer_size > input_size){
                 host_buffer_size = input_size;
             }
-            enbytes += compress(in.data(), out.data(), input_size, host_buffer_size,outFile,Gdict1.data(),Gdict2.data(),Gdict3.data(),Gdict4.data());
+            enbytes += compress(in.data(), NULL, input_size, host_buffer_size,&outFile,cu);
             //std::cout<<"enbytes:"<<enbytes<<"\n";  
         }
         // Close file 
         inFile.close();
         outFile.close();
+        return enbytes;
+    }
+    return 0;
+}
+
+uint64_t xil_lzma::compress_buffer(char* in, 
+                                char* out,
+                                uint64_t input_size,
+                                uint64_t out_size,
+                                int cu
+                               ) 
+{
+    if (m_switch_flow == 0) { // Xilinx FPGA compression flow
+        uint64_t enbytes = 0;
+        uint32_t host_buffer_size = HOST_BUFFER_SIZE;
+        uint32_t acc_buff_size = m_block_size_in_kb * 1024 * PARALLEL_BLOCK;
+        if (acc_buff_size > host_buffer_size){
+            host_buffer_size = acc_buff_size;
+        }
+        if (host_buffer_size > input_size){
+            host_buffer_size = input_size;
+        }
+        enbytes += compress((uint8_t*)in, (uint8_t*)out, input_size, host_buffer_size,NULL,cu);
         return enbytes;
     }
     return 0;
@@ -108,27 +128,37 @@ int validate(std::string & inFile_name, std::string & outFile_name) {
     return ret;
 }
 
-void xil_lzma::buffer_extension_assignments(bool flow){
+void xil_lzma::buffer_extension_assignments(int cu_run){
     for (int i = 0; i < MAX_COMPUTE_UNITS; i++) {
         for (int j = 0; j < OVERLAP_BUF_COUNT; j++){
-            if(flow){
-                inExt[i][j].flags = comp_ddr_nums[i];
+                inExt[i][j].flags = comp_ddr_nums[cu_run];
                 inExt[i][j].obj   = h_buf_in[i][j].data();
-                inExt[i][j].param   = NULL;
+                inExt[i][j].param   = 0;
 
-                outExt[i][j].flags = comp_ddr_nums[i];
+                outExt[i][j].flags = comp_ddr_nums[cu_run];
                 outExt[i][j].obj   = h_buf_out[i][j].data();
-                outExt[i][j].param   = NULL;
+                outExt[i][j].param   = 0;
 
-                csExt[i][j].flags = comp_ddr_nums[i];
+                csExt[i][j].flags = comp_ddr_nums[cu_run];
                 csExt[i][j].obj   = h_compressSize[i][j].data();
-                csExt[i][j].param   = NULL;
+                csExt[i][j].param   = 0;
 
-                bsExt[i][j].flags = comp_ddr_nums[i];
+                bsExt[i][j].flags = comp_ddr_nums[cu_run];
                 bsExt[i][j].obj   = h_blksize[i][j].data();
-                bsExt[i][j].param   = NULL;
-            }
+                bsExt[i][j].param   = 0;
         }
+
+        dbuf[i][0].flags = dict_ddr_nums[cu_run];
+        dbuf[i][0].obj = Gdict1[i].data();
+        dbuf[i][0].param = 0;
+
+        dbuf[i][1].flags = dict_ddr_nums[cu_run];
+        dbuf[i][1].obj = Gdict2[i].data();
+        dbuf[i][1].param = 0;
+
+        dbuf[i][2].flags = dict_ddr_nums[cu_run];
+        dbuf[i][2].obj = Gdict3[i].data();
+        dbuf[i][2].param = 0;
     }
 }
 
@@ -146,6 +176,10 @@ xil_lzma::xil_lzma(){
             m_compressSize[i][j].reserve(MAX_NUMBER_BLOCKS);
             m_blkSize[i][j].reserve(MAX_NUMBER_BLOCKS);
         }
+
+        Gdict1[i].resize(MEM_ALLOC_CPU,255);
+        Gdict2[i].resize(1*1024*1024,255);
+        Gdict3[i].resize(1*1024*1024,255);
     }
 }   
 
@@ -175,19 +209,20 @@ int xil_lzma::init(const std::string& binaryFileName)
     devices.resize(1);
     m_program = new cl::Program(*m_context, devices, bins);
    
-    for (int i = 0; i < C_COMPUTE_UNIT; i++) 
+    for (int i = 0; i < C_COMPUTE_UNIT; i++)
         compress_kernel_lzma[i] = new cl::Kernel(*m_program, compress_kernel_names[i].c_str());
+
     return 0;
 }
 
 int xil_lzma::release()
 {
-    delete(m_q);
-    delete(m_program);
-    delete(m_context);
-   
     for(int i = 0; i < C_COMPUTE_UNIT; i++)
         delete(compress_kernel_lzma[i]);
+
+    delete(m_program);
+    delete(m_q);
+    delete(m_context);
 
     return 0;
 }
@@ -199,11 +234,8 @@ uint32_t xil_lzma::compress(uint8_t *in,
                            uint8_t *out,
                            uint32_t input_size,
                            uint32_t host_buffer_size,
-                           std::ofstream &ofs,
-                           void *Gdict1,
-                           void *Gdict2,
-                           void *Gdict3,
-                           void *Gdict4
+                           std::ofstream *ofs,
+                           int cu_run
                           ) {
     uint32_t block_size_in_bytes = m_block_size_in_kb * 1024;
     uint32_t overlap_buf_count = OVERLAP_BUF_COUNT;
@@ -213,7 +245,7 @@ uint32_t xil_lzma::compress(uint8_t *in,
     uint64_t total_read_time = 0;
 #endif
     //Assignment to the buffer extensions
-    buffer_extension_assignments(1);
+    buffer_extension_assignments(cu_run);
     // Total chunks in input file
     // For example: Input file size is 12MB and Host buffer size is 2MB
     // Then we have 12/2 = 6 chunks exists 
@@ -248,7 +280,7 @@ uint32_t xil_lzma::compress(uint8_t *in,
     uint32_t temp_nblocks = (host_buffer_size - 1)/block_size_in_bytes + 1;
     host_buffer_size = ((host_buffer_size-1)/64 + 1) * 64;
     // Device buffer allocation
-    for (int cu = 0; cu < C_COMPUTE_UNIT;cu++) {
+    for (int cu = 0; cu < MAX_COMPUTE_UNITS;cu++) {
         for (uint32_t flag = 0; flag < overlap_buf_count;flag++) {
             // Input:- This buffer contains input chunk data
             buffer_input[cu][flag] = new cl::Buffer(*m_context, 
@@ -258,7 +290,7 @@ uint32_t xil_lzma::compress(uint8_t *in,
             // Output:- This buffer contains compressed data written by device
             buffer_output[cu][flag] = new cl::Buffer(*m_context, 
                                                 CL_MEM_USE_HOST_PTR | CL_MEM_READ_WRITE | CL_MEM_EXT_PTR_XILINX,
-                                               	HOST_BUFFER_SIZE,//host_buffer_size,
+                                               	(uint32_t)HOST_BUFFER_SIZE,//host_buffer_size,
                                                 &(outExt[cu][flag]));
             // Ouput:- This buffer contains compressed block sizes
             buffer_compressed_size[cu][flag] = new cl::Buffer(*m_context, 
@@ -271,30 +303,19 @@ uint32_t xil_lzma::compress(uint8_t *in,
                                                      temp_nblocks * sizeof(uint32_t),
                                                      &(bsExt[cu][flag]));
         }
+
+        dict_buffer1[cu] = new cl::Buffer(*m_context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR | CL_MEM_EXT_PTR_XILINX, MEM_ALLOC_CPU*sizeof(uint8_t),&(dbuf[cu][0]));
+        dict_buffer2[cu] = new cl::Buffer(*m_context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR | CL_MEM_EXT_PTR_XILINX, 1*1024*1024*sizeof(uint8_t),&(dbuf[cu][1]));
+        dict_buffer3[cu] = new cl::Buffer(*m_context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR | CL_MEM_EXT_PTR_XILINX, 1*1024*1024*sizeof(uint8_t),&(dbuf[cu][2]));
     }
 
-    	
-    cl_mem_ext_ptr_t dbuf[3];
-
-    dbuf[0].flags = XCL_MEM_DDR_BANK1;
-    dbuf[0].obj = Gdict1;
-    dbuf[0].param = NULL;
-
-    dbuf[1].flags = XCL_MEM_DDR_BANK2;
-    dbuf[1].obj = Gdict2;
-    dbuf[1].param = NULL;
-
-    dbuf[2].flags = XCL_MEM_DDR_BANK3;
-    dbuf[2].obj = Gdict3;
-    dbuf[2].param = NULL;	
-
-    cl::Buffer dict_buffer1(*m_context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR | CL_MEM_EXT_PTR_XILINX, MEM_ALLOC_CPU*sizeof(uint8_t),&dbuf[0]);
-    cl::Buffer dict_buffer2(*m_context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR | CL_MEM_EXT_PTR_XILINX, 1*1024*1024*sizeof(uint8_t),&dbuf[1]);
-    cl::Buffer dict_buffer3(*m_context, CL_MEM_READ_WRITE | CL_MEM_USE_HOST_PTR | CL_MEM_EXT_PTR_XILINX, 1*1024*1024*sizeof(uint8_t),&dbuf[2]);
-	
+    m_q->enqueueMigrateMemObjects({*(dict_buffer1[0])}, 0, NULL, NULL);  // migrate only for 1CU
+    m_q->flush();
+    m_q->finish();
     // Counter which helps in tracking
     // Output buffer index    
-    uint32_t outIdx = 0;
+    uint64_t outIdx = 0;
+    uint64_t outvalue = 0;
 
     // Track the lags of respective chunks for left over handling
     int chunk_flags[total_chunks];
@@ -328,26 +349,29 @@ uint32_t xil_lzma::compress(uint8_t *in,
 
     uint8_t magic[] = {0xFD, 0x37, 0x7A, 0x58, 0x5A, 0x00};
     uint8_t magic_size = 6;
-    fileWrite(ofs,magic,magic_size);
-
+    fileWrite(ofs,magic,magic_size,out,outvalue);
+    outvalue+=magic_size;
     uint8_t stream_flag[] = {0x00, 0x04};
     uint8_t stream_flag_size = 2;
-    fileWrite(ofs,stream_flag,stream_flag_size);
+    fileWrite(ofs,stream_flag,stream_flag_size,out,outvalue);
+    outvalue+=stream_flag_size;
     value32 = crc32(stream_flag, stream_flag_size, 0);
     crc.buffer.u32[0] = integer_le_32(value32);
-    fileWrite(ofs,crc.buffer.u8,4);
-
-    fileWrite(ofs,block_header,block_header_size);
+    fileWrite(ofs,crc.buffer.u8,4,out,outvalue);
+    outvalue+=4;
+    fileWrite(ofs,block_header,block_header_size,out,outvalue);
+    outvalue+=block_header_size;
     value32 = crc32(block_header, block_header_size, 0);
     crc.buffer.u32[0] = integer_le_32(value32);
-    fileWrite(ofs,crc.buffer.u8,4);
+    fileWrite(ofs,crc.buffer.u8,4,out,outvalue);
+    outvalue+=4;
 //-------END------------
 
     // Main loop of overlap execution
     // Loop below runs over total bricks i.e., host buffer size chunks
     auto total_start = std::chrono::high_resolution_clock::now();
-    for (uint32_t brick = 0, itr = 0; brick < total_chunks; brick+=C_COMPUTE_UNIT, itr++, flag =!flag) {
-        lcl_cu = C_COMPUTE_UNIT;
+    for (uint32_t brick = 0, itr = 0; brick < total_chunks; brick+=MAX_COMPUTE_UNITS, itr++, flag =!flag) {
+        lcl_cu = MAX_COMPUTE_UNITS;
         if (brick + lcl_cu > total_chunks) 
             lcl_cu = total_chunks - brick;
         // Loop below runs over number of compute units
@@ -370,7 +394,7 @@ uint32_t xil_lzma::compress(uint8_t *in,
 #endif
                 // Run over each block of the within brick
                 uint32_t index = 0;
-                int brick_flag_idx = brick - (C_COMPUTE_UNIT * overlap_buf_count - cu);
+                int brick_flag_idx = brick - (MAX_COMPUTE_UNITS * overlap_buf_count - cu);
                 for (uint32_t bIdx = 0; bIdx < blocksPerChunk[brick_flag_idx]; bIdx++, index += block_size_in_bytes) {
                     uint32_t block_size = block_size_in_bytes;
                     if (index + block_size > sizeOfChunk[brick_flag_idx]) {
@@ -396,19 +420,27 @@ uint32_t xil_lzma::compress(uint8_t *in,
                         else
                             control = 0xA0;
                         control |= ((uncompressed_size-1) >> 16);
-                        fileWrite(ofs, control);
-                        fileWrite(ofs, (uncompressed_size-1)>> 8);
-                        fileWrite(ofs, uncompressed_size-1);
+                        fileWrite(ofs, control,out,outvalue);
+                        outvalue++;
+                        fileWrite(ofs, (uncompressed_size-1)>> 8,out,outvalue);
+                        outvalue++;
+                        fileWrite(ofs, uncompressed_size-1,out,outvalue);
+                        outvalue++;
                         record_list[lzblock].uncompressed_size = uncompressed_size;
                         h_compressed_size = compressed_size;
-                        fileWrite(ofs, (h_compressed_size-1)>> 8);
-                        fileWrite(ofs, h_compressed_size-1);
+                        fileWrite(ofs, (h_compressed_size-1)>> 8,out,outvalue);
+                        outvalue++;
+                        fileWrite(ofs, h_compressed_size-1,out,outvalue);
+                        outvalue++;
                         record_list[lzblock].h_compressed_size = h_compressed_size;
                         outIdx += h_compressed_size;
                         lzblock++;
-                        if((lzblock-unlzblock) == 1)
-                            fileWrite(ofs, lclppb);
-                        fileWrite(ofs,comdata,h_compressed_size);
+                        if((lzblock-unlzblock) == 1) {
+                            fileWrite(ofs, lclppb,out,outvalue);
+                            outvalue++;
+                        }
+                        fileWrite(ofs,comdata,h_compressed_size,out,outvalue);
+                        outvalue+=h_compressed_size;
                         value64 = crc64(str, uncompressed_size, value64);
                     } else {
                         compressed_size = uncompressed_size;
@@ -417,16 +449,20 @@ uint32_t xil_lzma::compress(uint8_t *in,
                             control = 0x01;
                         else
                             control = 0x02;
-                        fileWrite(ofs, control);
+                        fileWrite(ofs, control,out,outvalue);
+                        outvalue++;
                         record_list[lzblock].uncompressed_size = uncompressed_size;
                         h_compressed_size = compressed_size;
-                        fileWrite(ofs, (h_compressed_size-1)>> 8);
-                        fileWrite(ofs, h_compressed_size-1);
+                        fileWrite(ofs, (h_compressed_size-1)>> 8,out,outvalue);
+                        outvalue++;
+                        fileWrite(ofs, h_compressed_size-1,out,outvalue);
+                        outvalue++;
                         record_list[lzblock].h_compressed_size = h_compressed_size;
                         outIdx += h_compressed_size;
                         lzblock++;
                         unlzblock++;
-                        fileWrite(ofs,comdata,h_compressed_size);
+                        fileWrite(ofs,comdata,h_compressed_size,out,outvalue);
+                        outvalue+=h_compressed_size;
                         value64 = crc64(str, uncompressed_size, value64);
                 }
 //-------END------------
@@ -445,19 +481,18 @@ uint32_t xil_lzma::compress(uint8_t *in,
             std::memcpy(h_buf_in[cu][flag].data(), &in[(brick + cu) * host_buffer_size], sizeOfChunk[brick + cu]);
             // Set kernel arguments 
             int narg = 0;
-            compress_kernel_lzma[cu]->setArg(narg++, *(buffer_input[cu][flag]));
-            compress_kernel_lzma[cu]->setArg(narg++, *(buffer_output[cu][flag]));
-            compress_kernel_lzma[cu]->setArg(narg++, dict_buffer1);
-            //compress_kernel_lzma[cu]->setArg(narg++, dict_buffer2);
-            //compress_kernel_lzma[cu]->setArg(narg++, dict_buffer3);
-            compress_kernel_lzma[cu]->setArg(narg++, *(buffer_compressed_size[cu][flag]));
-            compress_kernel_lzma[cu]->setArg(narg++, *(buffer_block_size[cu][flag]));
-            compress_kernel_lzma[cu]->setArg(narg++, m_block_size_in_kb);
-            compress_kernel_lzma[cu]->setArg(narg++, sizeOfChunk[brick + cu]);
-            compress_kernel_lzma[cu]->setArg(narg++, brick*host_buffer_size);
+            compress_kernel_lzma[cu_run]->setArg(narg++, *(buffer_input[cu][flag]));
+            compress_kernel_lzma[cu_run]->setArg(narg++, *(buffer_output[cu][flag]));
+            compress_kernel_lzma[cu_run]->setArg(narg++, *(dict_buffer1[cu]));
+            //compress_kernel_lzma[cu_run]->setArg(narg++, *(dict_buffer2[cu]));
+            //compress_kernel_lzma[cu_run]->setArg(narg++, *(dict_buffer3[cu]));
+            compress_kernel_lzma[cu_run]->setArg(narg++, *(buffer_compressed_size[cu][flag]));
+            compress_kernel_lzma[cu_run]->setArg(narg++, *(buffer_block_size[cu][flag]));
+            compress_kernel_lzma[cu_run]->setArg(narg++, m_block_size_in_kb);
+            compress_kernel_lzma[cu_run]->setArg(narg++, sizeOfChunk[brick + cu]);
+            compress_kernel_lzma[cu_run]->setArg(narg++, brick*host_buffer_size);
             // Transfer data from host to device
             m_q->enqueueMigrateMemObjects({*(buffer_input[cu][flag]), *(buffer_block_size[cu][flag])}, 0, NULL, &(write_events[cu][flag]));
-
             // Kernel wait events for writing & compute
             std::vector<cl::Event> kernelWriteWait;
             std::vector<cl::Event> kernelComputeWait;
@@ -465,7 +500,7 @@ uint32_t xil_lzma::compress(uint8_t *in,
             // Kernel Write events update
             kernelWriteWait.push_back(write_events[cu][flag]);
             // Fire the kernel
-            m_q->enqueueTask(*compress_kernel_lzma[cu], &kernelWriteWait, &(kernel_events[cu][flag]));
+            m_q->enqueueTask(*compress_kernel_lzma[cu_run], &kernelWriteWait, &(kernel_events[cu][flag]));
             // Update kernel events flag on computation
             kernelComputeWait.push_back(kernel_events[cu][flag]);
             // Transfer data from device to host
@@ -478,14 +513,14 @@ uint32_t xil_lzma::compress(uint8_t *in,
     m_q->finish();
     int leftover = total_chunks - completed_bricks;
     int stride = 0;
-    if ((total_chunks < overlap_buf_count * C_COMPUTE_UNIT))
-        stride = overlap_buf_count * C_COMPUTE_UNIT;
+    if ((total_chunks < overlap_buf_count * MAX_COMPUTE_UNITS))
+        stride = overlap_buf_count * MAX_COMPUTE_UNITS;
     else 
         stride = total_chunks;
     // Handle leftover bricks
 
-    for (int ovr_itr = 0, brick = stride - overlap_buf_count * C_COMPUTE_UNIT; ovr_itr < leftover; ovr_itr+=C_COMPUTE_UNIT, brick+=C_COMPUTE_UNIT) {
-        lcl_cu = C_COMPUTE_UNIT;
+    for (int ovr_itr = 0, brick = stride - overlap_buf_count * MAX_COMPUTE_UNITS; ovr_itr < leftover; ovr_itr+=MAX_COMPUTE_UNITS, brick+=MAX_COMPUTE_UNITS) {
+        lcl_cu = MAX_COMPUTE_UNITS;
         if (ovr_itr + lcl_cu > leftover) 
             lcl_cu = leftover - ovr_itr;
         // Handlue multiple bricks with multiple CUs
@@ -526,20 +561,27 @@ uint32_t xil_lzma::compress(uint8_t *in,
                     else
                         control = 0xA0;
                     control |= ((uncompressed_size-1) >> 16); // = (control & 0x1F) << 16;
-                    fileWrite(ofs, control);
-                    fileWrite(ofs, (uncompressed_size-1)>> 8);
-                    fileWrite(ofs, uncompressed_size-1);
+                    fileWrite(ofs, control,out,outvalue);
+                    outvalue++;
+                    fileWrite(ofs, (uncompressed_size-1)>> 8,out,outvalue);
+                    outvalue++;
+                    fileWrite(ofs, uncompressed_size-1,out,outvalue);
+                    outvalue++;
                     record_list[lzblock].uncompressed_size = uncompressed_size;
                     h_compressed_size = compressed_size;
-                    fileWrite(ofs, (h_compressed_size-1)>> 8);
-                    fileWrite(ofs, h_compressed_size-1);
+                    fileWrite(ofs, (h_compressed_size-1)>> 8,out,outvalue);
+                    outvalue++;
+                    fileWrite(ofs, h_compressed_size-1,out,outvalue);
+                    outvalue++;
                     record_list[lzblock].h_compressed_size = h_compressed_size;
                     outIdx += h_compressed_size;
                     lzblock++;
-                    if((lzblock-unlzblock) == 1)
-                        fileWrite(ofs, lclppb);
-
-                    fileWrite(ofs,comdata,h_compressed_size);
+                    if((lzblock-unlzblock) == 1) {
+                        fileWrite(ofs, lclppb,out,outvalue);
+                        outvalue++;
+                    }
+                    fileWrite(ofs,comdata,h_compressed_size,out,outvalue);
+                    outvalue+=h_compressed_size;
                     value64 = crc64(str, uncompressed_size, value64);
                 } else {
                     compressed_size = uncompressed_size;
@@ -548,16 +590,20 @@ uint32_t xil_lzma::compress(uint8_t *in,
                         control = 0x01;
                     else
                         control = 0x02;
-                    fileWrite(ofs, control);
+                    fileWrite(ofs, control,out,outvalue);
+                    outvalue++;
                     record_list[lzblock].uncompressed_size = uncompressed_size;
                     h_compressed_size = compressed_size;
-                    fileWrite(ofs, (h_compressed_size-1)>> 8);
-                    fileWrite(ofs, h_compressed_size-1);
+                    fileWrite(ofs, (h_compressed_size-1)>> 8,out,outvalue);
+                    outvalue++;
+                    fileWrite(ofs, h_compressed_size-1,out,outvalue);
+                    outvalue++;
                     record_list[lzblock].h_compressed_size = h_compressed_size;
                     outIdx += h_compressed_size;
                     lzblock++;
                     unlzblock++;
-                    fileWrite(ofs,comdata,h_compressed_size);
+                    fileWrite(ofs,comdata,h_compressed_size,out,outvalue);
+                    outvalue+=h_compressed_size;
                     value64 = crc64(str, uncompressed_size, value64);
                 }
             } // For loop ends
@@ -565,15 +611,18 @@ uint32_t xil_lzma::compress(uint8_t *in,
     } // Main loop ends here
     
 //---------START-----------------
-    fileWrite(ofs, 0x00); //end of stream
+    fileWrite(ofs, 0x00,out,outvalue); //end of stream
+    outvalue++;
     //padding
-    uint32_t paddingsize = outIdx + (lzblock-unlzblock)*5 + unlzblock*3 + 2;
+    uint32_t paddingsize = outIdx + (lzblock-unlzblock)*5 + unlzblock*3 + 1 +  ((lzblock-unlzblock) > 0 ? 1:0);
     while (paddingsize & 3) {
-        fileWrite(ofs, 0x00);
+        fileWrite(ofs, 0x00,out,outvalue);
+        outvalue++;
         ++paddingsize;
     }
     crc.buffer.u64[0] = integer_le_64(value64);
-    fileWrite(ofs,crc.buffer.u8,8);
+    fileWrite(ofs,crc.buffer.u8,8,out,outvalue);
+    outvalue+=8;
 
     std::vector<uint8_t> index;
     //uint8_t index_size = 0;
@@ -590,7 +639,7 @@ uint32_t xil_lzma::compress(uint8_t *in,
     //uint8_t data_crc_size = 8;
     size_t unpadded_size;	
     size_t uncompressed_size_buf_size;
-    uint32_t unpadded = outIdx + (lzblock-unlzblock)*5 + unlzblock*3 + 2 + 12 + 8;
+    uint32_t unpadded = outIdx + (lzblock-unlzblock)*5 + unlzblock*3 + 1 + ((lzblock-unlzblock) > 0 ? 1:0) + 12 + 8;
    
     unpadded_size = encode(unpadded_size_buf,unpadded);
     uncompressed_size_buf_size = encode(uncompressed_size_buf,input_size);
@@ -607,10 +656,12 @@ uint32_t xil_lzma::compress(uint8_t *in,
         ++paddingsize;
     }
 
-    fileWrite(ofs,index.data(),index.size());
+    fileWrite(ofs,index.data(),index.size(),out,outvalue);
+    outvalue+=index.size();
     value32 = crc32((uint8_t*)index.data(), index.size(), 0);
     crc.buffer.u32[0] = integer_le_32(value32);
-    fileWrite(ofs,crc.buffer.u8,4);
+    fileWrite(ofs,crc.buffer.u8,4,out,outvalue);
+    outvalue+=4;
     uint32_t backward_size = index.size() + 4 ; //index+crc
     backward_size = backward_size/4;
     backward_size = backward_size - 1;
@@ -625,14 +676,22 @@ uint32_t xil_lzma::compress(uint8_t *in,
     uint8_t footer_size = 6;
     value32 = crc32(footer, footer_size, 0);
     crc.buffer.u32[0] = integer_le_32(value32);
-    fileWrite(ofs,crc.buffer.u8,4);
-    fileWrite(ofs,backward_size);
-    fileWrite(ofs,backward_size>>8);
-    fileWrite(ofs,backward_size>>16);
-    fileWrite(ofs,backward_size>>24);
-    fileWrite(ofs,stream_flag,stream_flag_size);
-    fileWrite(ofs,0x59);
-    fileWrite(ofs,0x5A);
+    fileWrite(ofs,crc.buffer.u8,4,out,outvalue);
+    outvalue+=4;
+    fileWrite(ofs,backward_size,out,outvalue);
+    outvalue++;
+    fileWrite(ofs,backward_size>>8,out,outvalue);
+    outvalue++;
+    fileWrite(ofs,backward_size>>16,out,outvalue);
+    outvalue++;
+    fileWrite(ofs,backward_size>>24,out,outvalue);
+    outvalue++;
+    fileWrite(ofs,stream_flag,stream_flag_size,out,outvalue);
+    outvalue+=stream_flag_size;
+    fileWrite(ofs,0x59,out,outvalue);
+    outvalue++;
+    fileWrite(ofs,0x5A,out,outvalue);
+    outvalue++;
 //---------END-----------------------
     auto total_end = std::chrono::high_resolution_clock::now();   
     auto total_time_ns = std::chrono::duration<double, std::nano>(total_end - total_start);
@@ -650,16 +709,19 @@ uint32_t xil_lzma::compress(uint8_t *in,
     std::cout << std::fixed << std::setprecision(2) << kernel_throughput_in_mbps_1;
       
 	//delete[] record_list;     
-    for (int cu = 0; cu < C_COMPUTE_UNIT;cu++) {
+    for (int cu = 0; cu < MAX_COMPUTE_UNITS;cu++) {
         for (uint32_t flag = 0; flag < overlap_buf_count;flag++) {
             delete (buffer_input[cu][flag]);
             delete (buffer_output[cu][flag]);
             delete (buffer_compressed_size[cu][flag]);
             delete (buffer_block_size[cu][flag]);
         }
+        delete (dict_buffer1[cu]);
+        delete (dict_buffer2[cu]);
+        delete (dict_buffer3[cu]);
     }
     delete[] record_list;
-    return outIdx; 
+    return outvalue; 
 } // Overlap end
 /*
 // Note: Various block sizes supported by LZMA standard are not applicable to

@@ -61,12 +61,7 @@ void lz_compress(
 	//const int GLEVEL = 4;
 	//printf("last_index:%u\n",last_index);
     if(input_size == 0) return;      
-    //Dictionary
-	uintDictV_t ldict;
-	uint32_t maxoffset=0;
-
-    uintDictV_t resetValue=0;
-	int n = 0;
+    
     uint8_t present_window[MATCH_LEN];
     #pragma HLS ARRAY_PARTITION variable=present_window complete 
     for (uint8_t i = 1 ; i < MATCH_LEN; i++){
@@ -180,7 +175,6 @@ void lz_compress(
 		previous = present_window[0];
 		//printf("[%d] LIT:%x len:%u offset:%u\n",i,(int)outValue.range(7,0),(int)outValue.range(15,8),(unsigned int)outValue.range(47,16));
     }
-	//getchar();
     lz_compress_leftover:for (int m = 1 ; m < MATCH_LEN ; m++){
         #pragma HLS PIPELINE
         compressd_dt outValue = 0;
@@ -208,6 +202,100 @@ void lz_compress(
 	//outStreamSize << 0;
 }
 
+template <int MATCH_LEN, int OFFSET_WINDOW>
+void lz_cr_improve_959to999(
+        hls::stream<compressd_dt> &inStream,
+        hls::stream<compressd_dt> &outStream,
+        uint32_t input_size, uint32_t left_bytes
+        )
+{
+    const int c_max_match_length = MATCH_LEN;
+    if(input_size == 0) return;
+    
+    compressd_dt compare1 = inStream.read();
+    outStream << compare1;
+
+    compressd_dt compare_window[MATCH_LEN];
+    #pragma HLS array_partition variable=compare_window
+
+    for(uint32_t i = 0; i < c_max_match_length; i++)
+    {
+        #pragma HLS PIPELINE
+        compare_window[i] = inStream.read();
+    }
+
+    lz_cr_improve_959to999:for (uint32_t i = c_max_match_length+1; i < input_size; i++){
+        #pragma HLS PIPELINE II=1
+
+        compressd_dt compare2 = compare_window[0];
+        for(uint32_t j = 0; j < c_max_match_length-1; j++)
+        {   
+            #pragma HLS UNROLL
+            compare_window[j] = compare_window[j+1];
+        }   
+
+        compare_window[c_max_match_length-1] = inStream.read();
+        uint8_t compareLen1 = compare1.range(15,8);        
+        uint8_t compareLen2 = compare2.range(15,8);        
+        uint32_t compareOff1 = compare1.range(47,16);
+        uint32_t compareOff2 = compare2.range(47,16);
+        //printf("\ncmp2:[%d]tCh:%d tLen:%d tOffset:%d P:%d LM:%d\n",i,(uint32_t)compare2.range(7,0),(uint32_t)compare2.range(15,8),(uint32_t)compare2.range(47,16),(uint32_t)compare2.range(55,48),(uint32_t)compare2.range(63,56));
+        for(uint32_t j = 0; j < c_max_match_length-2; j++)
+        {
+            compressd_dt compare3 = compare_window[j];
+            uint8_t compareLen3 = compare3.range(15,8);
+            uint32_t compareOff3 = compare3.range(47,16);
+            if(compareLen1 == MATCH_LEN-1 && compareLen3 == MATCH_LEN-1 && compareOff1 == compareOff3)
+            {
+                compare2.range(15,8) = compareLen1;
+                compare2.range(47,16) = compareOff1;
+                compare2.range(63,56) = compare_window[MATCH_LEN-2].range(7,0);
+                //printf("-------- [%d]tCh:%d tLen:%d tOffset:%d P:%d LM:%d\n",i,(uint32_t)compare2.range(7,0),(uint32_t)compare2.range(15,8),(uint32_t)compare2.range(47,16),(uint32_t)compare2.range(55,48),(uint32_t)compare2.range(63,56));
+                break;
+            }
+                
+        }
+        outStream << compare2;
+        compare1 = compare2;
+        compare2 = compare_window[0];
+     }
+     
+     lz_959to999_left_over:
+     for(uint32_t i = 0; i < c_max_match_length; i++)
+     {
+         outStream << compare_window[i];
+     }     
+}
+
+template <int MATCH_LEN, int OFFSET_WINDOW>
+void lz_cr_improve_965to987(
+        hls::stream<compressd_dt> &inStream,
+        hls::stream<compressd_dt> &outStream,
+        uint32_t input_size, uint32_t left_bytes
+        )
+{
+    const int c_max_match_length = MATCH_LEN;
+    if(input_size == 0) return;
+    
+    compressd_dt compare = inStream.read();
+    outStream << compare;
+
+    lz_cr_improve_965to987:for (uint32_t i = 1; i < input_size; i++){
+        #pragma HLS PIPELINE II=1
+
+        compressd_dt outValue = inStream.read(); 
+        uint8_t compareLen = compare.range(15,8);        
+        uint8_t outValueLen = outValue.range(15,8);        
+        if(compareLen-1 > 3 && compareLen-1 > outValueLen){
+            outValue.range(15,8) = compareLen - 1;
+            outValue.range(47,16) = compare.range(47,16);            
+            outValue.range(63,56) = compare.range(63,56);            
+        }
+        outStream << outValue;
+        compare = outValue;
+     }
+}
+
 template<int MAX_MATCH_LEN, int OFFSET_WINDOW>
 void lz_booster(
         hls::stream<compressd_dt> &inStream,       
@@ -216,8 +304,6 @@ void lz_booster(
 )
 {
 	
-	std::cout<<"B input_size:"<<input_size<<"\n";
-	std::cout<<"B left_bytes:"<<left_bytes<<"\n";
     if(input_size == 0) return;
     uint8_t local_mem[OFFSET_WINDOW];
     uint32_t match_loc = 0;
@@ -279,9 +365,147 @@ void lz_booster(
     for (uint32_t i = 0 ; i < left_bytes ; i++){
         outStream << inStream.read();
     }
-	std::cout<<"B maxoff:"<<maxoff<<"\n";
-	std::cout<<"B location:"<<lo<<"\n";
 }
+
+template<int MAX_MATCH_LEN, int OFFSET_WINDOW, int MATCH_LEN>
+void lz_booster_999to11109(
+        hls::stream<compressd_dt> &inStream,       
+        hls::stream<compressd_dt> &outStream,       
+        uint32_t input_size,
+        uint32_t left_bytes
+        )
+{
+    if(input_size == 0) return;
+    compressd_dt local_mem[MAX_MATCH_LEN];
+    #pragma HLS array_partition variable=local_mem
+
+    uint32_t match_len =0;    
+    bool matchFlag = false;
+    compressd_dt compare1, compare2, compare3,compare4;
+
+    compare1 = inStream.read();
+    uint8_t compareLen1 = compare1.range(15,8);
+    uint32_t compareOff1 = compare1.range(47,16);
+    
+    lz_booster_999to11109: for(uint32_t i = 1; i < input_size; i++){
+        #pragma HLS PIPELINE II=1
+        compare4 = compare2;                            
+        compare2 = inStream.read();
+
+        uint8_t compareLen2 = compare2.range(15,8);
+        uint32_t compareOff2 = compare2.range(47,16);
+        if((compareLen1+match_len) < MAX_MATCH_LEN && compareLen1 == (MATCH_LEN-1) && compareLen1==compareLen2 && compareOff1==compareOff2){
+            local_mem[match_len] = compare2;
+            match_len++;
+            matchFlag = true;
+        }
+        else if(matchFlag){
+            compare1.range(15,8)= compareLen1 + (match_len? match_len:0);
+            if(match_len) compare1.range(63,56) = compare4.range(63,56);
+            outStream <<  compare1;
+            for(int i = 0; i < match_len; i++){
+                compare3 = local_mem[i];
+                compare3.range(15,8) = compare1.range(15,8) - (i + 1);
+                compare3.range(63,56) = compare1.range(63,56);
+                outStream << compare3;
+            }
+            matchFlag = false;
+            match_len = 0;
+            compare1 = compare2;
+            compareLen1 = compare1.range(15,8);
+            compareOff1 = compare1.range(47,16);
+        }      
+        else{
+            outStream << compare1;
+            compare1 = compare2;
+            compareLen1 = compare1.range(15,8);
+            compareOff1 = compare1.range(47,16);
+        }
+     }
+    outStream << compare1;
+}
+
+template<int MAX_MATCH_LEN, int OFFSET_WINDOW, int MATCH_LEN>
+void lz_booster_999to11(
+        hls::stream<compressd_dt> &inStream,       
+        hls::stream<compressd_dt> &outStream,       
+        uint32_t input_size, uint32_t left_bytes,
+       	hls::stream<uint16_t>               &outStreamSize
+)
+{
+    if(input_size == 0) return;
+   	static uint8_t lastmatchcontext = 0;
+    bool outFlag = false;
+    uint32_t match_len =0;
+    uint16_t skip_len = 0;
+    bool skipdone = false;
+    compressd_dt compare1, compare2, compare3,compare4;
+    compare1 = inStream.read();
+    uint8_t compareLen1 = compare1.range(15,8);
+    uint32_t compareOff1 = compare1.range(47,16);
+    
+    lz_booster_999to11: for(uint32_t i = 1; i < (input_size-left_bytes); i++){
+        #pragma HLS PIPELINE II=1
+        compare4 = compare2;
+        compare2 = inStream.read();
+        //printf("[%u] tCh:%u tLen:%u tOffset:%u P:%u LM:%u\n",i,(uint32_t)compare2.range(7,0),(uint32_t)compare2.range(15,8),(uint32_t)compare2.range(47,16),(uint32_t)compare2.range(55,48),(uint32_t)compare2.range(63,56));
+        uint8_t compareLen2 = compare2.range(15,8);
+        uint32_t compareOff2 = compare2.range(47,16);
+        
+        if(skipdone){
+            compare1 = compare2;
+            compareLen1 = compare1.range(15,8);
+            compareOff1 = compare1.range(47,16);
+            skipdone = false;
+        } else if(skip_len){
+            skip_len--;
+            skipdone = skip_len?false:true;
+        }else if(compareLen1+match_len < MAX_MATCH_LEN && compareLen1 == MATCH_LEN-1 && compareLen1==compareLen2 && compareOff1==compareOff2){
+            match_len++;
+        }else{
+            skip_len = compareLen1?compareLen1-2:0;
+            compare1.range(15,8)= compareLen1 + (match_len? match_len:0);
+            if(match_len) compare1.range(63,56)= compare4.range(63,56);
+            outFlag = true;
+        }
+
+        if(outFlag){
+            if(compareLen1!=0) {
+                lastmatchcontext = compare1.range(63,56);
+            }
+            compare1.range(63,56) = lastmatchcontext;
+            //printf("==================[%u] tCh:%u tLen:%u tOffset:%u P:%u LM:%u\n",i,(uint32_t)compare1.range(7,0),(uint32_t)compare1.range(15,8),(uint32_t)compare1.range(47,16),(uint32_t)compare1.range(55,48),(uint32_t)compare1.range(63,56));
+            outStream << compare1;
+            outStreamSize << 8;
+            outFlag = false;
+            match_len = 0;
+            compare1 = compare2;
+            compareLen1 = compare1.range(15,8);
+            compareOff1 = compare1.range(47,16);
+        }
+    }
+    if(skipdone == false) {
+        if(compareLen1!=0)
+            lastmatchcontext = compare1.range(63,56);
+        compare1.range(63,56) = lastmatchcontext;
+        outStream << compare1;                               
+        outStreamSize << 8;
+    }
+    lz_booster_999to11_left_bytes:
+    for (uint32_t i = 0 ; i < left_bytes ; i++){
+        compare3 = inStream.read();
+        uint16_t compareLen3 = compare3.range(15,8);
+        if(compareLen3!=0)
+            lastmatchcontext = compare3.range(63,56);
+        compare3.range(63,56) = lastmatchcontext;
+
+        outStream << compare3; 
+        outStreamSize << 8;
+    }
+   outStreamSize << 0;
+}    
+
+
 static void lz_filter(
         hls::stream<compressd_dt> &inStream,       
         hls::stream<compressd_dt> &outStream,
@@ -304,18 +528,17 @@ static void lz_filter(
 		uint32_t tOffset = inValue.range(47,16);
 		//if((i- tOffset) > 4194304 )
 		//	std::cout<<"["<<i<<"] "<<i-tOffset<<" ****\n";
-		//printf("[%d] LIT:%x len:%u offset:%u\n",i,(int)inValue.range(7,0),(int)inValue.range(15,8),(unsigned int)inValue.range(47,16));
+		//printf("[%d] LIT:%u len:%u offset:%u p:%u LM:%u\n",i,(int)inValue.range(7,0),(int)inValue.range(15,8),(unsigned int)inValue.range(47,16),(unsigned int)inValue.range(55,48),(unsigned int)inValue.range(63,56));
 		//std::cout<<"IN	P:"<<i<<"  "<<(int)inValue.range(7,0)<<" L:"<<(int)inValue.range(15,8)<<" O:"<<(int)inValue.range(47,16)<<"\n";
 		if (skip_len){
             skip_len--;
         }else{			
-			//printf("[%d] lit:%x len:%d\n",compout,(uint8_t)inValue.range(7,0),(uint8_t)inValue.range(15,8));
-			//std::cout<<compout<<": lit:"<<(uint8_t)inValue.range(7,0)<<" len:"<<(uint32_t)inValue.range(15,8)<<"\n";
-			//printf("--------------[%d] LIT:%x len:%u offset:%u\n",i,(int)inValue.range(7,0),(int)inValue.range(15,8),(unsigned int)inValue.range(47,16));
-            if(tLen!=0)
-				lastmatchcontext = inValue.range(63,56);
+			//printf("--------------[%d] LIT:%u len:%u offset:%u p:%u lm:%u\n",i,(int)inValue.range(7,0),(int)inValue.range(15,8),(unsigned int)inValue.range(47,16),(unsigned int)inValue.range(55,48),(unsigned int)inValue.range(63,56));
+            if(tLen!=0) 
+				lastmatchcontext = inValue.range(63,56);            
 			inValue.range(63,56) = lastmatchcontext;
 			outStream << inValue;
+			//printf("-------------==============[%d] LIT:%u len:%u offset:%u p:%u lm:%u\n",i,(int)inValue.range(7,0),(int)inValue.range(15,8),(unsigned int)inValue.range(47,16),(unsigned int)inValue.range(55,48),(unsigned int)inValue.range(63,56));
 			outStreamSize << 8;
 			compout++;
             if(tLen)skip_len = tLen-1;

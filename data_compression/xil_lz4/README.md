@@ -11,7 +11,7 @@ This application is accelerated using generic hardware architecture for LZ based
 
 ![LZx decompress select](../img/lzx_decomp.png) <br />
 
-For more details refer this [link](https://github.com/Xilinx/Applications/tree/master/data_compression)
+For more details refer this [link](https://gitenterprise.xilinx.com/heeran/xil_lz4/blob/master/README.md)
 
 
 ## Results
@@ -24,9 +24,8 @@ kernels with 8 engines for single compute unit. It is possible to extend number 
 
 | Design | LUT | LUTMEM | REG | BRAM | URAM| DSP | Fmax (MHz) |
 | --------------- | --- | ------ | --- | ---- | --- | -----| -----|
-| Compression     | 71934(7.04%) | 16333(2.83%)|68201(3.20%)|154(7.91%) | 48(5.23%)|1(0.01%)|250|
-| Decompression     | 35750(3.58%) | 13774(2.40%)|44464(2.11%)|146(7.60%)|0|1(0.01%)|250|
-
+| Compression     | 52095(5.15%) | 14645(2.56%)|65172(3.07%)|58(3.20%) | 48(5.00%)|1(0.01%)|274|
+| Decompression     | 35365(3.43%) | 14018(2.44%)|40937(1.90%)|146(7.93%)|0|1(0.01%)|299|
 
 
 ### Throughput & Compression Ratio
@@ -35,17 +34,17 @@ Table below presents the best kernel throughput achieved with single compute uni
 
 | Topic| Results| 
 |-------|--------|
-|Best Compression Throughput|1.73 GB/s|
-|Best Decompression Throughput| 1.72 GB/s |
-|Average Compression Ratio| 2.15x (Silesia Benchmark)|
+|Best Compression Throughput|1.66 GB/s|
+|Best Decompression Throughput| 1.68 GB/s |
+|Average Compression Ratio| 2.13x (Silesia Benchmark)|
 
 Note: Overall throughput can still be increased with multiple compute units.
 
 ## Software & Hardware
 
 ```
-  Software: Xilinx SDx 2018.2
-  Hardware: xilinx_aws-vu9p-f1-04261818_dynamic_5_0 (AWS VU9p F1 DSA)
+  Software: Xilinx SDx 2018.3
+  Hardware: xilinx_u200_xdma_201830_1 (Xilinx Alveo U200)
 ```
  
 ## Usage
@@ -55,7 +54,7 @@ Note: Overall throughput can still be increased with multiple compute units.
 
 #### Emulation flows
 ```
-  make check TARGETS=<sw_emu/hw_emu> DEVICES=$AWS_PLATFORM
+  make check TARGETS=<sw_emu/hw_emu> DEVICES=xilinx_u200_xdma_201830_1
   
   Note: This command compiles for targeted emulation mode and executes the
         application. To execute it on AWS F1 instance, please follow instructions
@@ -64,7 +63,7 @@ Note: Overall throughput can still be increased with multiple compute units.
 #### Hardware
 
 ```
-  make all TARGETS=hw DEVICES=$AWS_PLATFORM
+  make all TARGETS=hw DEVICES=xilinx_u200_xdma_201830_1
 
   Note: This command compiles for hardware execution. It generates kernel binary ".xclbin" file. 
         This file is placed in ./xclbin directory under LZ4 folder. To execute it on AWS F1 instance, 

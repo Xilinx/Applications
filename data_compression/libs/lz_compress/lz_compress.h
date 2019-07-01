@@ -145,6 +145,102 @@ void lz_compress(
 }
 
 template<int MATCH_LEN, int OFFSET_WINDOW>
+void lz_cr_improve_965to987(
+        hls::stream<compressd_dt> &inStream,
+        hls::stream<compressd_dt> &outStream,
+        uint32_t input_size , uint32_t left_bytes
+        )
+{
+    const int c_max_match_length = MATCH_LEN;
+    if(input_size == 0) return;
+
+    compressd_dt compare;
+    compare = inStream.read();
+    outStream << compare;
+
+    lz_cr_improve_965to987:for (uint32_t i = 1; i < input_size; i++){
+        #pragma HLS PIPELINE II=1
+        compressd_dt outValue = inStream.read();
+        uint8_t compareLen = compare.range(15,8);
+        uint8_t outValueLen = outValue.range(15,8);
+        if(compareLen-1 > 3 && compareLen-1 > outValueLen)
+        {
+            outValue.range(15,8) = compareLen - 1;
+            outValue.range(31,16) = compare.range(31,16);
+        }
+    outStream << outValue;
+    compare.range(31,0) = outValue.range(31,0);
+    }
+ }
+
+template<int MATCH_LEN, int OFFSET_WINDOW>
+void lz_cr_improve_959to999(
+        hls::stream<compressd_dt> &inStream,
+        hls::stream<compressd_dt> &outStream,
+        uint32_t input_size , uint32_t left_bytes
+        )
+{
+    const int c_max_match_length = MATCH_LEN;
+    if(input_size == 0) return;
+
+    compressd_dt compare1 = inStream.read();
+    outStream << compare1;
+
+    compressd_dt compare_window[MATCH_LEN];
+    #pragma HLS array_partition variable=compare_window
+
+    for(uint32_t i = 0; i < c_max_match_length; i++)
+    {
+        #pragma HLS PIPELINE
+        compare_window[i] = inStream.read();
+    }
+
+    lz_cr_improve_959to999:for (uint32_t i = c_max_match_length+1; i < input_size; i++){
+        #pragma HLS PIPELINE II=1
+
+        compressd_dt compare2 = compare_window[0];
+        for(uint32_t j = 0; j < c_max_match_length; j++)
+        {   
+            #pragma HLS UNROLL
+            compare_window[j] = compare_window[j+1];
+        }   
+
+        compare_window[c_max_match_length-1] = inStream.read();
+        bool match = 0;
+        uint8_t compareLen1 = compare1.range(15,8);        
+        uint8_t compareLen2 = compare2.range(15,8);        
+        uint32_t compareOff1 = compare1.range(31,16);
+        uint32_t compareOff2 = compare2.range(31,16);
+        for(uint32_t j = 0; j < c_max_match_length-1; j++)
+        {   
+            compressd_dt compare3 = compare_window[j];
+            uint8_t compareLen3 = compare3.range(15,8);
+            uint32_t compareOff3 = compare3.range(31,16);
+            if(compareLen1 == MATCH_LEN && compareLen3 == MATCH_LEN && compareOff1 == compareOff3 && compareLen2 < MATCH_LEN)
+            {
+                match = 1;
+                break;
+            }
+            
+        }
+        if(match)
+        {    
+            compare2.range(15,8) = compareLen1;
+            compare2.range(31,16) = compareOff1;
+        }
+        outStream << compare2;
+        compare1.range(31,0) = compare2.range(31,0);
+        compare2.range(31,0) = compare_window[0];
+     }    
+    lz_cr_improve_959to999_left_over:
+     for(uint32_t i = 0; i < c_max_match_length; i++)
+     {
+         outStream << compare_window[i];
+     }     
+
+}
+
+template<int MATCH_LEN, int OFFSET_WINDOW>
 void lz_bestMatchFilter(
         hls::stream<compressd_dt> &inStream,
         hls::stream<compressd_dt> &outStream,
@@ -197,8 +293,124 @@ void lz_bestMatchFilter(
     }
 }
 
+template<int MAX_MATCH_LEN, int OFFSET_WINDOW, int MATCH_LEN>
+void lz_booster_999to11109(
+        hls::stream<compressd_dt> &inStream,       
+        hls::stream<compressd_dt> &outStream,       
+        uint32_t input_size,
+        uint32_t left_bytes
+        )
+{
+    if(input_size == 0) return;
+    compressd_dt local_mem[MAX_MATCH_LEN];
+    #pragma HLS array_partition variable=local_mem
 
-template<int MAX_MATCH_LEN, int OFFSET_WINDOW>
+    uint32_t match_len =0;    
+    bool matchFlag = false;
+    compressd_dt compare1, compare2, compare3;
+
+    compare1 = inStream.read();
+    uint8_t compareLen1 = compare1.range(15,8);
+    uint32_t compareOff1 = compare1.range(31,16);
+    
+    lz_booster_999to11109: for(uint32_t i = 1; i < input_size; i++){
+        #pragma HLS PIPELINE II=1
+        compare2 = inStream.read();
+
+        uint8_t compareLen2 = compare2.range(15,8);
+        uint32_t compareOff2 = compare2.range(31,16);
+        if((compareLen1+match_len) < MAX_MATCH_LEN && compareLen1 == (MATCH_LEN-1) && compareLen1==compareLen2 && compareOff1==compareOff2){
+            local_mem[match_len] = compare2;
+            match_len++;
+            matchFlag = true;
+        }
+        else if(matchFlag){
+            compare1.range(15,8)= compareLen1 + (match_len? match_len:0);
+            outStream <<  compare1;
+            for(int i = 0; i < match_len; i++){
+                compare3 = local_mem[i];
+                compare3.range(15,8) = compare1.range(15,8) - (i + 1);
+                outStream << compare3;
+            }
+            matchFlag = false;
+            match_len = 0;
+            compare1 = compare2;
+            compareLen1 = compare1.range(15,8);
+            compareOff1 = compare1.range(31,16);
+        }      
+        else{
+            outStream << compare1;
+            compare1 = compare2;
+            compareLen1 = compare1.range(15,8);
+            compareOff1 = compare1.range(31,16);
+        }
+     }
+    outStream << compare1;
+}
+
+
+template<int MAX_MATCH_LEN, int BOOSTER_OFFSET_WINDOW, int MATCH_LEN>
+void lz_booster_999to11(
+        hls::stream<compressd_dt> &inStream,
+        hls::stream<compressd_dt> &outStream,
+        uint32_t input_size, uint32_t left_bytes
+        )   
+{
+    if(input_size == 0) return;
+    bool outFlag = false;
+    uint32_t match_len =0;
+    uint16_t skip_len = 0;
+    bool skipdone = false;
+    compressd_dt compare1, compare2;
+    compare1 = inStream.read();
+    uint8_t compareLen1 = compare1.range(15,8);
+    uint8_t compareLen1Last = 0;
+    uint16_t compareOff1 = compare1.range(31,16);
+
+    lz_booster_999to11: for(uint32_t i = 1; i < (input_size-left_bytes); i++){
+        #pragma HLS PIPELINE II=1
+        compare2 = inStream.read();
+        uint8_t compareLen2 = compare2.range(15,8);
+        uint16_t compareOff2 = compare2.range(31,16);
+    
+    if(skipdone){
+        compare1.range(31,0) = compare2.range(31,0);
+        compareLen1 = compare1.range(15,8);
+        compareOff1 = compare1.range(31,16);
+        skipdone = false;
+    } else if(skip_len){
+        skip_len--;
+        skipdone = skip_len?false:true;
+    }else if(compareLen1+match_len < MAX_MATCH_LEN && compareLen1 == MATCH_LEN && compareLen1==compareLen2 && compareOff1==compareOff2){
+        match_len++;
+    }else{
+        skip_len = compareLen1?compareLen1-2:0;
+        compare1.range(15,8)= compareLen1 + match_len;
+        outFlag = true;
+    }
+
+    if(outFlag){
+        outStream << compare1;
+        outFlag = false;
+        compareLen1Last = compare1.range(15,8);
+        match_len = 0;
+        compare1.range(31,0) = compare2.range(31,0);
+        compareLen1 = compare1.range(15,8);
+        compareOff1 = compare1.range(31,16);
+     }
+   }
+    if(skipdone == false) {
+        outStream << compare1;                               
+    }
+    lz_booster_999to11_left_bytes:
+    for (uint32_t i = 0 ; i < left_bytes ; i++){
+        compressd_dt compare3;
+        compare3 = inStream.read();
+        outStream << compare3;
+   }
+}
+
+template<int MAX_MATCH_LEN, int BOOSTER_OFFSET_WINDOW>
 void lz_booster(
         hls::stream<compressd_dt> &inStream,       
         hls::stream<compressd_dt> &outStream,       
@@ -207,13 +419,15 @@ void lz_booster(
 {
 
     if(input_size == 0) return;
-    uint8_t local_mem[OFFSET_WINDOW];
+    uint8_t local_mem[BOOSTER_OFFSET_WINDOW];
     uint32_t match_loc = 0;
     uint32_t match_len =0;
     compressd_dt outValue;
     compressd_dt outStreamValue;
     bool matchFlag=false;
     bool outFlag = false;
+    bool boostFlag = false;
+    uint16_t skip_len = 0;
     lz_booster:for (uint32_t i = 0 ; i < (input_size-left_bytes); i++){
         #pragma HLS PIPELINE II=1 
         #pragma HLS dependence variable=local_mem inter false
@@ -221,10 +435,18 @@ void lz_booster(
         uint8_t tCh      = inValue.range(7,0);
         uint8_t tLen     = inValue.range(15,8);
         uint16_t tOffset = inValue.range(31,16);
-        uint8_t match_ch = local_mem[match_loc%OFFSET_WINDOW];
-        local_mem[i%OFFSET_WINDOW] = tCh;
+        if (tOffset < BOOSTER_OFFSET_WINDOW) {
+            boostFlag = true;
+        }else{
+            boostFlag = false;
+        }
+        uint8_t match_ch = local_mem[match_loc%BOOSTER_OFFSET_WINDOW];
+        local_mem[i%BOOSTER_OFFSET_WINDOW] = tCh;
         outFlag = false;
-        if (    matchFlag 
+
+        if (skip_len){
+            skip_len--;
+        }else if (matchFlag
                 && (match_len< MAX_MATCH_LEN) 
                 && (tCh == match_ch) 
            ){
@@ -238,7 +460,13 @@ void lz_booster(
             outStreamValue = outValue;
             outValue = inValue;
             if(tLen){
-                matchFlag = true;
+                if (boostFlag){
+                    matchFlag = true;
+                    skip_len = 0;               
+                }else{
+                    matchFlag = false;
+                    skip_len = tLen-1;               
+                }
             }else{
                 matchFlag =false;
             }
