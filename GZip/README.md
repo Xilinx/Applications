@@ -1,3 +1,7 @@
+# Note:
+Please refer Latest Data Compression Solution in Vitis Libray:
+https://github.com/Xilinx/Vitis_Libraries/tree/master/data_compression
+
 # GZip 
 
 Xilinx Gzip application is FPGA based GZIP compression which gives very high throughput with respect to CPU. This application is developed and tested on AWS F1 instance.
