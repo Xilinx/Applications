@@ -1,3 +1,6 @@
+# Note
+Please refer Latest Data Compression Solution in Vitis Libray: https://github.com/Xilinx/Vitis_Libraries/tree/master/data_compression
+
 # LZ Based Data Compression
 Xilinx LZ data compression architecture is targeted for FPGAs.
 It aims to provide high throughput. This architecture is developed and tested on AWS F1
