@@ -1,3 +1,6 @@
+# Note:
+Please refer Latest Data Compression Solution in Vitis Libray:
+https://github.com/Xilinx/Vitis_Libraries/tree/master/data_compression
 # Xilinx LZ4  
 
 Xilinx LZ4 compression/decompression is FPGA based implementation of standard LZ4. 
